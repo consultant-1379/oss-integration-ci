@@ -1,0 +1,206 @@
+global:
+  hosts:
+    bdr: BDR_HOST_REPLACE
+  bdr:
+    enabled: true
+  eic:
+    enabled: true
+
+eric-cloud-native-base:
+  eric-data-object-storage-mn:
+    openID:
+      enabled: true
+  eric-odca-diagnostic-data-collector:
+    sftpServerHost: "sftp-server:22"
+
+eric-oss-adc:
+  eric-oss-enm-fns:
+    configuredQueries: |-
+      enms:
+        - name: ProdEngENM
+          periodSeconds: 60
+          queries:
+            - name: query1
+              topic: sftp-filetrans
+              fileType: "xml.gz"
+              fileLocation: ""
+              dmmDataTypeRegistrationParameters:
+                dataSpace: "4G5G"
+                dataCategory: PM_COUNTERS
+              enmFileLookupServiceParameters:
+                dataType: PM_STATISTICAL
+                nodeType: "RadioNode"
+                id: 0
+            - name: query2
+              topic: 4g-event
+              fileType: "bin.gz"
+              fileLocation: ""
+              dmmDataTypeRegistrationParameters:
+                dataSpace: 4G
+                dataCategory: PM_EVENTS
+              enmFileLookupServiceParameters:
+                dataType: PM_CELLTRACE
+                nodeType: "RadioNode"
+                id: 0
+            - name: query3
+              topic: 5g-event
+              fileType: "gpb.gz"
+              fileLocation: ".*_1_\\d+\\.gpb(?:\\.gz)?$"
+              dmmDataTypeRegistrationParameters:
+                dataSpace: 5G
+                dataCategory: PM_EVENTS
+              enmFileLookupServiceParameters:
+                dataType: "PM_CELLTRACE_*"
+                nodeType: "RadioNode"
+                id: 0
+            - name: query4
+              topic: sftp-filetrans
+              fileType: "xml.gz"
+              fileLocation: ""
+              dmmDataTypeRegistrationParameters:
+                dataSpace: "4G5G"
+                dataCategory: PM_COUNTERS
+              enmFileLookupServiceParameters:
+                dataType: PM_STATISTICAL
+                nodeType: "Shared-CNF"
+                id: 0
+        - name: enm1
+          periodSeconds: 60
+          queries:
+            - name: query1
+              topic: sftp-filetrans
+              fileType: ""
+              fileLocation: ""
+              dmmDataTypeRegistrationParameters:
+                dataSpace: "4G5G"
+                dataCategory: PM_COUNTERS
+              enmFileLookupServiceParameters:
+                dataType: PM_STATISTICAL
+                nodeType: "RadioNode"
+                id: -1
+            - name: query2
+              topic: 5g-event
+              fileType: "gpb.gz"
+              fileLocation: ".*_1_\\d+\\.gpb(?:\\.gz)?$"
+              dmmDataTypeRegistrationParameters:
+                dataSpace: 5G
+                dataCategory: PM_EVENTS
+              enmFileLookupServiceParameters:
+                dataType: "PM_CELLTRACE_*"
+                nodeType: "RadioNode"
+                id: -1
+            - name: query3
+              topic: sftp-filetrans
+              fileType: "xml.gz"
+              fileLocation: ""
+              dmmDataTypeRegistrationParameters:
+                dataSpace: "4G5G"
+                dataCategory: PM_COUNTERS
+              enmFileLookupServiceParameters:
+                dataType: PM_STATISTICAL
+                nodeType: "Shared-CNF"
+                id: -1
+        - name: ProdEngRestsimPMSCH
+          periodSeconds: 60
+          queries:
+            - name: query1
+              topic: sftp-filetrans
+              fileType: ""
+              fileLocation: ""
+              dmmDataTypeRegistrationParameters:
+                dataSpace: "4G5G"
+                dataCategory: PM_COUNTERS
+              enmFileLookupServiceParameters:
+                dataType: PM_STATISTICAL
+                nodeType: "RadioNode"
+                id: 0
+    
+  preHookJobs:
+    enabled: true
+  eric-oss-sftp-filetrans:
+    subsystem:
+      name: "enm1"
+    dmm:
+      data_catalog:
+        data_service:
+          datatype:
+            schema_name: ran
+  eric-oss-sftp-filetrans-ran-2:
+    enabled: true
+    replicaCount: 1
+    subsystem:
+      name: "ProdEngENM"
+    dmm:
+      data_catalog:
+        message_bus_namespace: "oss-deploy"
+        data_service:
+          datatype:
+            schema_name: ran
+  eric-oss-sftp-filetrans-ran-3:
+    enabled: true
+    replicaCount: 1
+    subsystem:
+      name: "ProdEngRestsimPMSCH"
+    dmm:
+      data_catalog:
+        message_bus_namespace: "oss-deploy"
+        data_service:
+          datatype:
+            schema_name: ran
+  eric-oss-5gpmevt-filetx-proc:
+    dmm:
+      dataCatalog:
+        dataCollectorName: "enm1"
+    enabled: true
+    eventRegulation:
+      produceNonStandard: true
+    imageCredentials:
+      eric-oss-5gpmevt-filetx-proc:
+        registry:
+          imagePullPolicy: Always
+    spring:
+      kafka:
+        topics:
+          input:
+            name: "file-notification-service--5g-event--enm1"
+    subsystem:
+      name: "enm1"
+  eric-oss-5gpmevt-filetx-proc-2:
+    dmm:
+      dataCatalog:
+        dataCollectorName: "ProdEngENM"
+    enabled: true
+    eventRegulation:
+      produceNonStandard: true
+    imageCredentials:
+      eric-oss-5gpmevt-filetx-proc:
+        registry:
+          imagePullPolicy: Always
+    replicaCount: 2
+    spring:
+      kafka:
+        topics:
+          input:
+            name: "file-notification-service--5g-event--ProdEngENM"
+    subsystem:
+      name: "ProdEngENM"
+
+  init:
+    sftp-username: flsuser1                          #FLS User's username
+    sftp-password: flspass@12                        #FLS User's passowrd
+    sftp-port: 2020
+    scriptingVM: eric-oss-pm-solution-enm-1.NAMESPACE.svc.cluster.local
+    url: http://eric-oss-fls-enm-1.NAMESPACE.svc.cluster.local:8080
+
+eric-oss-common-base:
+  eric-oss-ddc:
+    autoUpload:
+      ddpid: DDP_ID
+      account: DDP_ACCOUNT
+      password: "DDP_PASSWORD"
+  eric-eo-api-gateway:
+    enabled: true
+
+eric-oss-pm-stats-calc-handling:
+  sef:
+    enabled: true

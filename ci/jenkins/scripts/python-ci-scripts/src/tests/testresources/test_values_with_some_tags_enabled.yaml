@@ -1,0 +1,164 @@
+helmfile:
+  app:
+    namespace: eo-deploy
+
+global:
+  nodeSelector:
+    keyOne: valueOne
+  createClusterRoles: true
+  hosts:
+    gas: 'dummy'
+    gr: 'dummy'
+    iam: 'dummy'
+    pf: 'dummy'
+    so: 'dummy'
+    uds: 'dummy'
+    vnfm: 'dummy'
+    th: 'dummy'
+  ingressClass: oss_iccr
+  registry:
+    password: 'dummy'
+    url: 0123456789012.abc.xyz.i-am-2.somethang.com/mako-eo-22.1.3-sandpit
+    username: 'dummy'
+  support:
+    ipv6:
+      enabled: true
+  timezone: UTC
+  ericsson:
+    licensing:
+      licenseDomains:
+        - productType: Dummy1
+          swltId: Dummy
+          customerId: 1234
+tags:
+  eoCm: false
+  eoEvnfm: true
+  eoPf: true
+  eoSo: false
+  eoUds: true
+  eoVmvnfm: true
+  eoEca: false
+
+eric-cloud-native-base:
+  eric-ctrl-bro:
+    persistence:
+      persistentVolumeClaim:
+        size: 1Gi
+    sftp:
+      password: 'dummy'
+      username: 'dummy'
+  eric-lm-combined-server:
+    licenseServerClient:
+      licenseServer:
+        thrift:
+          # Mandatory: licenseServerClient.licenseServer.thrift.host - The NELS thrift server address or service name
+          host: ""
+  eric-data-search-engine:
+    service:
+      network:
+        protocol:
+          IPv6: true
+  eric-sec-access-mgmt:
+    replicaCount: 2
+  eric-log-transformer:
+    egress:
+      syslog:
+        enabled: false
+        remoteHosts: []
+  eric-tm-ingress-controller-cr:
+    service:
+      externalTrafficPolicy: Local
+      loadBalancerIP: '1.2.3.4'
+  eric-data-object-storage-mn:
+    persistentVolumeClaim:
+      size: 10Gi
+  eric-fh-snmp-alarm-provider:
+    sendAlarm: false
+eric-eo-evnfm:
+  eric-lcm-container-registry:
+    ingress:
+      hostname: 'dummy'
+    persistence:
+      persistentVolumeClaim:
+        size: 1Gi
+  eric-global-lcm-container-registry:
+    hostname: 'dummy'
+    username: 'dummy'
+    password: 'dummy'
+  eric-lcm-helm-chart-registry:
+    env:
+      secret:
+        BASIC_AUTH_PASS: 'dummy'
+        BASIC_AUTH_USER: 'dummy'
+    ingress:
+      enabled: true
+      hostname: 'dummy'
+  eric-vnfm-orchestrator-service:
+    oss:
+      topology:
+        secretName: null
+    smallstack:
+      application: true
+eric-eo-evnfm-vm:
+  eric-vnflcm-service:
+    oss:
+      secretName: null
+    persistentVolumeClaim:
+      size: 1Gi
+    service:
+      enabled: true
+      externalTrafficPolicy: Local
+      loadBalancerIP: '1.2.3.4'
+eric-eo-so:
+  defaultUser:
+    password: 'dummy'
+    username: 'dummy'
+eric-oss-common-base:
+  sessionTokens:
+    maxSessionDurationSecs: 36000
+    maxIdleTimeSecs: 1800
+  eric-eo-usermgmt:
+    replicaCount: 2
+  eric-eo-usermgmt-ui:
+    replicaCount: 2
+  eric-eo-evnfm-nbi:
+    eric-evnfm-rbac:
+      defaultUser:
+        password: 'dummy'
+        username: 'dummy'
+  eric-gr-bur-orchestrator:
+    credentials:
+      password: 'dummy'
+      username: 'dummy'
+    gr:
+      bro:
+        autoDelete:
+          backupsLimit: 10
+      cluster:
+        role: 'PRIMARY'
+        secondary_hostnames:
+          - 'dummy'
+      registry:
+        secondarySiteContainerRegistryHostname: 'dummy'
+      sftp:
+        password: 'dummy'
+        url: 'dummy:22/path/'
+        username: 'dummy'
+  gas:
+    defaultUser:
+      password: 'dummy'
+      username: 'dummy'
+  system-user:
+    credentials:
+      password: 'dummy'
+      username: 'dummy'
+eric-oss-pf:
+  defaultUser:
+    password: 'dummy'
+    username: 'dummy'
+eric-oss-uds:
+  defaultUser:
+    password: 'dummy'
+    username: 'dummy'
+geo-redundancy:
+  enabled: true

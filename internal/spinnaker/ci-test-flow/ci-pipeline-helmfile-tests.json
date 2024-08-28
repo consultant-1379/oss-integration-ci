@@ -1,0 +1,259 @@
+{
+  "appConfig": {},
+  "description": "The is a CI Release pipeline to be used by Team TicketMaster",
+  "disabled": false,
+  "keepWaitingPipelines": false,
+  "lastModifiedBy": "emanjoh",
+  "limitConcurrent": false,
+  "notifications": [],
+  "parameterConfig": [
+    {
+      "default": "None",
+      "description": "Name of the microservice chart within the integration chart",
+      "hasOptions": false,
+      "label": "",
+      "name": "CHART_NAME",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": false
+    },
+    {
+      "default": "None",
+      "description": "Version of the microservice chart within the integration chart",
+      "hasOptions": false,
+      "label": "",
+      "name": "CHART_VERSION",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": false
+    },
+    {
+      "default": "None",
+      "description": "Repo of the microservice chart within the integration chart",
+      "hasOptions": false,
+      "label": "",
+      "name": "CHART_REPO",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": false
+    },
+    {
+      "default": "None",
+      "description": "CI Code review under test",
+      "hasOptions": false,
+      "label": "",
+      "name": "GERRIT_REFSPEC",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "eric-eiae-helmfile",
+      "description": "Name of the integration chart which will be used for the Initial install",
+      "hasOptions": false,
+      "label": "",
+      "name": "II_INT_CHART_NAME",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "0.0.0",
+      "description": "Version of the Integration Chart which will be used for the Initial Install",
+      "hasOptions": false,
+      "label": "",
+      "name": "II_INT_CHART_VERSION",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "https://arm.seli.gic.ericsson.se/artifactory/proj-eric-oss-drop-helm-local",
+      "description": "Repo of the Integration Chart which will be used for the Initial Install",
+      "hasOptions": false,
+      "label": "",
+      "name": "II_INT_CHART_REPO",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "evo_docker_engine_gic_IDUN",
+      "description": "Label to choose which Jenkins slave to execute Jenkinsfiles against",
+      "hasOptions": false,
+      "label": "",
+      "name": "SLAVE_LABEL",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "ciloopman-user-creds",
+      "description": "Functional user for logging into armdocker",
+      "hasOptions": false,
+      "label": "",
+      "name": "FUNCTIONAL_USER_SECRET",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "armdocker.rnd.ericsson.se/proj-eric-oss-drop/eric-oss-ci-scripts:latest",
+      "description": "",
+      "hasOptions": false,
+      "label": "CI Docker Image to use",
+      "name": "CI_DOCKER_IMAGE",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    }
+  ],
+  "schema": "1",
+  "spelEvaluator": "v4",
+  "stages": [
+    {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "CI-Test-Check-For-CRDS",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Check For CRDs",
+      "parameters": {
+        "CHART_NAME": "${trigger['parameters']['CHART_NAME']}",
+        "CHART_REPO": "${trigger['parameters']['CHART_REPO']}",
+        "CHART_VERSION": "${trigger['parameters']['CHART_VERSION']}",
+        "CI_DOCKER_IMAGE": "${trigger['parameters']['CI_DOCKER_IMAGE']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['GERRIT_REFSPEC']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['II_INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['II_INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${trigger['parameters']['II_INT_CHART_VERSION']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}"
+      },
+      "propertyFile": "crd_details_artifact.properties",
+      "refId": "1",
+      "requisiteStageRefIds": [],
+      "type": "jenkins"
+    },
+    {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "CI-Test-Get-Microservice-Info-From-Helmfile",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Get Microservice Info",
+      "parameters": {
+        "CI_DOCKER_IMAGE": "${trigger['parameters']['CI_DOCKER_IMAGE']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['GERRIT_REFSPEC']}",
+        "INT_CHART_NAME": "eric-ci-helmfile",
+        "INT_CHART_VERSION": "${trigger['parameters']['II_INT_CHART_VERSION']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}"
+      },
+      "propertyFile": "helmServicesContent.txt",
+      "refId": "4",
+      "requisiteStageRefIds": [],
+      "type": "jenkins"
+    },
+    {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "CI-Test-Get-Release-Info-From-Helmfile",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Get Release Info",
+      "parameters": {
+        "CI_DOCKER_IMAGE": "${trigger['parameters']['CI_DOCKER_IMAGE']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['GERRIT_REFSPEC']}",
+        "INT_CHART_NAME": "${trigger['parameters']['II_INT_CHART_NAME']}",
+        "INT_CHART_REPO": "${trigger['parameters']['II_INT_CHART_REPO']}",
+        "INT_CHART_VERSION": "${trigger['parameters']['II_INT_CHART_VERSION']}",
+        "PATH_TO_HELMFILE": "${trigger['parameters']['II_INT_CHART_NAME']}/helmfile.yaml",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "STATE_VALUES_FILE": "${trigger['parameters']['II_INT_CHART_NAME']}/build-environment/tags_true.yaml"
+      },
+      "propertyFile": "csar_build.properties",
+      "refId": "5",
+      "requisiteStageRefIds": [],
+      "type": "jenkins"
+    },
+    {
+      "name": "Check Preconditions",
+      "preconditions": [
+        {
+          "context": {
+            "stageName": "Check For CRDs",
+            "stageStatus": "SUCCEEDED"
+          },
+          "failPipeline": true,
+          "type": "stageStatus"
+        },
+        {
+          "context": {
+            "stageName": "Get Microservice Info",
+            "stageStatus": "SUCCEEDED"
+          },
+          "failPipeline": true,
+          "type": "stageStatus"
+        },
+        {
+          "context": {
+            "stageName": "Get Release Info",
+            "stageStatus": "SUCCEEDED"
+          },
+          "failPipeline": true,
+          "type": "stageStatus"
+        }
+      ],
+      "refId": "6",
+      "requisiteStageRefIds": [
+        "1",
+        "4",
+        "5"
+      ],
+      "type": "checkPreconditions"
+    }
+  ],
+  "triggers": []
+}

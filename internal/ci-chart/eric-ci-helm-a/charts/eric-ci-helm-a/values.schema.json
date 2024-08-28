@@ -1,0 +1,130 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": [
+        "global",
+        "eric-cloud-native-base",
+        "enabled",
+        "faultMappings",
+        "alertRules"
+    ],
+    "properties": {
+        "global": {
+            "type": "object",
+            "required": [
+                "createClusterRoles",
+                "security",
+                "hosts",
+                "networkPolicy"
+            ],
+            "properties": {
+                "createClusterRoles": {
+                    "type": "boolean"
+                },
+                "security": {
+                    "type": "object",
+                    "required": [
+                        "privilegedPolicyClusterRoleName"
+                    ],
+                    "properties": {
+                        "privilegedPolicyClusterRoleName": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "hosts": {
+                    "type": "object",
+                    "required": [
+                        "iam"
+                    ],
+                    "properties": {
+                        "iam": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "networkPolicy": {
+                    "type": "object",
+                    "required": [
+                        "enabled"
+                    ],
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            }
+        },
+        "eric-cloud-native-base": {
+            "type": "object",
+            "required": [
+                "eric-si-application-sys-info-handler",
+                "eric-fh-snmp-alarm-provider",
+                "eric-data-distributed-coordinator-ed",
+                "eric-lm-combined-server-db-pg"
+            ],
+            "properties": {
+                "eric-si-application-sys-info-handler": {
+                    "type": "object",
+                    "required": [
+                        "enabled"
+                    ],
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean"
+                        }
+                    }
+                },
+                "eric-fh-snmp-alarm-provider": {
+                    "type": "object",
+                    "required": [
+                        "enabled"
+                    ],
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean"
+                        }
+                    }
+                },
+                "eric-data-distributed-coordinator-ed": {
+                    "type": "object",
+                    "required": [
+                        "enabled"
+                    ],
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean"
+                        }
+                    }
+                },
+                "eric-lm-combined-server-db-pg": {
+                    "type": "object",
+                    "required": [
+                        "enabled"
+                    ],
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            }
+        },
+        "enabled": {
+            "type": "boolean"
+        },
+        "faultMappings": {
+            "type": "object",
+            "patternProperties": {
+                "": { "type": "string" }
+            }
+        },
+        "alertRules": {
+            "type": "object",
+            "patternProperties": {
+                "": { "type": "string" }
+            }
+        }
+    }
+}

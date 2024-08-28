@@ -1,0 +1,11 @@
+-DhelmDesignRule.config.DR-D1121-122=skip
+-DhelmDesignRule.config.DR-D1125-050=skip
+-DhelmDesignRule.config.DR-D1125-057=skip
+-DhelmDesignRule.config.DR-D1121-067=skip
+-DhelmDesignRule.config.DR-D1123-125=skip
+-DhelmDesignRule.config.DR-D1123-121=skip
+-DhelmDesignRule.config.DR-D1126-011=enable
+-DhelmDesignRule.config.eric-data-document-database-pg.DR-D1121-106=exempt
+-DhelmDesignRule.config.DR-D1122-131=skip
+-DhelmDesignRule.config.DR-D470219-140=skip
+

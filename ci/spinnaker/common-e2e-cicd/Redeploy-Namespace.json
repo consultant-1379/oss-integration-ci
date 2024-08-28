@@ -1,0 +1,696 @@
+{
+  "appConfig": {},
+  "application": "common-e2e-cicd",
+  "id": "22995332-48bb-47c1-92dc-3f9ebf65d7bf",
+  "index": 7,
+  "keepWaitingPipelines": false,
+  "lastModifiedBy": "ZSRRAES",
+  "limitConcurrent": false,
+  "name": "Redeploy-Namespace",
+  "notifications": [],
+  "parameterConfig":   [
+        {
+      "default": "default",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "ELASTIC_INGRESS_HOST",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "false",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "IS_EOCM_NAMESPACE",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "false",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "IS_OPENSHIFT_CLUSTER",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "PROMETHEUS_INGRESS_HOST",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "true",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "SKIP_TOKEN_REFRESH",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "ADC_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "APPMGR_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "CH_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "EAS_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "GAS_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "GR_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "IAM_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "OS_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "PF_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "SO_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "TA_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "default",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "TH_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "UDS_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "VNFM_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "VNFM_REGISTRY_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "HELM_REGISTRY_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "TAGS",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "eric-eo-helmfile",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "INT_CHART_NAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "https://arm.seli.gic.ericsson.se/artifactory/proj-eo-drop-helm",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "INT_CHART_REPO",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "0.0.0",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "INT_CHART_VERSION",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "INGRESS_IP",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "site-values/ci/site-values-latest.yaml",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "FULL_PATH_TO_SITE_VALUES_FILE",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "site-values/app-staging/override_IDUN_site-values.yaml",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "PATH_TO_SITE_VALUES_OVERRIDE_FILE",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "oss-common-ci/ci-infrastructure/pooling/environments/...",
+      "description": "Path to certificates from oss-integration-ci repo",
+      "hasOptions": false,
+      "label": "",
+      "name": "PATH_TO_CERTIFICATES_FILES",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "KUBECONFIG_FILE",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "",
+      "description": "Namespace on cluster for deployment",
+      "hasOptions": false,
+      "label": "",
+      "name": "NAMESPACE",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "evo_docker_engine",
+      "description": "Lable for Jenkins Agents",
+      "hasOptions": false,
+      "label": "",
+      "name": "SLAVE_LABEL",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "false",
+      "description": "Used within CI when deploying multiple deployments in the one cluster. When set to true ensures all tagged CRDs are set to true, to ensure no dependency mismatch between deployments",
+      "hasOptions": false,
+      "label": "",
+      "name": "DEPLOY_ALL_CRDS",
+      "options":       [
+        {"value": "false"},
+        {"value": "true"}
+      ],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "false",
+      "description": "",
+      "hasOptions": true,
+      "label": "",
+      "name": "HELM_REGISTRY_DEPLOY",
+      "options":       [
+        {"value": "false"},
+        {"value": "true"}
+      ],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "1800",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "HELM_TIMEOUT",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "false",
+      "description": "Set to true to use the Deploymet Manager function \"prepare\" to generate the site values file",
+      "hasOptions": false,
+      "label": "",
+      "name": "USE_DM_PREPARE",
+      "options":       [
+        {"value": "false"},
+        {"value": "true"}
+      ],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "",
+      "description": "Name of the Environment to be unreserved. Lockable resourse name. You get that in Reserve Namespacce stage.",
+      "hasOptions": false,
+      "label": "",
+      "name": "ENV_NAME",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "true",
+      "description": "If \"false\" - then environment will be just cleaned and unreserved. No install will be performed after cleanup.",
+      "hasOptions": false,
+      "label": "",
+      "name": "PERFORM_REDEPLOY",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "true",
+      "description": "\"true\" or \"false\". Define if Unreserve stage has to be skipped",
+      "hasOptions": false,
+      "label": "",
+      "name": "UNRESERVE_ENVIRONMENT",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "ossapps100-arm-docker-auth-config",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "ARMDOCKER_USER_SECRET",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "ENV_CONFIG_FILE",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "ML_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "default",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "AVIZ_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "false",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "DDP_AUTO_UPLOAD",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "IP for the SNMP Alarm Provider",
+      "hasOptions": false,
+      "label": "FH_SNMP_ALARM_IP",
+      "name": "FH_SNMP_ALARM_IP",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "false",
+      "description": "Set to true to use \"--use-certm\" flag during deployment",
+      "hasOptions": false,
+      "label": "",
+      "name": "USE_CERTM",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "true",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "DEPLOY_NELS_SIMULATOR",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    }
+  ],
+  "schema": "1",
+  "spelEvaluator": "v4",
+  "stages":   [
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "Deployment_Namespace_Preparation_EIC_BP",
+      "master": "oss-fem8s11-eiffel052",
+      "name": "NamespacePreparation",
+      "notifications": [      {
+        "address": "PDLAPPSTAG@pdl.internal.ericsson.com",
+        "level": "stage",
+        "message": {"stage.failed": {"text": "Recreate Namespace job failed!\nPlease check what is wrong with it"}},
+        "type": "email",
+        "when": ["stage.failed"]
+      }],
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "ossapps100-arm-docker-auth-config",
+        "ELASTIC_INGRESS_HOST": "${parameters[\"ELASTIC_INGRESS_HOST\"]}",
+        "IS_APPMGR_NAMESPACE": "${IS_APPMGR_NAMESPACE}",
+        "KUBECONFIG_FILE": "${parameters[\"KUBECONFIG_FILE\"]}",
+        "NAMESPACE": "${parameters[\"NAMESPACE\"]}",
+        "PROMETHEUS_INGRESS_HOST": "${parameters[\"PROMETHEUS_INGRESS_HOST\"]}",
+        "SKIP_TOKEN_REFRESH": "${parameters[\"SKIP_TOKEN_REFRESH\"]}",
+        "SLAVE_LABEL": "${parameters[\"SLAVE_LABEL\"]}"
+      },
+      "refId": "1",
+      "requisiteStageRefIds": ["6"],
+      "restrictExecutionDuringTimeWindow": false,
+      "sendNotifications": false,
+      "stageEnabled":       {
+        "expression": "\"${#stage('NamespaceCleanup')['status']}\" == \"SUCCEEDED\"",
+        "type": "expression"
+      },
+      "stageTimeoutMs": 1800000,
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": false,
+      "failPipeline": true,
+      "job": "OSS-Integration-Unreserve-Environment",
+      "master": "oss-fem8s11-eiffel052",
+      "name": "UnreserveNamespace",
+      "parameters":       {
+        "ENV_NAME": "${parameters[\"ENV_NAME\"]}",
+        "SLAVE_LABEL": "${parameters[\"SLAVE_LABEL\"]}"
+      },
+      "refId": "2",
+      "requisiteStageRefIds": ["3"],
+      "stageEnabled":       {
+        "expression": "\"${parameters[\"UNRESERVE_ENVIRONMENT\"]}\" == \"true\"",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failOnFailedExpressions": false,
+      "failPipeline": false,
+      "job": "OSS-Integration-Helmfile-Deploy",
+      "master": "oss-fem8s11-eiffel052",
+      "name": "Helmfile-Deploy",
+      "parameters":       {
+        "ADC_HOSTNAME": "${parameters[\"ADC_HOSTNAME\"]}",
+        "APPMGR_HOSTNAME": "${parameters[\"APPMGR_HOSTNAME\"]}",
+        "ARMDOCKER_USER_SECRET": "${parameters[\"ARMDOCKER_USER_SECRET\"]}",
+        "CH_HOSTNAME": "${parameters[\"CH_HOSTNAME\"]}",
+        "CRD_NAMESPACE": "eric-crd-ns",
+        "DDP_AUTO_UPLOAD": "${parameters[\"DDP_AUTO_UPLOAD\"]}",
+        "DEPLOY_ALL_CRDS": "${parameters[\"DEPLOY_ALL_CRDS\"]}",
+        "EAS_HOSTNAME": "${parameters[\"EAS_HOSTNAME\"]}",
+        "ENV_CONFIG_FILE": "${parameters[\"ENV_CONFIG_FILE\"]}",
+        "FH_SNMP_ALARM_IP": "${parameters['FH_SNMP_ALARM_IP']}",
+        "FULL_PATH_TO_SITE_VALUES_FILE": "${parameters[\"FULL_PATH_TO_SITE_VALUES_FILE\"]}",
+        "FUNCTIONAL_USER_SECRET": "ossapps100-user-creds",
+        "GAS_HOSTNAME": "${parameters[\"GAS_HOSTNAME\"]}",
+        "HELM_REGISTRY_DEPLOY": "${parameters[\"HELM_REGISTRY_DEPLOY\"]}",
+        "HELM_REGISTRY_HOSTNAME": "${parameters[\"HELM_REGISTRY_HOSTNAME\"]}",
+        "HELM_TIMEOUT": "${parameters[\"HELM_TIMEOUT\"]}",
+        "IAM_HOSTNAME": "${parameters[\"IAM_HOSTNAME\"]}",
+        "INGRESS_IP": "${parameters[\"INGRESS_IP\"]}",
+        "INT_CHART_NAME": "${parameters[\"INT_CHART_NAME\"]}",
+        "INT_CHART_REPO": "${parameters[\"INT_CHART_REPO\"]}",
+        "INT_CHART_VERSION": "${parameters[\"INT_CHART_VERSION\"]}",
+        "KUBECONFIG_FILE": "${parameters[\"KUBECONFIG_FILE\"]}",
+        "ML_HOSTNAME": "${parameters[\"ML_HOSTNAME\"]}",
+        "NAMESPACE": "${parameters[\"NAMESPACE\"]}",
+        "OS_HOSTNAME": "${parameters[\"OS_HOSTNAME\"]}",
+        "PATH_TO_CERTIFICATES_FILES": "${parameters[\"PATH_TO_CERTIFICATES_FILES\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${parameters[\"PATH_TO_SITE_VALUES_OVERRIDE_FILE\"]}",
+        "PF_HOSTNAME": "${parameters[\"PF_HOSTNAME\"]}",
+        "SO_HOSTNAME": "${parameters[\"SO_HOSTNAME\"]}",
+        "TAGS": "${parameters[\"TAGS\"]}",
+        "TA_HOSTNAME": "${parameters[\"TA_HOSTNAME\"]}",
+        "TH_HOSTNAME": "${parameters[\"TH_HOSTNAME\"]}",
+        "UDS_HOSTNAME": "${parameters[\"UDS_HOSTNAME\"]}",
+        "USE_CERTM": "${parameters['USE_CERTM']}",
+        "USE_DM_PREPARE": "${parameters[\"USE_DM_PREPARE\"]}",
+        "VNFM_HOSTNAME": "${parameters[\"VNFM_HOSTNAME\"]}",
+        "VNFM_REGISTRY_HOSTNAME": "${parameters[\"VNFM_REGISTRY_HOSTNAME\"]}"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "3",
+      "requisiteStageRefIds": ["7"],
+      "stageEnabled":       {
+        "expression": "\"${#stage('NamespacePreparation')['status']}\" == \"SUCCEEDED\" and (\"${#stage('NELSSimInstall')['status']}\" == \"SUCCEEDED\" or \"${#stage('NELSSimInstall')['status']}\" == \"SKIPPED\") and \"${parameters['PERFORM_REDEPLOY']}\" == \"true\"",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "name": "Flow Completed",
+      "preconditions":       [
+                {
+          "context": {"expression": "\"${#stage('Helmfile-Deploy')['status']}\" == \"SUCCEEDED\" or \"${#stage('Helmfile-Deploy')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context":           {
+            "stageName": "NamespaceCleanup",
+            "stageStatus": "SUCCEEDED"
+          },
+          "failPipeline": true,
+          "type": "stageStatus"
+        },
+                {
+          "context":           {
+            "stageName": "NamespacePreparation",
+            "stageStatus": "SUCCEEDED"
+          },
+          "failPipeline": true,
+          "type": "stageStatus"
+        },
+                {
+          "context": {"expression": "\"${#stage('NELSSimInstall')['status']}\" == \"SUCCEEDED\" or \"${#stage('NELSSimInstall')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        }
+      ],
+      "refId": "4",
+      "requisiteStageRefIds": ["2"],
+      "type": "checkPreconditions"
+    },
+        {
+      "failOnFailedExpressions": true,
+      "name": "Evaluate Variables",
+      "refId": "5",
+      "requisiteStageRefIds": [],
+      "type": "evaluateVariables",
+      "variables": [      {
+        "key": "IS_APPMGR_NAMESPACE",
+        "value": "${trigger.parameters.TAGS.contains(\"appmgr\")}"
+      }]
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-Integration-Purge",
+      "master": "oss-fem8s11-eiffel052",
+      "name": "NamespaceCleanup",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "ossapps100-arm-docker-auth-config",
+        "CLEANUP_TYPE": "PARTIAL",
+        "CRD_NAMESPACE": "eric-crd-ns",
+        "FUNCTIONAL_USER_SECRET": "ossapps100-user-creds",
+        "KUBECONFIG_FILE": "${parameters[\"KUBECONFIG_FILE\"]}",
+        "NAMESPACE": "${parameters[\"NAMESPACE\"]}",
+        "SLAVE_LABEL": "evo_docker_engine"
+      },
+      "refId": "6",
+      "requisiteStageRefIds": ["5"],
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "NeLS-simulator-installation",
+      "master": "oss-fem8s11-eiffel052",
+      "name": "NELSSimInstall",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "cloudman-docker-auth-config",
+        "FUNCTIONAL_USER_CREDENTIALS": "cloudman-user-creds",
+        "KUBECONFIG_FILE": "${parameters[\"KUBECONFIG_FILE\"]}",
+        "LICENSE_KEYS": "false",
+        "NAMESPACE": "${parameters[\"NAMESPACE\"]}"
+      },
+      "refId": "7",
+      "requisiteStageRefIds": ["1"],
+      "stageEnabled":       {
+        "expression": "\"${#stage('NamespacePreparation')['status']}\" == \"SUCCEEDED\" and \"${parameters[\"DEPLOY_NELS_SIMULATOR\"]}\" == \"true\"",
+        "type": "expression"
+      },
+      "stageTimeoutMs": 600000,
+      "type": "jenkins"
+    }
+  ],
+  "triggers": [],
+  "updateTs": "1705332717875"
+}

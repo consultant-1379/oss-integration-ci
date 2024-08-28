@@ -1,0 +1,754 @@
+{
+  "appConfig": {},
+  "application": "common-e2e-cicd",
+  "description": "This file can be used to execute the IDUN Specific pre deployment steps.",
+  "id": "88012023-7839-4eca-92f4-f87715ed77ad",
+  "index": 2,
+  "keepWaitingPipelines": false,
+  "lastModifiedBy": "tbspinauth",
+  "limitConcurrent": false,
+  "locked":   {
+    "allowUnlockUi": true,
+    "description": "This pipeline is maintained by Spinnaker as a code, any changes made through the UI will be overwritten. Please see https://gerrit-gamma.gic.ericsson.se/plugins/gitiles/OSS/com.ericsson.oss.aeonic/oss-integration-ci/+/refs/heads/master/docs/flows/IDUN-Pre-Deployment.md for details",
+    "ui": true
+  },
+  "name": "IDUN-Pre-Deployment",
+  "parameterConfig":   [
+        {
+      "default": "oss-deploy",
+      "description": "Namespace to be used to execute deployment against on the kubernetes system",
+      "hasOptions": false,
+      "label": "Namespace",
+      "name": "NAMESPACE",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "armdocker.rnd.ericsson.se/proj-eric-oss-drop/eric-oss-ci-scripts:default",
+      "description": "CI Docker image to use. Mainly used in CI Testing flows",
+      "hasOptions": false,
+      "label": "CI_DOCKER_IMAGE",
+      "name": "CI_DOCKER_IMAGE",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "Ericsson123!",
+      "description": "IAM Password to use when creating the secret",
+      "hasOptions": false,
+      "label": "ADP_IAM_AA_CLIENT_PASSWORD",
+      "name": "ADP_IAM_AA_CLIENT_PASSWORD",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "eric-sec-access-mgmt-aapxy-creds",
+      "description": "Authentication Proxy Secret name to be created",
+      "hasOptions": false,
+      "label": "AAPXY_SECRET_NAME",
+      "name": "AAPXY_SECRET_NAME",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "eric-sec-access-mgmt-creds",
+      "description": "Postgres secret name to be created",
+      "hasOptions": false,
+      "label": "MGMT_CREDS_SECRET_NAME",
+      "name": "MGMT_CREDS_SECRET_NAME",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "eric-eo-database-pg-secret",
+      "description": "Postgres secret name to be created",
+      "hasOptions": false,
+      "label": "DATABASE_PG_SECRET_NAME",
+      "name": "DATABASE_PG_SECRET_NAME",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": true,
+      "description": "Used to ignore if the namespace is already created do not fail the job.",
+      "hasOptions": false,
+      "label": "IGNORE_IF_CREATED",
+      "name": "IGNORE_IF_CREATED",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "123456",
+      "description": "ID for Spinnaker pipeline. Used as a placeholder to mitigate Jenkins 404 errors.",
+      "hasOptions": false,
+      "label": "SPINNAKER_PIPELINE_ID",
+      "name": "SPINNAKER_PIPELINE_ID",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "crd-namespace",
+      "description": "CRD Namespace to be used to execute the CRD deployment against on the kubernetes system",
+      "hasOptions": false,
+      "label": "CRD Namespace",
+      "name": "CRD_NAMESPACE",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "k8s-registry-secret",
+      "description": "This is the name of the secret to create for both the Main Namespace  (NAMESPACE) and CRD namespace (CRD_NAMESPACE)",
+      "hasOptions": false,
+      "label": "Namespace Secret Name",
+      "name": "SECRET_NAME",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "",
+      "description": "Kubeconfig file id stored in the Jenkins secret area",
+      "hasOptions": false,
+      "label": "Kubernetes Config File ID",
+      "name": "KUBECONFIG_FILE",
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "admin",
+      "description": "Key Cloak Admin User (--from-literal=kcadminid=<KC_ADMIN_ID>)",
+      "hasOptions": false,
+      "label": "Key Cloak Admin User ",
+      "name": "KC_ADMIN_ID",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "Ericsson123!",
+      "description": "Key Cloak Admin Password (--from-literal=kcpasswd=<KC_PASSWORD>)",
+      "hasOptions": false,
+      "label": "Key Cloak Admin Password",
+      "name": "KC_PASSWORD",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "admin",
+      "description": "Key Cloak Postgres Admin User (--from-literal=pguserid=<PG_USER_ID>)",
+      "hasOptions": false,
+      "label": "Key Cloak Postgres Admin User",
+      "name": "PG_USER_ID",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "Ericsson-pw123!",
+      "description": "Key Cloak Postgres Admin Password (--from-literal=pgpasswd=<PG_PASSWORD>) ",
+      "hasOptions": false,
+      "label": "Key Cloak Postgres Admin Password",
+      "name": "PG_PASSWORD",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "eouser",
+      "description": "Postgres Custom user used in the creation of the generic secret (--from-literal=custom-user=<CUSTOM_USER_ID>)",
+      "hasOptions": false,
+      "label": "Postgres Custom User",
+      "name": "CUSTOM_USER_ID",
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "customuser",
+      "description": "Postgres Custom user used in the creation of the generic secret for app mgr (--from-literal=custom-user=<CUSTOM_USER_ID>)",
+      "hasOptions": false,
+      "label": "Postgres Custom User",
+      "name": "APRMGR_CUSTOM_USER_ID",
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "Postgres123!",
+      "description": "Postgres Custom Password  used in the creation of the generic secret (--from-literal=custom-pwd=<CUSTOM_PASSWORD>)",
+      "hasOptions": false,
+      "label": "Postgres Custom Password",
+      "name": "CUSTOM_PASSWORD",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "exporter",
+      "description": "Postgres Metric User used in the creation of the generic secret (--from-literal=metrics-user=<METRICS_USER_ID>)",
+      "hasOptions": false,
+      "label": "Postgres Metrics User",
+      "name": "METRICS_USER_ID",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "Postgres123!",
+      "description": "Postgres Metric Password  used in the creation of the generic secret (--from-literal=metrics-pwd=<METRICS_PASSWORD>)",
+      "hasOptions": false,
+      "label": "Postgres Metrics Password",
+      "name": "METRICS_PASSWORD",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "replica",
+      "description": "Postgres Replica User used in the creation of the generic secret (--from-literal=replica-user=<REPLICA_USER_ID>)",
+      "hasOptions": false,
+      "label": "Postgres Replica User ID",
+      "name": "REPLICA_USER_ID",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "Postgres123!",
+      "description": "Postgres Replica Password used in the creation of the generic secret (--from-literal=replica-pwd=<REPLICA_PASSWORD>)",
+      "hasOptions": false,
+      "label": "Postgres Replica Password",
+      "name": "REPLICA_PASSWORD",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "postgres",
+      "description": "Postgres Super User used in the creation of the generic secret (--from-literal=super-user=<SUPER_USER_ID>)",
+      "hasOptions": false,
+      "label": "Postgres Super User ID",
+      "name": "SUPER_USER_ID",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "Postgres123!",
+      "description": "Postgres Super User Password used in the creation of the generic secret (--from-literal=super-pwd=<SUPER_PASSWORD>)",
+      "hasOptions": false,
+      "label": "Postgres Super User Password",
+      "name": "SUPER_PASSWORD",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "false",
+      "description": "Used to Create a custom cluster role, should be used in conjunction with the site values when the  \"global.createClusterRoles=false\" is set.",
+      "hasOptions": true,
+      "label": "Create Custom Cluster Role",
+      "name": "CUSTOM_CLUSTER_ROLE",
+      "options":       [
+        {"value": "true"},
+        {"value": "false"}
+      ],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "eric-oss-common-base",
+      "description": "This is the release or project name i.e. eric-eo or  eric-oss-common-base. It is used to set the releas within the custom cluster role if the option is turned on ( metadata:   name: <RELEASE_NAME>-<NAMESPACE_NAME>-allowed-use-privileged-policy",
+      "hasOptions": false,
+      "label": "Cluster Role Binding Release Name",
+      "name": "CLUSTER_ROLE_BINDING_RELEASE_NAME",
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "refs/heads/master",
+      "description": "Gerrit RefSpec to be able to test the flow against a review before merge. Use with caution",
+      "hasOptions": false,
+      "label": "Gerrit Ref Spec",
+      "name": "GERRIT_REFSPEC",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "ciloopman-docker-auth-config",
+      "description": "Arm Docker User secret to log into dock to be able to pull images",
+      "hasOptions": false,
+      "label": "ARMDOCKER USER SECRET",
+      "name": "ARMDOCKER_USER_SECRET",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "evo_docker_engine_athlone",
+      "description": "Jenkins Slave where this flow should be executed from",
+      "hasOptions": false,
+      "label": "SLAVE LABEL",
+      "name": "SLAVE_LABEL",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "no",
+      "description": "Option to choose to execute the App Mgr Pre deployment step which are part of IDUN",
+      "hasOptions": true,
+      "label": "App Mgr Specific Pre Deployment",
+      "name": "EXECUTE_AM_PREDEPLOYMENT_STEP",
+      "options":       [
+        {"value": "yes"},
+        {"value": "no"}
+      ],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "ciloopman-user-creds",
+      "description": "Jenkins secret ID for ARM Registry Credentials",
+      "hasOptions": false,
+      "label": "FUNCTIONAL_USER_SECRET",
+      "name": "FUNCTIONAL_USER_SECRET",
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "NONE",
+      "description": "ID for Jenkins identity token for ARM Registry access stored as a credential",
+      "hasOptions": false,
+      "label": "FUNCTIONAL_USER_TOKEN",
+      "name": "FUNCTIONAL_USER_TOKEN",
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "None",
+      "description": "Name of the Environment file OST bucket that stores the kube config file for the environment. ONLY USED if environment data store in OST",
+      "hasOptions": false,
+      "label": "ENV_FILES_BUCKET_NAME",
+      "name": "ENV_FILES_BUCKET_NAME",
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "",
+      "description": "The API URL for the Testware resource",
+      "hasOptions": false,
+      "label": "TESTWARE_API_URL",
+      "name": "TESTWARE_API_URL",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "",
+      "description": "The Database URL for the Testware resource",
+      "hasOptions": false,
+      "label": "TESTWARE_DATABASE_URL",
+      "name": "TESTWARE_DATABASE_URL",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "",
+      "description": "The GUI URL for the Testware resource",
+      "hasOptions": false,
+      "label": "TESTWARE_K6_TOOL_GUI_URL",
+      "name": "TESTWARE_K6_TOOL_GUI_URL",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "eric-odca-diagnostic-data-collector-sftp-credentials",
+      "description": "SFTP Server Secret name to be created",
+      "hasOptions": false,
+      "label": "SFTP_SECRET_NAME",
+      "name": "SFTP_SECRET_NAME",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "eric-appmgr-data-document-db-credentials",
+      "description": "Postgres secret name to be created",
+      "hasOptions": false,
+      "label": "APPMGR_DATA_DOCUMENT_DB_SECRET_NAME",
+      "name": "APPMGR_DATA_DOCUMENT_DB_SECRET_NAME",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "testware-resources-secret",
+      "description": "The name of the Testware resource secret to be created",
+      "hasOptions": false,
+      "label": "TESTWARE_SECRET_NAME",
+      "name": "TESTWARE_SECRET_NAME",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "odca-ddc-sftp-credentials",
+      "description": "Jenkins credentials object consisting of a username and password for use when creating the SFTP Server secret",
+      "hasOptions": false,
+      "label": "SFTP_CREDENTIALS",
+      "name": "SFTP_CREDENTIALS",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "gas-user",
+      "description": "The value for the GAS user username",
+      "hasOptions": false,
+      "label": "GAS_USER_USERNAME_VALUE",
+      "name": "GAS_USER_USERNAME",
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "Ericsson123!",
+      "description": "The value for the GAS user password",
+      "hasOptions": false,
+      "label": "GAS_USER_PASSWORD_VALUE",
+      "name": "GAS_USER_PASSWORD",
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "cts-user",
+      "description": "The value for the CTS username",
+      "hasOptions": false,
+      "label": "CTS_USER_USERNAME_VALUE",
+      "name": "CTS_USER_USERNAME",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "Ericsson123!",
+      "description": "The value for the CTS password",
+      "hasOptions": false,
+      "label": "CTS_USER_PASSWORD_VALUE",
+      "name": "CTS_USER_PASSWORD",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "rta-user",
+      "description": "The value for the RTA username",
+      "hasOptions": false,
+      "label": "RTA_USER_USERNAME_VALUE",
+      "name": "RTA_USER_USERNAME",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "Ericsson123!",
+      "description": "The value for the RTA password",
+      "hasOptions": false,
+      "label": "RTA_USER_PASSWORD_VALUE",
+      "name": "RTA_USER_PASSWORD",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "None",
+      "description": "Kafka topic brokers",
+      "hasOptions": false,
+      "label": "KAFKA_CONFIG_BROKERS",
+      "name": "KAFKA_CONFIG_BROKERS",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "None",
+      "description": "Kafka config topic based on environment",
+      "hasOptions": false,
+      "label": "KAFKA_CONFIG_TOPIC",
+      "name": "KAFKA_CONFIG_TOPIC",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "json",
+      "description": "Format of Kafka Config",
+      "hasOptions": false,
+      "label": "KAFKA_CONFIG_FORMAT",
+      "name": "KAFKA_CONFIG_FORMAT",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "a1-user",
+      "description": "The value for the A1 username",
+      "hasOptions": false,
+      "label": "A1_USER_USERNAME_VALUE",
+      "name": "A1_USER_USERNAME",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "Ericsson123!",
+      "description": "The value for the A1 password",
+      "hasOptions": false,
+      "label": "A1_USER_PASSWORD_VALUE",
+      "name": "A1_USER_PASSWORD",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "install",
+      "description": "The type of deployment, set to \"install\" or \"upgrade\"",
+      "hasOptions": false,
+      "label": "DEPLOYMENT_TYPE",
+      "name": "DEPLOYMENT_TYPE",
+      "pinned": false,
+      "required": true
+    }
+  ],
+  "schema": "1",
+  "stages":   [
+        {
+      "name": "Check Secret & Cluster Role Creation",
+      "preconditions":       [
+                {
+          "context":           {
+            "expression": "\"${#stage('OSS Common Pre Deployment')['status']}\" == \"SUCCEEDED\" or \"${#stage('OSS Common Pre Deployment')['status']}\" == \"SKIPPED\"",
+            "failureMessage": ""
+          },
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context":           {
+            "expression": "\"${#stage('Create User Secrets')['status']}\" == \"SUCCEEDED\" or \"${#stage('Create User Secrets')['status']}\" == \"SKIPPED\"",
+            "failureMessage": ""
+          },
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context":           {
+            "expression": "\"${#stage('Cluster Role Binding : App Mgr Specific')['status']}\" == \"SUCCEEDED\" or \"${#stage('Cluster Role Binding : App Mgr Specific')['status']}\" == \"SKIPPED\"",
+            "failureMessage": ""
+          },
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Secret : eric-appmgr-data-document-db-credentials')['status']}\" == \"SUCCEEDED\" or \"${#stage('Secret : eric-appmgr-data-document-db-credentials')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Secret : testware-resources')['status']}\" == \"SUCCEEDED\" or \"${#stage('Secret : testware-resources')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        }
+      ],
+      "refId": "Check Secret & Cluster Role Creation",
+      "requisiteStageRefIds":       [
+        "Secret : eric-appmgr-data-document-db-credentials",
+        "OSS Common Pre Deployment",
+        "Create User Secrets",
+        "Secret : testware-resources",
+        "Cluster Role Binding : App Mgr Specific"
+      ],
+      "type": "checkPreconditions"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-Integration-predeploy-database-pg-secret",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Secret : eric-appmgr-data-document-db-credentials",
+      "parameters":       {
+        "CI_DOCKER_IMAGE": "${trigger['parameters']['CI_DOCKER_IMAGE']}",
+        "CUSTOM_PASSWORD": "${trigger['parameters']['CUSTOM_PASSWORD']}",
+        "CUSTOM_USER_ID": "${trigger['parameters']['APRMGR_CUSTOM_USER_ID']}",
+        "ENV_FILES_BUCKET_NAME": "${trigger['parameters']['ENV_FILES_BUCKET_NAME']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['GERRIT_REFSPEC']}",
+        "KUBECONFIG_FILE": "${trigger['parameters']['KUBECONFIG_FILE']}",
+        "METRICS_PASSWORD": "${trigger['parameters']['CUSTOM_PASSWORD']}",
+        "METRICS_USER_ID": "${trigger['parameters']['METRICS_USER_ID']}",
+        "NAMESPACE": "${trigger['parameters']['NAMESPACE']}",
+        "REPLICA_PASSWORD": "${trigger['parameters']['REPLICA_PASSWORD']}",
+        "REPLICA_USER_ID": "${trigger['parameters']['REPLICA_USER_ID']}",
+        "SECRET_NAME": "${trigger['parameters']['APPMGR_DATA_DOCUMENT_DB_SECRET_NAME']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SUPER_PASSWORD": "${trigger['parameters']['SUPER_PASSWORD']}",
+        "SUPER_USER_ID": "${trigger['parameters']['SUPER_USER_ID']}"
+      },
+      "refId": "Secret : eric-appmgr-data-document-db-credentials",
+      "requisiteStageRefIds": ["Create Namespaces"],
+      "stageEnabled":       {
+        "expression": "'${#stage('Create Namespaces')['status']}' == 'SUCCEEDED' and '${trigger['parameters']['EXECUTE_AM_PREDEPLOYMENT_STEP']}' == 'yes' and '${trigger['parameters']['DEPLOYMENT_TYPE']}' == 'install'",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-Integration-Predeploy-testware-resources-secret",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Secret : testware-resources",
+      "parameters":       {
+        "CI_DOCKER_IMAGE": "${trigger['parameters']['CI_DOCKER_IMAGE']}",
+        "ENV_FILES_BUCKET_NAME": "${trigger['parameters']['ENV_FILES_BUCKET_NAME']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "GAS_USER_PASSWORD_VALUE": "${trigger['parameters']['GAS_USER_PASSWORD']}",
+        "GAS_USER_USERNAME_VALUE": "${trigger['parameters']['GAS_USER_USERNAME']}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['GERRIT_REFSPEC']}",
+        "KAFKA_CONFIG_BROKERS": "${trigger['parameters']['KAFKA_CONFIG_BROKERS']}",
+        "KAFKA_CONFIG_FORMAT": "${trigger['parameters']['KAFKA_CONFIG_FORMAT']}",
+        "KAFKA_CONFIG_TOPIC": "${trigger['parameters']['KAFKA_CONFIG_TOPIC']}",
+        "KUBECONFIG_FILE": "${trigger['parameters']['KUBECONFIG_FILE']}",
+        "NAMESPACE": "${trigger['parameters']['NAMESPACE']}",
+        "SECRET_NAME": "${trigger['parameters']['TESTWARE_SECRET_NAME']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "TESTWARE_API_URL": "${trigger['parameters']['TESTWARE_API_URL']}",
+        "TESTWARE_DATABASE_URL": "${trigger['parameters']['TESTWARE_DATABASE_URL']}",
+        "TESTWARE_K6_TOOL_GUI_URL": "${trigger['parameters']['TESTWARE_K6_TOOL_GUI_URL']}"
+      },
+      "refId": "Secret : testware-resources",
+      "requisiteStageRefIds": ["Create Namespaces"],
+      "stageEnabled":       {
+        "expression": "'${#stage('Create Namespaces')['status']}' == 'SUCCEEDED' or '${#stage('Create Namespaces')['status']}' == 'SKIPPED' and '${trigger['parameters']['TESTWARE_API_URL']}' != null and '${trigger['parameters']['TESTWARE_API_URL']}' != '' and '${trigger['parameters']['TESTWARE_DATABASE_URL']}' != null and '${trigger['parameters']['TESTWARE_DATABASE_URL']}' != '' and '${trigger['parameters']['TESTWARE_K6_TOOL_GUI_URL']}' != null and '${trigger['parameters']['TESTWARE_K6_TOOL_GUI_URL']}' != ''",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-Integration-predeploy-am-specific-role-binding",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Cluster Role Binding : App Mgr Specific",
+      "parameters":       {
+        "CI_DOCKER_IMAGE": "${trigger['parameters']['CI_DOCKER_IMAGE']}",
+        "ENV_FILES_BUCKET_NAME": "${trigger['parameters']['ENV_FILES_BUCKET_NAME']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['GERRIT_REFSPEC']}",
+        "KUBECONFIG_FILE": "${trigger['parameters']['KUBECONFIG_FILE']}",
+        "NAMESPACE": "${trigger['parameters']['NAMESPACE']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SPINNAKER_PIPELINE_ID": "${trigger['parameters']['SPINNAKER_PIPELINE_ID']}"
+      },
+      "refId": "Cluster Role Binding : App Mgr Specific",
+      "requisiteStageRefIds": ["Create Namespaces"],
+      "stageEnabled":       {
+        "expression": "'${#stage('Create Namespaces')['status']}' == 'SUCCEEDED' and '${trigger['parameters']['EXECUTE_AM_PREDEPLOYMENT_STEP']}' == 'yes' and '${trigger['parameters']['DEPLOYMENT_TYPE']}' == 'install'",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "application": "common-e2e-cicd",
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "name": "OSS Common Pre Deployment",
+      "pipeline": "5a7df4f9-e323-4e0b-8eae-15fe78958b51",
+      "pipelineParameters":       {
+        "AAPXY_SECRET_NAME": "${trigger['parameters']['AAPXY_SECRET_NAME']}",
+        "ADP_IAM_AA_CLIENT_PASSWORD": "${trigger['parameters']['ADP_IAM_AA_CLIENT_PASSWORD']}",
+        "CI_DOCKER_IMAGE": "${trigger['parameters']['CI_DOCKER_IMAGE']}",
+        "CLUSTER_ROLE_RELEASE_NAME": "${trigger['parameters']['CLUSTER_ROLE_BINDING_RELEASE_NAME']}",
+        "CRD_NAMESPACE": "${trigger['parameters']['CRD_NAMESPACE']}",
+        "CUSTOM_CLUSTER_ROLE": "${trigger['parameters']['CUSTOM_CLUSTER_ROLE']}",
+        "CUSTOM_PASSWORD": "${trigger['parameters']['CUSTOM_PASSWORD']}",
+        "CUSTOM_USER_ID": "${trigger['parameters']['CUSTOM_USER_ID']}",
+        "DATABASE_PG_SECRET_NAME": "${trigger['parameters']['DATABASE_PG_SECRET_NAME']}",
+        "ENV_FILES_BUCKET_NAME": "${trigger['parameters']['ENV_FILES_BUCKET_NAME']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['GERRIT_REFSPEC']}",
+        "KC_ADMIN_ID": "${trigger['parameters']['KC_ADMIN_ID']}",
+        "KC_PASSWORD": "${trigger['parameters']['KC_PASSWORD']}",
+        "KUBECONFIG_FILE": "${trigger['parameters']['KUBECONFIG_FILE']}",
+        "METRICS_PASSWORD": "${trigger['parameters']['CUSTOM_PASSWORD']}",
+        "METRICS_USER_ID": "${trigger['parameters']['METRICS_USER_ID']}",
+        "MGMT_CREDS_SECRET_NAME": "${trigger['parameters']['MGMT_CREDS_SECRET_NAME']}",
+        "NAMESPACE": "${trigger['parameters']['NAMESPACE']}",
+        "PG_PASSWORD": "${trigger['parameters']['PG_PASSWORD']}",
+        "PG_USER_ID": "${trigger['parameters']['PG_USER_ID']}",
+        "REPLICA_PASSWORD": "${trigger['parameters']['REPLICA_PASSWORD']}",
+        "REPLICA_USER_ID": "${trigger['parameters']['REPLICA_USER_ID']}",
+        "SFTP_CREDENTIALS": "${trigger['parameters']['SFTP_CREDENTIALS']}",
+        "SFTP_SECRET_NAME": "${trigger['parameters']['SFTP_SECRET_NAME']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SUPER_PASSWORD": "${trigger['parameters']['SUPER_PASSWORD']}",
+        "SUPER_USER_ID": "${trigger['parameters']['SUPER_USER_ID']}",
+        "TESTWARE_API_URL": "${trigger['parameters']['TESTWARE_API_URL']}",
+        "TESTWARE_DATABASE_URL": "${trigger['parameters']['TESTWARE_DATABASE_URL']}",
+        "TESTWARE_K6_TOOL_GUI_URL": "${trigger['parameters']['TESTWARE_K6_TOOL_GUI_URL']}"
+      },
+      "refId": "OSS Common Pre Deployment",
+      "requisiteStageRefIds": ["Create Namespaces"],
+      "stageEnabled":       {
+        "expression": "'${#stage('Create Namespaces')['status']}' == 'SUCCEEDED' and '${trigger['parameters']['DEPLOYMENT_TYPE']}' == 'install'",
+        "type": "expression"
+      },
+      "type": "pipeline",
+      "waitForCompletion": true
+    },
+        {
+      "application": "common-e2e-cicd",
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "name": "Create User Secrets",
+      "pipeline": "8234464f-0e57-4359-bcf9-f37d8b079731",
+      "pipelineParameters":       {
+        "A1_USER_PASSWORD": "${trigger['parameters']['A1_USER_PASSWORD']}",
+        "A1_USER_USERNAME": "${trigger['parameters']['A1_USER_USERNAME']}",
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "CI_DOCKER_IMAGE": "${trigger['parameters']['CI_DOCKER_IMAGE']}",
+        "CTS_USER_PASSWORD": "${trigger['parameters']['CTS_USER_PASSWORD']}",
+        "CTS_USER_USERNAME": "${trigger['parameters']['CTS_USER_USERNAME']}",
+        "ENV_FILES_BUCKET_NAME": "${trigger['parameters']['ENV_FILES_BUCKET_NAME']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "GAS_USER_PASSWORD": "${trigger['parameters']['GAS_USER_PASSWORD']}",
+        "GAS_USER_USERNAME": "${trigger['parameters']['GAS_USER_USERNAME']}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['GERRIT_REFSPEC']}",
+        "IGNORE_IF_CREATED": "${trigger['parameters']['IGNORE_IF_CREATED']}",
+        "KUBECONFIG_FILE": "${trigger['parameters']['KUBECONFIG_FILE']}",
+        "NAMESPACE": "${trigger['parameters']['NAMESPACE']}",
+        "RTA_USER_PASSWORD": "${trigger['parameters']['RTA_USER_PASSWORD']}",
+        "RTA_USER_USERNAME": "${trigger['parameters']['RTA_USER_USERNAME']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}"
+      },
+      "refId": "Create User Secrets",
+      "requisiteStageRefIds": ["Create Namespaces"],
+      "stageEnabled":       {
+        "expression": "'${#stage('Create Namespaces')['status']}' == 'SUCCEEDED' or '${#stage('Create Namespaces')['status']}' == 'SKIPPED'",
+        "type": "expression"
+      },
+      "type": "pipeline",
+      "waitForCompletion": true
+    },
+        {
+      "application": "common-e2e-cicd",
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "name": "Create Namespaces",
+      "pipeline": "f26e3ffd-8bfb-44f4-9c8d-712384c19994",
+      "pipelineParameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "CI_DOCKER_IMAGE": "${trigger['parameters']['CI_DOCKER_IMAGE']}",
+        "CRD_NAMESPACE": "${trigger['parameters']['CRD_NAMESPACE']}",
+        "ENV_FILES_BUCKET_NAME": "${trigger['parameters']['ENV_FILES_BUCKET_NAME']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['GERRIT_REFSPEC']}",
+        "IGNORE_IF_CREATED": "${trigger['parameters']['IGNORE_IF_CREATED']}",
+        "KUBECONFIG_FILE": "${trigger['parameters']['KUBECONFIG_FILE']}",
+        "NAMESPACE": "${trigger['parameters']['NAMESPACE']}",
+        "SECRET_NAME": "${trigger['parameters']['SECRET_NAME']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}"
+      },
+      "refId": "Create Namespaces",
+      "requisiteStageRefIds": [],
+      "stageEnabled":       {
+        "expression": "'${trigger['parameters']['DEPLOYMENT_TYPE']}' == 'install'",
+        "type": "expression"
+      },
+      "type": "pipeline",
+      "waitForCompletion": true
+    }
+  ],
+  "triggers": [],
+  "updateTs": "1718900894863"
+}

@@ -1,0 +1,51 @@
+# How to build the python-ci-scripts for local testing
+
+Two options Available
+
+Note: All commands below are executed from the root of the oss-integration-ci repo
+
+Option 1:
+
+If you are not concerned with the cihelm image, there is a prebuild image with all the files needed to bake cihelm into the docker image.
+
+1. Download the following file http://141.137.173.50/cihelm.tar
+
+2. Extract the content to the oss-integration-ci/ci/jenkins/scripts/python-ci-scripts within the repo
+3. Build the docker image as normal
+# docker build . --file ci/jenkins/scripts/python-ci-scripts/Dockerfile --tag armdocker.rnd.ericsson.se/proj-eric-oss-drop/eric-oss-ci-scripts:99.99.99-999 --build-arg REPOSITORY=https://gerrit-gamma.gic.ericsson.se/plugins/gitiles/OSS/com.ericsson.oss.aeonic/oss-integration-ci --build-arg COMMIT=9999999 --build-arg APP_VERSION=99.99.99-999
+
+Option 2:
+
+If you need to test with a new version of the cihelm docker image then execute the following to download and extract the required files
+
+1. Make a directory to store the new cihelm image once created.
+# mkdir ./ciHelmDir
+2. Pull the latest CI Helm image
+# docker pull serodocker.sero.gic.ericsson.se/proj-pc-tools-latest/cihelm:latest
+3. Create, build image into an artifact and remove unwanted container
+# docker create --name cihelm serodocker.sero.gic.ericsson.se/proj-pc-tools-latest/cihelm:latest
+# docker export cihelm -o ./ciHelmDir/image.tar
+# docker container rm cihelm
+4. Create a tar of the new image
+# tar xf ./ciHelmDir/image.tar -C ./ciHelmDir
+5 Change directory to just inside the oss-integration-ci repo
+6. Copy the required files to the python ci script docker directory
+# mkdir -p ./ci/jenkins/scripts/python-ci-scripts/cihelm/python3/bin/ && cp ./ciHelmDir/usr/bin/cihelm ./ci/jenkins/scripts/python-ci-scripts/cihelm/python3/bin/
+# mkdir -p ./ci/jenkins/scripts/python-ci-scripts/cihelm/bin/ && cp ./ciHelmDir/usr/lib/cihelm/parse_index ./ci/jenkins/scripts/python-ci-scripts/cihelm/bin/
+# mkdir -p ./ci/jenkins/scripts/python-ci-scripts/cihelm/python3/lib/ && cp -r ./ciHelmDir/usr/lib/python3.8/site-packages/cihelm ./ci/jenkins/scripts/python-ci-scripts/cihelm/python3/lib/
+7. Build the docker image as normal
+# docker build . --file ci/jenkins/scripts/python-ci-scripts/Dockerfile --tag armdocker.rnd.ericsson.se/proj-eric-oss-drop/eric-oss-ci-scripts:99.99.99-999 --build-arg REPOSITORY=https://gerrit-gamma.gic.ericsson.se/plugins/gitiles/OSS/com.ericsson.oss.aeonic/oss-integration-ci --build-arg COMMIT=9999999 --build-arg APP_VERSION=99.99.99-999
+
+Note: To just build the image and skip the python tests add "--target release" to the docker build command
+
+Note: To get the test report of the unit test and coverage execute the following command after the main command above to copy them to the working directory. (Does not work if --target release was used).
+# docker run --rm -u $(id -u):$(id -g) -v ${PWD}:/workspace/ --entrypoint cp armdocker.rnd.ericsson.se/proj-eric-oss-drop/eric-oss-ci-scripts:99.99.99-999 -r /test_results/ /workspace/
+
+Note:
+To log into the docker image directly that executed the tests, see below. Ensure to use "-u 0:0" to have write access on the file system.
+# docker run --rm -it -u 0:0 -v ${PWD}:/workspace/ --entrypoint /bin/sh armdocker.rnd.ericsson.se/proj-eric-oss-drop/eric-oss-ci-scripts:99.99.99-999
+To execute an individual test
+# cd /ci-scripts
+# pytest tests/<test file name>
+e.g.
+# pytest tests/test_helmfile_executor_get_base_baseline.py

@@ -1,0 +1,9 @@
+environments:
+  default:
+    values:
+      - ./default-values/values.yaml.gotmpl
+  build:
+    values:
+      - ./build-environment/optionality_maximum.yaml
+      - ./build-environment/tags_true.yaml
+      - ./default-values/values.yaml.gotmpl

@@ -1,0 +1,224 @@
+global:
+  hosts:
+    so: 'SO_HOST_REPLACE'
+    uds: 'UDS_HOST_REPLACE'
+    iam: 'IAM_HOST_REPLACE'
+    vnfm: 'VNFM_HOST_REPLACE'
+    pf: 'PF_HOST_REPLACE'
+    gr: 'GR_HOST_REPLACE'
+    gas: 'GAS_HOST_REPLACE'
+  registry:
+    # If deploying from the director node on a CCD environment, the url can be retrieved using:
+    # kubectl get ingress eric-lcm-container-registry-ingress -n kube-system -o jsonpath='{.spec.tls[*].hosts[0]}'; echo
+    url: 'DOCKER_REGISTRY_REPLACE'
+    #
+    # If deploying on a CCD environment with version < 2.7.0 credentials are stored as Kubernetes secrets in kube-system namespace.
+    # The username can be retrieved using the following command
+    # kubectl get secrets cr-registry-credentials -n kube-system -o jsonpath='{.data.custom-user}' | base64 -d; echo
+    #
+    # If deploying on a CCD environment with version >= 2.7.0 credentials are encrypted with htpasswd automatically, and can be retrieved using the following Openstack command
+    # openstack stack output show 'stack-name' container_registry_custom_user_id -f json | jq '.output_value' -M -r
+    username: 'USERNAME_REPLACE'
+    #
+    # If deploying on a CCD environment with version < 2.7.0 credentials are stored as Kubernetes secrets in kube-system namespace.
+    # The password can be retrieved using the following command
+    # kubectl get secrets cr-registry-credentials -n kube-system -o jsonpath='{.data.custom-pass}' | base64 -d; echo
+    #
+    # If deploying on a CCD environment with version >= 2.7.0 credentials are encrypted with htpasswd automatically, and can be retrieved using the following Openstack command
+    # openstack stack output show 'stack-name' container_registry_custom_pw -f json | jq '.output_value' -M -r
+    password: 'PASSWORD_REPLACE'
+  support:
+    ipv6:
+      enabled: false
+  timezone: UTC
+  ingressClass: 'eo_iccr'
+
+# Warning! If changing these application tags from true to false and that application
+# is already installed, then that application will be removed and data will be lost!
+tags:
+  eoSo: false
+  eoPf: false
+  eoUds: false
+  eoEvnfm: false
+  eoVmvnfm: false
+  eoCm: false
+
+# Enabling stubs from SO
+stubs:
+  enabled: true
+
+# Fill only if deploying EO Container VNFM (EO EVNFM)
+eric-oss-function-orchestration-common:
+   eric-am-onboarding-service: # SM-149743
+      userSecret: container-credentials
+eric-eo-evnfm:
+  eric-am-common-wfs: # SM-149743
+      userSecret: container-credentials
+  eric-lcm-container-registry:
+    ingress:
+      hostname: 'VNFM_REGISTRY_HOST_REPLACE'
+    persistence:
+      persistentVolumeClaim:
+        size: '50Gi'
+  eric-global-lcm-container-registry:
+    hostname: 'dummy'
+    username: 'dummy'
+    password: 'dummy'
+  eric-lcm-helm-chart-registry:
+    ingress:
+      enabled: HELM_REGISTRY_DEPLOY_REPLACE
+      hostname: 'HELM_CHART_HOST_REPLACE'
+    env:
+      secret:
+        BASIC_AUTH_USER: 'evnfm'
+        BASIC_AUTH_PASS: 'evnfm'
+  eric-vnfm-orchestrator-service:
+    oss:
+      topology:
+        secretName: null
+    smallstack:
+      application: true
+
+# Fill only if deploying EO VM VNFM
+eric-eo-evnfm-vm:
+  eric-vnflcm-service:
+    oss:
+      secretName: null
+    persistentVolumeClaim:
+      size: 20Gi
+    service:
+      enabled: VNFLCM_SERVICE_DEPLOY_REPLACE
+      externalTrafficPolicy: 'Local'
+      loadBalancerIP: 'VNFLCM_SERVICE_IP_REPLACE'
+
+# Fill only if deploying EO Service Orchestration (EO SO)
+eric-eo-so:
+  stubs:
+    enabled: true
+  defaultUser:
+    username: 'so-user'
+    password: 'Ericsson123!'
+
+# Fill only if deploying Ericsson Adaptation (EAS)
+eric-oss-ericsson-adaptation:
+  stubs:
+    enabled: true
+  eric-oss-ran-topology-adapter:
+    rtaUser:
+      username: 'rta-user'
+      password: 'Ericsson123!'
+
+# Fill only if deploying EO UDS Orchestration (EO UDS)
+eric-oss-uds:
+  defaultUser:
+    username: 'uds-user'
+    password: 'Ericsson123!'
+  eric-oss-uds-policy-artifact-ui:
+    resources:
+      limits:
+        cpu: 200m
+        memory: 200Mi
+      requests:
+        cpu: 100m
+        memory: 100Mi
+
+eric-oss-config-handling:
+  cps-user:
+    credentials:
+      username: 'cps-user'
+      password: 'Ericsson123!'
+  dmi-user:
+    credentials:
+      username: 'dmi-user'
+      password: 'Ericsson123!'
+
+eric-cloud-native-base:
+  # Please refer to the EO dimensioning guide for the appropriate size of the BRO volume
+  # The size will be dependent on which applications are being deployed
+  eric-ctrl-bro:
+    persistence:
+      persistentVolumeClaim:
+        size: '20Gi'
+    sftp:
+      username: 'dummy'
+      password: 'dummy'
+
+  eric-lm-combined-server:
+    licenseServerClient:
+      licenseServer:
+        thrift:
+          # Mandatory: licenseServerClient.licenseServer.thrift.host - The NELS thrift server address or service name
+          host: ''
+
+  eric-data-search-engine:
+    service:
+      network:
+        protocol:
+          IPv6: false
+
+  eric-tm-ingress-controller-cr:
+    service:
+      loadBalancerIP: 'INGRESS_IP_REPLACE'
+      externalTrafficPolicy: 'Local'
+    ingressClass: 'eo_iccr'
+
+  # This is the same as the global.iam hostname
+  eric-sec-access-mgmt:
+    ingress:
+      hostname: 'IAM_HOST_REPLACE'
+    replicaCount: 2
+
+  eric-log-transformer:
+    egress:
+      syslog:
+        enabled: false
+        remoteHosts: []
+
+eric-oss-common-base:
+  system-user:
+    credentials:
+      username: 'system-user'
+      password: 'Ericsson123!'
+  gas:
+    defaultUser:
+      username: 'gas-user'
+      password: 'Ericsson123!'
+  # Fill only if deploying EO Container VNFM (EO VNFM) or EO VM VNFM
+  eric-eo-evnfm-nbi:
+    eric-evnfm-rbac:
+      defaultUser:
+        username: 'vnfm'
+        password: 'Ericsson123!'
+  eric-gr-bur-orchestrator:
+    credentials:
+      username: 'dummy'
+      password: 'dummy'
+    gr:
+      bro:
+        autoDelete:
+          backupsLimit: 10
+      sftp:
+        url: 'dummy:22/path/'
+        username: 'dummy'
+        password: 'dummy'
+      cluster:
+        role: 'PRIMARY'
+        # note that the secondary_hostnames variable should only be defined if the role is set to 'PRIMARY'
+        secondary_hostnames:
+          - 'dummy'
+      registry:
+        secondarySiteContainerRegistryHostname: 'fakehostname.com'
+
+# Fill only if deploying EO PF Orchestration (EO PF)
+eric-oss-pf:
+  defaultUser:
+    username: 'pf-user'
+    password: 'Ericsson123!'
+
+eric-oss-ddc:
+  enabled: true
+
+# Fill in values in the following section only if deploying EO Georedundancy
+# Please refer to EO Installation Documentation for guidance on geo-redundant config
+geo-redundancy:
+  enabled: false

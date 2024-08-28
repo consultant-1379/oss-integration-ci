@@ -1,0 +1,151 @@
+{
+  "id": "e6c7aefa-1131-4878-a924-7fd9207cb6f7",
+  "name": "RecreateNamespace",
+  "application": "common-e2e-cicd",
+  "schema": "1",
+  "triggers": [],
+  "index": 7,
+  "updateTs": "1668774877550",
+  "lastModifiedBy": "zolepan",
+  "stages":   [
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "ReCreate_Namespace",
+      "master": "oss-fem8s11-eiffel052",
+      "name": "RecreateNamespace",
+      "notifications": [      {
+        "address": "PDLAPPSTAG@pdl.internal.ericsson.com",
+        "level": "stage",
+        "message": {"stage.failed": {"text": "Recreate Namespace job failed!\nPlease check what is wrong with it"}},
+        "type": "email",
+        "when": ["stage.failed"]
+      }],
+      "parameters":       {
+        "IS_APPMGR_NAMESPACE": "${IS_APPMGR_NAMESPACE}",
+        "KUBECONFIG_FILE": "${ parameters[\"KUBECONFIG_FILE\"] }",
+        "NAMESPACE": "${ parameters[\"NAMESPACE\"] }"
+      },
+      "refId": "1",
+      "requisiteStageRefIds": ["5"],
+      "restrictExecutionDuringTimeWindow": false,
+      "sendNotifications": true,
+      "stageTimeoutMs": 2400000,
+      "type": "jenkins"
+    },
+        {
+      "continuePipeline": false,
+      "failPipeline": true,
+      "job": "OSS-Integration-Unreserve-Environment",
+      "master": "oss-fem8s11-eiffel052",
+      "name": "UnreserveNamespace",
+      "parameters": {"ENV_NAME": "${ parameters[\"ENV_NAME\"] }"},
+      "refId": "2",
+      "requisiteStageRefIds": ["1"],
+      "stageEnabled":       {
+        "expression": "\"${#stage('RecreateNamespace')['status']}\" == \"SUCCEEDED\"",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failOnFailedExpressions": true,
+      "failPipeline": false,
+      "name": "Evaluate Variables",
+      "refId": "3",
+      "requisiteStageRefIds": [],
+      "type": "evaluateVariables",
+      "variables": [      {
+        "key": "IS_APPMGR_NAMESPACE",
+        "value": "${(trigger.parentExecution.name == \"APPMGR_Baseline_Staging\")? \"true\" : \"false\"}"
+      }]
+    },
+        {
+      "name": "Flow Completed",
+      "preconditions":       [
+                {
+          "context": {"expression": "\"${#stage('Evaluate Variables')['status']}\" == \"SUCCEEDED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('RecreateNamespace')['status']}\" == \"SUCCEEDED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context":           {
+            "stageName": "Purge namespace",
+            "stageStatus": "SUCCEEDED"
+          },
+          "failPipeline": true,
+          "type": "stageStatus"
+        }
+      ],
+      "refId": "4",
+      "requisiteStageRefIds": ["2"],
+      "type": "checkPreconditions"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-Integration-Purge",
+      "master": "oss-fem8s11-eiffel052",
+      "name": "Purge namespace",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "ossapps100-arm-docker-auth-config",
+        "KUBECONFIG_FILE": "${ parameters[\"KUBECONFIG_FILE\"] }",
+        "NAMESPACE": "${ parameters[\"NAMESPACE\"] }"
+      },
+      "refId": "5",
+      "requisiteStageRefIds": ["3"],
+      "type": "jenkins"
+    }
+  ],
+  "keepWaitingPipelines": false,
+  "limitConcurrent": false,
+  "parameterConfig":   [
+        {
+      "default": "",
+      "description": "Name of environment to be unreserved",
+      "hasOptions": false,
+      "label": "",
+      "name": "ENV_NAME",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "KUBECONFIG_FILE",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "NAMESPACE",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    }
+  ],
+  "spelEvaluator": "v4",
+  "notifications": [  {
+    "address": "PDLAPPSTAG@pdl.internal.ericsson.com",
+    "level": "pipeline",
+    "message": {"pipeline.failed": {"text": "Recreate namespace job failed. Please investigate the reason and unreserve environment"}},
+    "type": "email",
+    "when": ["pipeline.failed"]
+  }]
+}

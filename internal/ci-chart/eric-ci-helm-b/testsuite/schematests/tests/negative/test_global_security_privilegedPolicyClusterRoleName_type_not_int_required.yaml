@@ -1,0 +1,20 @@
+global:
+  createClusterRoles: true
+  security:
+    privilegedPolicyClusterRoleName: 123
+  hosts:
+    iam: dummy
+eric-cloud-native-base:
+  eric-si-application-sys-info-handler:
+    enabled: true
+  eric-fh-snmp-alarm-provider:
+    enabled: true
+  eric-data-distributed-coordinator-ed:
+    enabled: true
+  eric-lm-combined-server-db-pg:
+    enabled: true
+enabled: true
+faultMappings:
+  myfile1.json: dummy
+alertRules:
+  myFile2.json: dummy

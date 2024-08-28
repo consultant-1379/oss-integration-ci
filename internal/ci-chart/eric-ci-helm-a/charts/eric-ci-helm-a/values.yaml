@@ -1,0 +1,92 @@
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+# Default values for eric-cnbase-oss-config.
+global:
+  iam:
+    clientId: eo
+    adminSecret: eric-sec-access-mgmt-creds
+    userKey: kcadminid
+    passwordKey: kcpasswd
+    cacert:
+      secretName: iam-cacert-secret
+      key: tls.crt
+      filePath: iam/ca.crt
+  registry:
+    url: armdocker.rnd.ericsson.se
+    imagePullPolicy: "IfNotPresent"
+  pullSecret: "k8s-registry-secret"
+  timezone: "UTC"
+  networkPolicy:
+    enabled: true
+  security:
+    tls:
+      enabled: false
+    privilegedPolicyClusterRoleName: ""
+    privilegedMetricsPolicyClusterRoleName: ""
+    privilegedMetricsPolicyClusterRoleBindingName: ""
+    privilegedPolicyClusterRoleBindingName: ""
+    restrictedPolicyClusterRoleName: ""
+  createClusterRoles: false
+
+annotations: {}
+labels: {}
+minReadySeconds: 0
+terminationGracePeriodSeconds: 30
+topologySpreadConstraints: [ ]
+tolerations: []
+
+imageCredentials:
+  keycloak-client:
+    registry:
+      imagePullPolicy:
+
+faultMappings: {}
+alertRules: {}
+configAlertRules:
+  alarmConfigurationParameters:
+    backupAndRestoreOrchestrator:
+      diskSpaceThreshold: 80 # %rate
+    distributedCoordinatorEd:
+      diskSpaceThreshold: 80 # %rate
+    dataObjectStorageMn:
+      diskSpaceThreshold: 80 # %rate
+    dataSearchEngine:
+      volumeThreshold: 80 # %rate
+    documentDatabasePg:
+      diskSpaceThreshold: 80 # %rate
+    diagnosticDataCollector:
+      dataTransferSpeedHoldOnOffTime: 0 # minute
+    pmServer:
+      diskSpaceThreshold: 80 # %rate
+psp-role-binding:
+  enabled: false
+
+eric-cloud-native-base:
+  eric-si-application-sys-info-handler:
+    enabled: true
+  eric-fh-snmp-alarm-provider:
+    enabled: true
+  eric-data-distributed-coordinator-ed:
+    enabled: true
+  eric-lm-combined-server-db-pg:
+    enabled: true
+  eric-cm-mediator:
+    enabled: true
+  eric-sec-certm:
+    enabled: true
+  eric-odca-diagnostic-data-collector:
+    enabled: false

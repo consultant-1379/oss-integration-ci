@@ -1,0 +1,451 @@
+{
+  "appConfig": {},
+  "description": "The is a demo CI pipeline that makes use of shared dynamic cluster services used by Team TicketMaster",
+  "disabled": false,
+  "keepWaitingPipelines": false,
+  "lastModifiedBy": "ecepand",
+  "limitConcurrent": false,
+  "notifications": [
+    {
+      "address": "andrew.ceponkus@ericsson.com",
+      "level": "pipeline",
+      "message": {
+        "pipeline.failed": {
+          "text": "The TicketMaster CI Release pipeline has failed"
+        }
+      },
+      "type": "email",
+      "when": [
+        "pipeline.failed"
+      ]
+    }
+  ],
+  "parameterConfig": [
+    {
+      "default": "eoadm100-docker-auth-config",
+      "description": "ARM Docker secret which holds the username and password to log into the ARM Docker repositories.",
+      "hasOptions": false,
+      "label": "ARM Docker Secret",
+      "name": "ARMDOCKER_USER_SECRET",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "eoadm100-user-credentials",
+      "description": "Gerrit secret which holds the username and password to log into the Gerrit repositories.",
+      "hasOptions": false,
+      "label": "Gerrit User Secret",
+      "name": "GERRIT_USER_SECRET",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "eric-ci-helmfile",
+      "description": "Name of the integration chart which will be used for the Initial install",
+      "hasOptions": false,
+      "label": "",
+      "name": "HELMFILE_NAME",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "0.0.0",
+      "description": "Version of the Integration Chart which will be used for the Initial Install",
+      "hasOptions": false,
+      "label": "",
+      "name": "HELMFILE_VERSION",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": " https://arm.seli.gic.ericsson.se/artifactory/proj-eric-oss-drop-helm-local",
+      "description": "Repo of the Integration Chart which will be used for the Initial Install",
+      "hasOptions": false,
+      "label": "",
+      "name": "HELMFILE_REPO",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "evo_docker_engine_gic",
+      "description": "Jenkins Slave to execute the flow against",
+      "hasOptions": false,
+      "label": "Jenkins Slave",
+      "name": "SLAVE_LABEL",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "armdocker.rnd.ericsson.se",
+      "description": "Registry that should be used for the deployment",
+      "hasOptions": false,
+      "label": "DOCKER_REGISTRY",
+      "name": "DOCKER_REGISTRY",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "None",
+      "description": "Docker Registry Credentials, Only should be populated if using the local registry",
+      "hasOptions": false,
+      "label": "DOCKER_REGISTRY_CREDENTIALS",
+      "name": "DOCKER_REGISTRY_CREDENTIALS",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "eo-integration-ci/honeypots/pooling/environments",
+      "description": "This is the directory within the Repo specified within the Gather-Env-Details Jenkins job where to find the pooling environment details",
+      "hasOptions": false,
+      "label": "",
+      "name": "ENV_DETAILS_DIR",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "ciloopman-user-creds",
+      "description": "Functional user for logging into armdocker",
+      "hasOptions": false,
+      "label": "",
+      "name": "FUNCTIONAL_USER_SECRET",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "1800",
+      "description": "Timeout for helmfile deploy",
+      "hasOptions": false,
+      "label": "",
+      "name": "HELM_TIMEOUT",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "site-values/idun/ci/template/site-values-latest.yaml",
+      "description": "The Path where all the necessary site values are located for the install/upgrade",
+      "hasOptions": false,
+      "label": "",
+      "name": "PATH_TO_SITE_VALUES_FILE",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": true
+    },
+    {
+      "default": "site-values/idun/ci/override/override-site-values-ci-test.yaml",
+      "description": "PATH_TO_SITE_VALUES_OVERRIDE_FILE",
+      "hasOptions": false,
+      "label": "PATH_TO_SITE_VALUES_OVERRIDE_FILE",
+      "name": "PATH_TO_SITE_VALUES_OVERRIDE_FILE",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "true",
+      "description": "Set this parameter to true if you wish for the environment to be quarantined if the deployment flow false",
+      "hasOptions": false,
+      "label": "",
+      "name": "QUARANTINE_ENV",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "so",
+      "description": "Applications that should be switch on during deployment",
+      "hasOptions": false,
+      "label": "TAGS",
+      "name": "TAGS",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": true
+    },
+    {
+      "default": "120",
+      "description": "This is the time to wait for an Environment to become available. After the time expires the job will fail out",
+      "hasOptions": false,
+      "label": "",
+      "name": "WAIT_TIME",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "eric-ci-helmfile/helmfile.yaml",
+      "description": "Path to the helmfile.yaml from the extracted helmfile.",
+      "hasOptions": false,
+      "label": "Path to the helmfile.yaml",
+      "name": "PATH_TO_HELMFILE",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "${execution.id}",
+      "description": "Pipeline ID to use as cluster ID for dynamic cluster provisioning",
+      "hasOptions": false,
+      "label": "",
+      "name": "CLUSTER_ID",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "ci-deploy",
+      "description": "Namespace to use for pipeline jobs",
+      "hasOptions": false,
+      "label": "",
+      "name": "NAMESPACE",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    }
+  ],
+  "schema": "1",
+  "spelEvaluator": "v4",
+  "stages": [
+    {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "Demo-CI-Dynamic-Cluster-Create-Namespace",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Create Namespace",
+      "parameters": {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "CLUSTER_ID": "${trigger['parameters']['CLUSTER_ID']}",
+        "GERRIT_CHANGE_NUMBER": "${trigger['payload']['GERRIT_CHANGE_NUMBER']}",
+        "GERRIT_REFSPEC": "${trigger['payload']['GERRIT_REFSPEC']}",
+        "GERRIT_USER_SECRET": "${trigger['parameters']['GERRIT_USER_SECRET']}",
+        "KUBECONFIG_FILE": "dummy",
+        "NAMESPACE": "${trigger['parameters']['NAMESPACE']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}"
+      },
+      "propertyFile": "",
+      "refId": "Get Latest Helmfile Version",
+      "requisiteStageRefIds": [],
+      "type": "jenkins"
+    },
+    {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "CI-Test-Get-Latest-ChartOrHelmfile",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Get Latest Helmfile Version",
+      "parameters": {
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "GERRIT_REFSPEC": "${trigger['payload']['GERRIT_REFSPEC']}",
+        "INT_CHART_NAME": "${trigger['parameters']['HELMFILE_NAME']}",
+        "INT_CHART_REPO": "${trigger['parameters']['HELMFILE_REPO']}",
+        "INT_CHART_VERSION": "${trigger['parameters']['HELMFILE_VERSION']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "9",
+      "requisiteStageRefIds": [
+        "15"
+      ],
+      "stageEnabled": {
+        "expression": "\"${#stage('Create PG Secret')['status']}\" == \"SUCCEEDED\"",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+    {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "Demo-CI-Dynamic-Cluster-Deploy-Helmfile",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Helmfile Deploy",
+      "parameters": {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "CLUSTER_ID": "${trigger['parameters']['CLUSTER_ID']}",
+        "DOCKER_REGISTRY": "${trigger['parameters']['DOCKER_REGISTRY']}",
+        "DOCKER_REGISTRY_CREDENTIALS": "${trigger['parameters']['DOCKER_REGISTRY_CREDENTIALS']}",
+        "FULL_PATH_TO_SITE_VALUES_FILE": "${trigger['parameters']['PATH_TO_SITE_VALUES_FILE']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "GERRIT_REFSPEC": "${trigger['payload']['GERRIT_REFSPEC']}",
+        "HELM_TIMEOUT": "${trigger['parameters']['HELM_TIMEOUT']}",
+        "INT_CHART_NAME": "${trigger['parameters']['HELMFILE_NAME']}",
+        "INT_CHART_REPO": "${trigger['parameters']['HELMFILE_REPO']}",
+        "INT_CHART_VERSION": "${#stage(\"Get Latest Helmfile Version\")[\"context\"][\"INT_CHART_VERSION\"]}",
+        "KUBECONFIG_FILE": "dummy",
+        "NAMESPACE": "${trigger['parameters']['NAMESPACE']}",
+        "PATH_TO_CERTIFICATES_FILES": "dummy",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${trigger['parameters']['PATH_TO_SITE_VALUES_OVERRIDE_FILE']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "TAGS": "${trigger['parameters']['TAGS']}"
+      },
+      "refId": "12",
+      "requisiteStageRefIds": [
+        "9"
+      ],
+      "stageEnabled": {
+        "expression": "\"${#stage('Get Latest Helmfile Version')['status']}\" == \"SUCCEEDED\"",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+    {
+      "continuePipeline": false,
+      "failPipeline": true,
+      "job": "Demo-CI-Dynamic-Cluster-Teardown",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Teardown Cluster",
+      "parameters": {
+        "CLUSTER_ID": "${trigger['parameters']['CLUSTER_ID']}",
+        "GERRIT_REFSPEC": "${trigger['payload']['GERRIT_REFSPEC']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}"
+      },
+      "refId": "13",
+      "requisiteStageRefIds": [
+        "12"
+      ],
+      "type": "jenkins"
+    },
+    {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "Demo-CI-Dynamic-Cluster-Create-Namespace",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Create CRD Namespace",
+      "parameters": {
+        "CLUSTER_ID": "${trigger['parameters']['CLUSTER_ID']}",
+        "GERRIT_REFSPEC": "${trigger['payload']['GERRIT_REFSPEC']}",
+        "KUBECONFIG_FILE": "dummy",
+        "NAMESPACE": "crd-namespace",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}"
+      },
+      "refId": "14",
+      "requisiteStageRefIds": [
+        "Get Latest Helmfile Version"
+      ],
+      "stageEnabled": {
+        "expression": "\"${#stage('Create Namespace')['status']}\" == \"SUCCEEDED\"",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+    {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "Demo-CI-Dynamic-Cluster-Create-PG-Secret",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Create PG Secret",
+      "parameters": {
+        "CLUSTER_ID": "${trigger['parameters']['CLUSTER_ID']}",
+        "GERRIT_REFSPEC": "${trigger['payload']['GERRIT_REFSPEC']}",
+        "KUBECONFIG_FILE": "dummy",
+        "NAMESPACE": "${trigger['parameters']['NAMESPACE']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}"
+      },
+      "refId": "15",
+      "requisiteStageRefIds": [
+        "14"
+      ],
+      "stageEnabled": {
+        "expression": "\"${#stage('Create CRD Namespace')['status']}\" == \"SUCCEEDED\"",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    }
+  ],
+  "triggers": [
+    {
+      "enabled": true,
+      "source": "demo-dynamic-cluster",
+      "type": "webhook"
+    }
+  ]
+}

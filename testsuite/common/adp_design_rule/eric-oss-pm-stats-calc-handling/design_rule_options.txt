@@ -1,0 +1,10 @@
+-DhelmDesignRule.config.DR-D1123-125=skip
+-DhelmDesignRule.config.DR-D1121-067=skip
+-DhelmDesignRule.config.eric-oss-pm-stats-calculator.DR-D470222-010=skip
+-DhelmDesignRule.config.eric-oss-pm-stats-calculator.DR-D1101-800=skip
+-DhelmDesignRule.config.eric-data-engine-sk.DR-D1101-800=skip
+-DhelmDesignRule.config.eric-oss-pm-stats-exporter.DR-D1101-800=skip
+-DhelmDesignRule.config.eric-oss-pm-stats-query-service.DR-D1101-800=skip
+-DhelmDesignRule.config.DR-D1101-800=skip
+-DhelmDesignRule.config.DR-D1123-134=skip
+-DhelmDesignRule.config.eric-data-engine-sk.DR-D1123-124=skip

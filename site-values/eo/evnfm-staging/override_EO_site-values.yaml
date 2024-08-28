@@ -1,0 +1,30 @@
+# This override delta file was prepared for usage with main file:
+# site-values/eo/ci/site_values_helmfile-latest.yaml
+
+# Enabling stubs from SO
+stubs:
+  enabled: true
+
+eric-eo-so:
+  stubs:
+    enabled: true
+
+# Fill only if deploying Ericsson Adaptation (EAS)
+eric-oss-ericsson-adaptation:
+  eric-eo-enm-stub:
+    enabled: true
+  eric-oss-enm-notification-simulator:
+    enabled: true
+
+eric-oss-uds:
+  eric-oss-uds-policy-artifact-ui:
+    resources:
+      limits:
+        cpu: 200m
+        memory: 200Mi
+      requests:
+        cpu: 100m
+        memory: 100Mi
+
+eric-oss-ddc:
+  enabled: false

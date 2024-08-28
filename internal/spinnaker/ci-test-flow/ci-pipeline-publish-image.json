@@ -1,0 +1,145 @@
+{
+  "appConfig": {},
+  "description": "The is a CI Release pipeline to be used by Team TicketMaster",
+  "disabled": false,
+  "keepWaitingPipelines": true,
+  "lastModifiedBy": "emanjoh",
+  "limitConcurrent": true,
+  "notifications": [
+    {
+      "address": "john.mannion@ericsson.com",
+      "level": "pipeline",
+      "message": {
+        "pipeline.failed": {
+          "text": "The TicketMaster CI Release pipeline has failed"
+        }
+      },
+      "type": "email",
+      "when": [
+        "pipeline.failed"
+      ]
+    }
+  ],
+  "parameterConfig": [
+    {
+      "default": "eoadm100-docker-auth-config",
+      "description": "ARM Docker secret which holds the username and password to log into the ARM Docker repositories.",
+      "hasOptions": false,
+      "label": "ARM Docker Secret",
+      "name": "ARMDOCKER_USER_SECRET",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "ciloopman-user-creds",
+      "description": "Gerrit secret which holds the username and password to log into the Gerrit repositories.",
+      "hasOptions": false,
+      "label": "Gerrit User Secret",
+      "name": "GERRIT_USER_SECRET",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "evo_docker_engine_gic",
+      "description": "Jenkins Slave to execute the flow against",
+      "hasOptions": false,
+      "label": "Jenkins Slave",
+      "name": "SLAVE_LABEL",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    }
+  ],
+  "schema": "1",
+  "spelEvaluator": "v4",
+  "stages": [
+    {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-Integration-Release-CI",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Publish CI Docker image",
+      "parameters": {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "DEV_OR_PUBLISH": "publish",
+        "GERRIT_CHANGE_NUMBER": "${trigger['payload']['GERRIT_CHANGE_NUMBER']}",
+        "GERRIT_PATCHSET_NUMBER": "${trigger['payload']['GERRIT_PATCHSET_NUMBER']}",
+        "GERRIT_REFSPEC": "${trigger['payload']['GERRIT_REFSPEC']}",
+        "GERRIT_REFSPEC_CI": "${trigger['payload']['GERRIT_REFSPEC']}",
+        "GERRIT_USER_SECRET": "${trigger['parameters']['GERRIT_USER_SECRET']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SUBMODULE_SYNC_TIMEOUT": "240"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "1",
+      "requisiteStageRefIds": [],
+      "type": "jenkins"
+    },
+    {
+      "continuePipeline": false,
+      "failPipeline": true,
+      "job": "Gerrit-Notification",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "CI Flow Completed",
+      "parameters": {
+        "GERRIT_CHANGE_NUMBER": "${trigger['payload']['GERRIT_CHANGE_NUMBER']}",
+        "GERRIT_PATCHSET_NUMBER": "${trigger['payload']['GERRIT_PATCHSET_NUMBER']}",
+        "GERRIT_REFSPEC": "${trigger['payload']['GERRIT_REFSPEC']}",
+        "Message": "SUCCESS: CI Image Released"
+      },
+      "refId": "4",
+      "requisiteStageRefIds": [
+        "1"
+      ],
+      "stageEnabled": {
+        "expression": "\"${#stage('Publish CI Docker image')['status']}\" == \"SUCCEEDED\"",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+    {
+      "continuePipeline": false,
+      "failPipeline": true,
+      "job": "Gerrit-Notification",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Notification CI Flow Test Failed",
+      "parameters": {
+        "GERRIT_CHANGE_NUMBER": "${trigger['payload']['GERRIT_CHANGE_NUMBER']}",
+        "GERRIT_PATCHSET_NUMBER": "${trigger['payload']['GERRIT_PATCHSET_NUMBER']}",
+        "GERRIT_REFSPEC": "${trigger['payload']['GERRIT_REFSPEC']}",
+        "Message": "FAILED: CI Image Publish Failed"
+      },
+      "refId": "10",
+      "requisiteStageRefIds": [
+        "1"
+      ],
+      "stageEnabled": {
+        "expression": "\"${#stage('Publish CI Docker image')['status']}\" == \"FAILED_CONTINUE\"",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    }
+  ],
+  "triggers": [
+    {
+      "enabled": true,
+      "source": "publish-ci-image",
+      "type": "webhook"
+    }
+  ]
+}

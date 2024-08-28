@@ -1,0 +1,6 @@
+APP_LIST,BANNER_TEXT,BG_COLOR,TEXT_COLOR,ENABLED,SKIP,DELETE
+test-cicd,This is a test **success** banner message,success,on-dark,true,false,false
+test-cicd test2-cicd,This is a test **danger** banner message,danger,on-dark,true,false,false
+ALL_e2e-cicd,Banner for all E2E applications,success,on-dark,false,true,false
+test-cicd,Remove me,danger,on-dark,false,false,true
+ALL_,Test banner for all applications,success,on-dark,false,true,false

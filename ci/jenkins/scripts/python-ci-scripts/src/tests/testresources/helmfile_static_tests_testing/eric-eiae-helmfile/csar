@@ -1,0 +1,1 @@
+# The presence of this file indicates that this helmfile tgz package should itself be packaged as a helmfile csar

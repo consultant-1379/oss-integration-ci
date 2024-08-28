@@ -1,0 +1,128 @@
+global:
+  hosts:
+    bdr: BDR_HOST_REPLACE
+  bdr:
+    enabled: true
+eric-cloud-native-base:
+  eric-data-object-storage-mn:
+    openID:
+      enabled: true
+#Trace Logging Enabled
+  eric-dst-collector:
+    samplingConfig: |-
+      {
+        "service_strategies": [],
+        "default_strategy": {
+          "type": "probabilistic",
+          "param": 1.0
+        }
+      }
+#added for ADP Diagnostic Data Collector      
+  eric-odca-diagnostic-data-collector:
+    sftpServerHost: sfts.sero.gic.ericsson.se:22
+    collectionWindow: 1440
+    logplanes: "_all"
+    sftpFileLocation: "/IdunReleaseBUR/ADP_Diagnostic_Data"
+    sftpSecretName: eric-odca-diagnostic-data-collector-sftp-credentials
+eric-oss-adc:
+  eric-oss-enm-fns:
+    configuredQueries: |-
+      enms:
+        - name: ProdEngENM
+          periodSeconds: 60
+          queries:
+            - name: query1
+              topic: sftp-filetrans
+              fileType: "xml.gz"
+              fileLocation: ""
+              dmmDataTypeRegistrationParameters:
+                dataSpace: "4G5G"
+                dataCategory: "PM_COUNTERS"
+              enmFileLookupServiceParameters:
+                dataType: PM_STATISTICAL
+                nodeType: "RadioNode"
+                id: 0
+            - name: query2
+              topic: 4g-event
+              fileType: "bin.gz"
+              fileLocation: ""
+              dmmDataTypeRegistrationParameters:
+                dataSpace: "4G"
+                dataCategory: "PM_EVENTS"
+              enmFileLookupServiceParameters:
+                dataType: "PM_CELLTRACE"
+                nodeType: "RadioNode"
+                id: 0
+            - name: query3
+              topic: 5g-event
+              fileType: "gpb.gz"
+              fileLocation: ".*_1_\\d+\\.gpb(?:\\.gz)?$"
+              dmmDataTypeRegistrationParameters:
+                dataSpace: "5G"
+                dataCategory: "PM_EVENTS"
+              enmFileLookupServiceParameters:
+                dataType: "PM_CELLTRACE_*"
+                nodeType: "RadioNode"
+                id: 0
+    dmm:
+      dataCatalog:
+        messageBusNamespace: "NAMESPACE"
+  eric-oss-sftp-filetrans:
+    subsystem:
+      name: "ProdEngENM"
+    dmm:
+      data_catalog:
+        message_bus_namespace: "NAMESPACE"
+        data_service:
+          data_service_instance:
+            consumed_data_provider: ProdEngENM
+    spring:
+      kafka:
+        topics:
+          enm_id: "ProdEngENM"
+  eric-oss-5gpmevt-filetx-proc:
+    dmm:
+      dataCatalog:
+        dataProviderTypeId: "5g-event-ProdEngENM"
+        dataSpace: "5G"
+        dataCollectorName: "ProdEngENM"
+        messageBusNamespace: "NAMESPACE"
+    spring:
+      kafka:
+        topics:
+          input:
+            name: "file-notification-service--5g-event--ProdEngENM"
+eric-oss-common-base:
+  eric-oss-ddc:
+    autoUpload:
+      enabled: DDP_AUTOUPLOAD_ENABLED_REPLACE
+      ddpid: DDP_ID
+      account: DDP_ACCOUNT
+      password: "DDP_PASSWORD"
+#Trace Logging enabled
+eric-oss-ericsson-adaptation:
+  eric-oss-ran-topology-adapter:
+    dst:
+      enabled: true
+
+  eric-eo-enm-adapter:
+    dst:
+      enabled: true
+
+  eric-oss-enm-discovery-adapter:
+    dst:
+      enabled: true
+
+  eric-oss-enm-model-adapter:
+    dst:
+      enabled: true
+
+  eric-oss-enm-notification-adapter:
+    dst:
+      enabled: true
+
+#Trace Logging enabled
+eric-oss-config-handling:
+  eric-oss-ncmp:
+    dst:
+      enabled: true

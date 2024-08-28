@@ -1,0 +1,20 @@
+global:
+  hosts:
+    iam: ""
+    gas: ""
+  registry:
+    # If deploying from the director node on a CCD environment, the url can be retrieved using:
+    # kubectl get ingress eric-lcm-container-registry-ingress -n kube-system -o jsonpath="{.spec.tls[*].hosts[0]}"; echo
+    url: ""
+    # Docker registry username
+    username: ""
+    # Docker registry password
+    password: ""
+  support:
+    ipv6:
+      enabled: false
+  timezone: UTC
+  createClusterRoles: true
+
+tags:
+  appmgr: false

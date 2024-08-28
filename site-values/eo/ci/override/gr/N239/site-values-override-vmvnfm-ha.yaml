@@ -1,0 +1,90 @@
+global:
+  hosts:
+    gr: 'GR_HOST_REPLACE'
+  ericsson:
+    licensing:
+      licenseDomains:
+        - productType: "Ericsson_Orchestrator"
+          swltId: "STB-EVNFM-1"
+          customerId: 800141
+          applicationId: "800141_STB-EVNFM-1_Ericsson_Orchestrator"
+      nelsConfiguration:
+        primary:
+          hostname: "nelsaas-vnf2-thrift.sero.gic.ericsson.se"
+
+eric-eo-evnfm:
+  eric-am-common-wfs:
+    dockerRegistry:
+      secret: global-registry-secret
+  application-manager-postgres:
+    brAgent:
+      enabled: true
+  eric-lcm-container-registry:
+    persistence:
+      persistentVolumeClaim:
+        size: "10Gi"
+    ingress:
+      enabled: true
+  eric-lcm-helm-chart-registry:
+    ingress:
+      hostname: 'HELM_CHART_HOST_REPLACE'
+  eric-global-lcm-container-registry:
+    enabled: true
+    hostname: "registry-local.eo.ocp2-n239.sc.sero.gic.ericsson.se"
+    username: "vnfm"
+    password: "Ericsson123!"
+eric-oss-function-orchestration-common:
+  eric-gr-bur-orchestrator:
+    credentials:
+      username: 'gr-user'
+      password: 'Ericsson123!'
+    gr:
+      sftp:
+        url: 10.237.38.163:22/eso/eo-gr/n239_ocp
+        username: "ericsson"
+        password: "ericsson"
+      cluster:
+        role: 'PRIMARY'
+        secondary_hostnames:
+        - 'gr2.eo.ocp2-n239.sc.sero.gic.ericsson.se'
+        primary_hostname:
+        - 'gr.eo.ocp2-n239.sc.sero.gic.ericsson.se'
+      registry:
+        secondarySiteContainerRegistryHostname: 'gr2.eo.ocp2-n239.sc.sero.gic.ericsson.se'
+        userSecretName: container-credentials
+        usernameKey: userid
+        passwordKey: userpasswd
+geo-redundancy:
+  enabled: true
+eric-eo-config:
+  enabled: true
+eric-topology-handling:
+  ingress:
+    enabled: true
+eric-cloud-native-base:
+  eric-si-application-sys-info-handler:
+    asih:
+      uploadSwimInformation: false
+    applicationInfoService:
+      port: 9095
+  eric-lm-combined-server:
+    labels:
+      eric-si-application-sys-info-handler-access: "true"
+    licenseServerClient:
+      asih:
+        port: 8080
+      licenseServer:
+        thrift:
+          # Mandatory: licenseServerClient.licenseServer.thrift.host - The NELS thrift server address or service name
+          host: "nelsaas-vnf2-thrift.sero.gic.ericsson.se"
+          port: 9095
+  eric-data-object-storage-mn:
+    persistentVolumeClaim:
+      size: 10Gi
+
+eric-eo-evnfm-vm:
+  eric-vnflcm-service:
+    ha:
+      enabled: true
+      persistentVolumeClaim:
+        storageClassName: "csi-cephfs-sc"

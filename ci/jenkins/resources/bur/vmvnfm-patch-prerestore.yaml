@@ -1,0 +1,10 @@
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+        - name: eric-vnflcm-service
+          command:
+          - /bin/bash
+          - -c
+          - while true;do echo \"Backup and Restore is running. Service is temporarily down.\";sleep 5s;done

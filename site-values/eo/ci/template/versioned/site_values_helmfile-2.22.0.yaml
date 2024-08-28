@@ -1,0 +1,253 @@
+global:
+  createClusterRoles: true
+  hosts:
+    gas: 'GAS_HOST_REPLACE'
+    gr: 'GR_HOST_REPLACE'
+    iam: 'IAM_HOST_REPLACE'
+    vnfm: 'VNFM_HOST_REPLACE'
+    cm: 'CM_HOST_REPLACE'
+  ingressClass: eo_iccr
+  registry:
+    password: 'PASSWORD_REPLACE'
+    url: 'DOCKER_REGISTRY_REPLACE'
+    username: 'USERNAME_REPLACE'
+  support:
+    ipv6:
+      enabled: IPV6_ENABLE_REPLACE
+  timezone: UTC
+  serviceMesh:
+    enabled: true
+  meshConfig:
+    enableTracing: false
+    defaultConfig:
+      tracing:
+        sampling: 10
+  proxy:
+    tracer: zipkin
+  tracer:
+    zipkin:
+      address: 'localhost:9411'
+  externalIPv4:
+    loadBalancerIP: INGRESS_IP_REPLACE
+  clusterName: ''
+  domainName: ''
+  ericsson:
+    licensing:
+      licenseDomains:
+      - customerId: 800119
+        productType: EDA
+        swltId: EDA2_01
+      - customerId: 800140
+        productType: "Ericsson_Orchestrator"
+        swltId: "STB-EVNFM-1"
+      nelsConfiguration:
+        primary:
+          hostname: "nelsaas-vnf2-thrift.sero.gic.ericsson.se"
+tags:
+  eoCm: false
+  eoEvnfm: false
+  eoVmvnfm: false
+eric-cloud-native-base:
+  eric-ctrl-bro:
+    persistence:
+      persistentVolumeClaim:
+        size: 20Gi
+  eric-data-search-engine:
+    replicaCount:
+      ingest: 1
+    service:
+      network:
+        protocol:
+          IPv6: IPV6_ENABLE_REPLACE
+  eric-sec-access-mgmt:
+    accountManager:
+      enabled: false
+      inactivityThreshold: 9999
+    replicaCount: 2
+  eric-tm-ingress-controller-cr:
+    enabled: false
+    service:
+      loadBalancerIP: 'INGRESS_IP_REPLACE'
+      annotations:
+        cloudProviderLB: {}
+      externalTrafficPolicy: Cluster
+  eric-log-transformer:
+    replicaCount: 1
+    egress:
+      syslog:
+        enabled: false
+        tls:
+          enabled: true
+        remoteHosts: []
+  eric-data-object-storage-mn:
+    persistentVolumeClaim:
+      size: 10Gi
+  eric-fh-snmp-alarm-provider:
+    sendAlarm: false
+    loadBalancerIP: 'FH_SNMP_ALARM_IP_REPLACE'
+  eric-lm-combined-server:
+    licenseServerClient:
+      licenseServer:
+        thrift:
+          host: "nelsaas-vnf2-thrift.sero.gic.ericsson.se"
+geo-redundancy:
+  enabled: false
+eric-oss-function-orchestration-common:
+  eric-eo-evnfm-nbi:
+    eric-evnfm-rbac:
+      defaultUser:
+        username: 'vnfm'
+        password: 'Ericsson123!'
+  eric-am-onboarding-service:
+    userSecret: container-credentials
+    enabled: true
+    container:
+      registry:
+        enabled: true
+eric-oss-common-base:
+  service-mesh-ingress-gateway:
+    service:
+      loadBalancerIP: 'INGRESS_IP_REPLACE'
+      annotations:
+        cloudProviderLB: {}
+  sessionTokens:
+    maxSessionDurationSecs: 36000
+    maxIdleTimeSecs: 1800
+  system-user:
+    credentials:
+      username: 'system-user'
+      password: 'Ericsson123!'
+  gas:
+    defaultUser:
+      username: 'gas-user'
+      password: 'Ericsson123!'
+  eric-eo-usermgmt:
+    replicaCount: 2
+  eric-eo-usermgmt-ui:
+    replicaCount: 2
+  eric-eo-evnfm-nbi:
+    eric-evnfm-rbac:
+      defaultUser:
+        username: 'vnfm'
+        password: 'Ericsson123!'
+  eric-gr-bur-orchestrator:
+    credentials:
+      username: 'dummy'
+      password: 'dummy'
+    gr:
+      bro:
+        autoDelete:
+          backupsLimit: 10
+      sftp:
+        url: 'dummy:22/path/'
+        username: 'dummy'
+        password: 'dummy'
+      cluster:
+        role: 'PRIMARY'
+        secondary_hostnames:
+        - 'dummy'
+      registry:
+        secondarySiteContainerRegistryHostname: 'fakehostname.com'
+eric-eo-evnfm-vm:
+  eric-vnflcm-service:
+    oss:
+      secretName: null
+    persistentVolumeClaim:
+      size: 20Gi
+    service:
+      enabled: VNFLCM_SERVICE_DEPLOY_REPLACE
+      loadBalancerIP: 'VNFLCM_SERVICE_IP_REPLACE'
+      externalTrafficPolicy: Local
+    ha:
+      enabled: false
+      persistentVolumeClaim:
+        storageClassName:
+eric-eo-evnfm:
+  eric-lcm-container-registry:
+    enabled: true
+    highAvailability: false
+    ingress:
+      hostname: 'VNFM_REGISTRY_HOST_REPLACE'
+    persistence:
+      persistentVolumeClaim:
+        size: 10Gi
+  eric-global-lcm-container-registry:
+    hostname: ''
+    username: ''
+    password: ''
+  eric-lcm-helm-chart-registry:
+    replicaCount: 1
+    ingress:
+      enabled: HELM_REGISTRY_DEPLOY_REPLACE
+      hostname: 'HELM_CHART_HOST_REPLACE'
+    env:
+      secret:
+        BASIC_AUTH_USER: 'evnfm'
+        BASIC_AUTH_PASS: 'evnfm'
+      s3:
+        enabled: false
+      s3Secret: eric-eo-object-store-cred
+    migration:
+      enabled: false
+  eric-vnfm-orchestrator-service:
+    oss:
+      topology:
+        secretName: null
+    smallstack:
+      application: true
+  eric-am-common-wfs:
+    helm:
+      url: "HELM_CHART_HOST_REPLACE"
+    dockerRegistry:
+      secret: null
+    userSecret: container-credentials # SM-149743
+  services:
+    onboarding:
+      enabled: true
+eric-eo-cm:
+  defaultUser:
+    password: ''
+  eric_eo_cm_broker_credentials:
+    password: ''
+  eric-eo-cm-db:
+    password: ''
+    superpwd: ''
+    db_cmdb_pass: ''
+    db_ecm_pass: ''
+    db_actprovadapter_pass: ''
+    db_eda_pass: ''
+  eric-eo-cm-ns-lcm:
+    eric-eo-cm-ns-lcm-db:
+      password: ''
+      superpwd: ''
+  eric-eo-cm-cust-wf:
+    eric-eo-cm-cust-wf-db:
+      password: ''
+      superpwd: ''
+  eric-eo-cm-order-mgmt-ca:
+    eric-eo-cm-order-mgmt-ca-db:
+      password: ''
+      superpwd: ''
+  eric-eo-cm-idam:
+    domain: ''
+    cmdbSync_pass: ''
+  eric-eo-cm-core:
+    credentials:
+      am_password: ''
+    edaConfigJob:
+      onboardPassword: ''
+      eoadminPassword: ''
+      ecmadminPassword: ''
+      ecmActPassword: ''
+      scmClientId: ''
+      scmClientSecret: ''
+  eric-eo-cm-onboarding:
+    enabled: false
+  eric-eo-cm-license-consumer-db:
+    custompwd: ''
+    superpwd: ''
+eric-oss-eo-clm:
+  enabled: false
+  eric-oss-clusterm-capi-clusterctl:
+    workload:
+      namespace: ''

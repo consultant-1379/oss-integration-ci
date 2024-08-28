@@ -1,0 +1,61 @@
+# This override delta file was prepared for usage with main file:
+# site-values/eo/ci/template/site-values-latest.yaml
+
+global:
+  nodeSelector:
+    kubernetes.io/os: linux
+  ericsson:
+    licensing:
+      licenseDomains:
+        - productType: "Ericsson_Orchestrator"
+          swltId: "STB-EVNFM-1"
+          customerId: 800141
+          applicationId: "800141_STB-EVNFM-1_Ericsson_Orchestrator"
+      nelsConfiguration:
+        primary:
+          hostname: "nelsaas-vnf2-thrift-ipv6.sero.gic.ericsson.se"
+  support:
+    ipv6:
+      enabled: true
+
+eric-eo-evnfm:
+  eric-eo-evnfm-mb:
+    global:
+      internalIPFamily: IPv6
+  application-manager-postgres:
+    global:
+      internalIPFamily: IPv6
+  eric-lcm-container-registry:
+    persistence:
+      persistentVolumeClaim:
+        size: "40Gi"
+  eric-global-lcm-container-registry:
+    hostname: 'dummy'
+    username: 'dummy'
+    password: 'dummy'
+  eric-am-onboarding-service:
+    onboarding:
+      skipCertificateValidation: false
+
+eric-cloud-native-base:
+  eric-data-search-engine:
+    service:
+      network:
+        protocol:
+          IPv6: true
+  eric-si-application-sys-info-handler:
+    asih:
+      uploadSwimInformation: false
+    applicationInfoService:
+      port: 9095
+  eric-lm-combined-server:
+    labels:
+      eric-si-application-sys-info-handler-access: "true"
+    licenseServerClient:
+      asih:
+        port: 8080
+      licenseServer:
+        thrift:
+          # Mandatory: licenseServerClient.licenseServer.thrift.host - The NELS thrift server address or service name
+          host: "nelsaas-vnf2-thrift-ipv6.sero.gic.ericsson.se"
+          port: 9095

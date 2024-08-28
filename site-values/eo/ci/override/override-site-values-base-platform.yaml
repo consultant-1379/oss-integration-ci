@@ -1,0 +1,109 @@
+# This override delta file was prepared for usage with main file:
+# site-values/ci/site-values-latest.yaml
+
+global:
+  ericsson:
+    licensing:
+      licenseDomains:
+        - productType: "Ericsson_Orchestrator"
+          swltId: "STB-EVNFM-1"
+          customerId: 800141
+          applicationId: "800141_STB-EVNFM-1_Ericsson_Orchestrator"
+      nelsConfiguration:
+        primary:
+          hostname: "nelsaas-vnf2-thrift.sero.gic.ericsson.se"
+
+eric-eo-evnfm:
+  eric-lcm-container-registry:
+    persistence:
+      persistentVolumeClaim:
+        size: "10Gi"
+  eric-global-lcm-container-registry:
+    hostname: 'dummy'
+    username: 'dummy'
+    password: 'dummy'
+  application-manager-postgres:
+    probes:
+      logshipper:
+        livenessProbe:
+          initialDelaySeconds: 300
+
+eric-oss-function-orchestration-common:
+  eric-am-onboarding-service:
+    onboarding:
+      skipCertificateValidation: false
+
+eric-cloud-native-base:
+  eric-si-application-sys-info-handler:
+    asih:
+      uploadSwimInformation: false
+    applicationInfoService:
+      port: 9095
+  eric-lm-combined-server:
+    labels:
+      eric-si-application-sys-info-handler-access: "true"
+    licenseServerClient:
+      asih:
+        port: 8080
+      licenseServer:
+        thrift:
+          # Mandatory: licenseServerClient.licenseServer.thrift.host - The NELS thrift server address or service name
+          host: "nelsaas-vnf2-thrift.sero.gic.ericsson.se"
+          port: 9095
+
+eric-cncs-oss-pre-config:
+  configAlertRules:
+    alarmConfigurationParameters:
+      documentDatabasePg:
+        diskSpaceThreshold: 0 # %rate
+        holdOnOffTime: 0 # minutes
+        severity: Major
+      dataSearchEngine:
+        volumeThreshold: 0 # %rate
+        volumeHoldOnOffTime: 0 # minutes
+        volumeSeverity: Major
+        missingPShardHoldOnOffTime: 0 # minutes
+        missingPShardSeverity: Major
+        missingReplicaHoldOnOffTime: 0 # minutes
+        missingReplicaSeverity: Major
+      dataObjectStorageMn:
+        diskSpaceThreshold: 0 # %rate
+        diskSpaceholdOnOffTime: 0 # minutes
+        diskSpaceSeverity: Major
+        diskOfflineThreshold: 0 # %rate
+        diskOfflineholdOnOffTime: 0 # minutes
+        diskOfflineSeverity: Major
+      diagnosticDataCollector:
+        diskSpaceThreshold: 0 # %rate
+        diskSpaceholdOnOffTime: 0 # minutes
+        diskSpaceSeverity: Major
+        dataTransferSpeedHoldOnOffTime: 0 # minutes
+        dataTransferSpeedSeverity: Warning
+        dataExportFailureThreshold: 0 # attempts
+        dataExportFailureMonitorTime: 0 # minutes
+        dataExportFailureHoldOnOffTime: 0 # minutes
+        dataExportFailureSeverity: Major
+      backupAndRestoreOrchestrator:
+        diskSpaceThreshold: 0 # %rate
+        holdOnOffTime: 0 # minutes
+        volumeSeverity: Major
+        noSuccessfulBackupDaysThreshold: 0 # days
+        noSuccessfulBackupDaysSeverity: Warning
+        exportBackupOperationFailedSeverity: Major
+        createBackupOperationFailedSeverity: Major
+        restoreBackupOperationFailedSeverity: Major
+        deleteBackupOperationFailedSeverity: Major
+      pmServer:
+        diskSpaceThreshold: 0 # %rate
+        diskSpaceholdOnOffTime: 0 # minutes
+        diskSpaceSeverity: Major
+        containerMemoryThreshold: 0 # %rate
+        containerMemoryHoldOffTime: 0 # minutes
+        containerMemorySeverity: Warning
+        containerCpuThreshold: 0 # %rate
+        containerCpuHoldOffTime: 0 # minutes
+        containerCpuSeverity: Warning
+      distributedCoordinatorEd:
+        diskSpaceThreshold: 0 # %rate
+        holdOnOffTime: 0 # minutes
+        severity: Major

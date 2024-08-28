@@ -1,0 +1,14 @@
+# Manual testing of this content.
+(Note: All commands in this file are execute from the root directory of the repository)
+
+1. Build a local CI docker image or used a released version.
+
+2. Download the Chart under test
+
+3. Execute the docker commands against the
+    - Chart under test.
+    - Site values template for the chart.
+    - Skip list fo the chart.
+    - Common skip list.
+
+    # docker run --rm --user 0:0 -v ${PWD}:/ci-scripts/output-files -v $PWD:$PWD --workdir ${PWD} armdocker.rnd.ericsson.se/proj-eric-oss-drop/eric-oss-ci-scripts:<CI_IMAGE_VERSION> pre_code_review_executor static-tests --state-values-file ${PWD}/ci/jenkins/scripts/common/helm-chart-validator/<CHART_DIR>/site_values_template.yaml --chart-full-path ${PWD}/eric-oss-common-base-0.2.0-216.tgz --specific-skip-file ${PWD}/ci/jenkins/scripts/common/helm-chart-validator/<CHART_DIR>/skip_list.json  --common-skip-file ${PWD}/ci/jenkins/scripts/common/helm-chart-validator/common_skip_list.json

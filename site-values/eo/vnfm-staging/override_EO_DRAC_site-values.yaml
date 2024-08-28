@@ -1,0 +1,175 @@
+# This override delta file was prepared for usage with main file:
+# site-values/eo/ci/site_values_helmfile-latest.yaml
+
+#Nels Global Configuration
+global:
+  ericsson:
+    licensing:
+      licenseDomains:
+        - productType: "Ericsson_Orchestrator"
+          swltId: "STB-EVNFM-1"
+          customerId: 800141
+          applicationId: "800141_STB-EVNFM-1_Ericsson_Orchestrator"
+      nelsConfiguration:
+        primary:
+          hostname: "nelsaas-vnf2-thrift.sero.gic.ericsson.se"
+
+# Enabling stubs from SO
+stubs:
+  enabled: true
+
+eric-eo-so:
+  stubs:
+    enabled: true
+
+# Fill only if deploying EO VM VNFM
+eric-eo-evnfm-vm:
+  eric-vnflcm-service:
+    oss:
+      secretName: "oss-secret"
+  eric-vm-vnfm-migration:
+    migration:
+      enabled: true
+
+# Fill only if deploying Ericsson Adaptation (EAS)
+eric-oss-ericsson-adaptation:
+  eric-eo-enm-stub:
+    enabled: true
+  eric-oss-enm-notification-simulator:
+    enabled: true
+
+eric-oss-uds:
+  eric-oss-uds-policy-artifact-ui:
+    resources:
+      limits:
+        cpu: 200m
+        memory: 200Mi
+      requests:
+        cpu: 100m
+        memory: 100Mi
+
+eric-oss-ddc:
+  enabled: false
+
+#Nels instance configuration for function-orchestation
+eric-oss-function-orchestration-common:
+  eric-eo-lm-consumer:
+    licenseConsumer:
+      restrictedMode: true
+  eric-eo-evnfm-nbi:
+    eric-evnfm-rbac:
+      eric-eo-evnfm-drac:
+        enabled: true
+        domainRoles:
+         - name: E-VNFM_5GC Domain Role
+           nodeTypes:
+            - PCC
+            - PCG
+            - ERIC-CCDM
+            - CCDM
+            - CCES
+            - CCPC
+            - CCRC
+            - CCSM
+            - ENL
+            - NELS
+         - name: E-VNFM_EPC Domain Role
+           nodeTypes:
+            - EPG
+            - SGSN-MME
+            - WMG
+         - name: E-VNFM_UDM Domain Role
+           nodeTypes:
+            - EIR-FE
+            - LR-FE
+            - HLR-FE
+            - vCUDB
+            - SAPC
+            - vIPWorks
+         - name: E-VNFM_SIG Domain Role
+           nodeTypes:
+            - vDSC
+            - Signaling_Controller
+            - DSC
+            - vIP-STP_Compact
+         - name: E-VNFM_IMS Domain Role
+           nodeTypes:
+            - vCSCF
+            - vMTAS
+            - vBGF
+            - vMRF
+            - vAFG
+            - vEMe
+            - IMS-CS-OAM-FW
+            - IMS-SBG-TH
+            - IMS-BFG-TH
+            - IMS-CS-ADC
+            - IMS-MGMTD
+         - name: E-VNFM_MSC Domain Role
+           nodeTypes:
+            - vMSC-S_Compact
+            - vMSC-S_HC
+         - name: E-VNFM_OSS Domain Role
+           nodeTypes:
+            - cENM
+            - cEM
+            - EDA
+         - name: E-VNFM_5GRAN Domain Role
+           nodeTypes:
+            - VDU
+            - VCU-CP
+            - VCU-UP
+            - RANS
+         - name: E-VNFM_VNFLCM Domain Role
+           nodeTypes:
+            - VNFLAF
+            - vnflcm
+            - vnflafecm
+            - vnfl
+
+eric-oss-common-base:
+  sessionTokens:
+    maxSessionDurationSecs: 36000
+    maxIdleTimeSecs: 1800
+  eric-cnom-server:
+    imageCredentials:
+      pullSecret: k8s-registry-secret-legacy
+eric-cloud-native-base:
+  eric-si-application-sys-info-handler:
+    enabled: true
+    asih:
+      uploadSwimInformation: false
+    applicationInfoService:
+      port: 9095
+  eric-lm-combined-server-db-pg:
+    enabled: true
+    credentials:
+      kubernetesSecretName: eric-oss-lm-combined-server-db-pg-secret
+    postgresDatabase: licensemanager_db
+  eric-lm-combined-server:
+    enabled: true
+    labels:
+      eric-si-application-sys-info-handler-access: "true"
+    database:
+      credentials:
+        secretName: eric-oss-lm-combined-server-db-pg-secret
+    licenseServerClient:
+      asih:
+        host: "eric-si-application-sys-info-handler"
+        port: 8080
+      licenseServer:
+        thrift:
+          host: "nelsaas-vnf2-thrift.sero.gic.ericsson.se"
+          port: 9095
+  eric-fh-snmp-alarm-provider:
+    imageCredentials:
+      pullSecret: k8s-registry-secret-legacy
+  eric-fh-alarm-handler:
+    imageCredentials:
+      pullSecret: k8s-registry-secret-legacy
+  eric-data-key-value-database-rd:
+    imageCredentials:
+      pullSecret: k8s-registry-secret-legacy
+  eric-cloud-native-kvdb-rd-operand:
+    imageCredentials:
+      pullSecret: k8s-registry-secret-legacy

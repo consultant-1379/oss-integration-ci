@@ -1,0 +1,7 @@
+eric-oss-common-base:
+  eric-oss-ddc:
+    autoUpload:
+      enabled: DDP_AUTOUPLOAD_ENABLED_REPLACE
+      ddpid: DDP_ID
+      account: DDP_ACCOUNT
+      password: "DDP_PASSWORD"

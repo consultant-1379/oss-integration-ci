@@ -1,0 +1,670 @@
+{
+  "appConfig": {},
+  "description": "The is a CI Release pipeline to be used by Team TicketMaster",
+  "disabled": false,
+  "keepWaitingPipelines": false,
+  "lastModifiedBy": "EINTSKE",
+  "limitConcurrent": false,
+  "notifications": [],
+  "parameterConfig": [
+    {
+      "default": "eric-ci-helmfile",
+      "description": "Name of the Helmfile which will be used for the Initial install",
+      "hasOptions": false,
+      "label": "",
+      "name": "HELMFILE_NAME",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "0.0.0",
+      "description": "Version of the Helmfile which will be used for the Initial Install",
+      "hasOptions": false,
+      "label": "",
+      "name": "HELMFILE_VERSION",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "https://arm.seli.gic.ericsson.se/artifactory/proj-eric-oss-drop-helm-local",
+      "description": "Repo of the Helmfile which will be used for the Initial Install",
+      "hasOptions": false,
+      "label": "",
+      "name": "HELMFILE_REPO",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "so",
+      "description": "Applications that should be switch on during deployment",
+      "hasOptions": false,
+      "label": "TAGS",
+      "name": "TAGS",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": true
+    },
+    {
+      "default": "site-values/idun/ci/template/site-values-latest.yaml",
+      "description": "The Path where all the necessary site values are located for the install/upgrade",
+      "hasOptions": false,
+      "label": "",
+      "name": "PATH_TO_SITE_VALUES_FILE",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": true
+    },
+    {
+      "default": "true",
+      "description": "Set this parameter to true if you wish for the environment to be quarantined if the deployment flow false",
+      "hasOptions": false,
+      "label": "",
+      "name": "QUARANTINE_ENV",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "eo-integration-ci/honeypots/pooling/environments",
+      "description": "This is the directory within the Repo specified within the Gather-Env-Details Jenkins job where to find the pooling environment details",
+      "hasOptions": false,
+      "label": "",
+      "name": "ENV_DETAILS_DIR",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "ci_test_ticketmaster",
+      "description": "This is the label to search for that is attached to the environments in the Lockable Resource Plugin on Jenkins",
+      "hasOptions": false,
+      "label": "",
+      "name": "ENV_LABEL",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "Ticketmaster CI Iniitial InstallTest Flow",
+      "description": "Flow URL Tag is used when locking the environment to add a tag to describe what has locked the environment for easier tracking",
+      "hasOptions": false,
+      "label": "",
+      "name": "FLOW_URL_TAG",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "120",
+      "description": "This is the time to wait for an Environment to become available. After the time expires the job will fail out",
+      "hasOptions": false,
+      "label": "",
+      "name": "WAIT_TIME",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "evo_docker_engine_gic_IDUN",
+      "description": "Label to choose which Jenkins slave to execute Jenkinsfiles against",
+      "hasOptions": false,
+      "label": "",
+      "name": "SLAVE_LABEL",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "ciloopman-user-creds",
+      "description": "Functional user for logging into armdocker",
+      "hasOptions": false,
+      "label": "",
+      "name": "FUNCTIONAL_USER_SECRET",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "1800",
+      "description": "Timeout for helmfile deploy",
+      "hasOptions": false,
+      "label": "",
+      "name": "HELM_TIMEOUT",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "refs/heads/master",
+      "description": "The Gerrit Refspec to the review under test",
+      "hasOptions": false,
+      "label": "CI Gerit Review Refspec",
+      "name": "CI_GERRIT_REFSPEC",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "armdocker.rnd.ericsson.se/proj-eric-oss-drop/eric-oss-ci-scripts:latest",
+      "description": "",
+      "hasOptions": false,
+      "label": "CI Docker Image details",
+      "name": "CI_DOCKER_IMAGE",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "ciloopman-docker-auth-config",
+      "description": "User credentials file that stores the username and password to log onto the ARM Docker",
+      "hasOptions": false,
+      "label": "User creds to log into ARM Docker",
+      "name": "ARMDOCKER_USER_SECRET",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "eric-ci-helmfile/helmfile.yaml",
+      "description": "Path to the helmfile.yam within the extracted tar file.",
+      "hasOptions": false,
+      "label": "Path to helmfile location",
+      "name": "PATH_TO_HELMFILE",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "armdocker.rnd.ericsson.se",
+      "description": "Registry that should be used for the deployment",
+      "hasOptions": false,
+      "label": "DOCKER_REGISTRY",
+      "name": "DOCKER_REGISTRY",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "None",
+      "description": "Docker Registry Credentials, Only should be populated if using the local registry",
+      "hasOptions": false,
+      "label": "DOCKER_REGISTRY_CREDENTIALS",
+      "name": "DOCKER_REGISTRY_CREDENTIALS",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "site-values/idun/ci/override/override-site-values-ci-test.yaml",
+      "description": "Path to the override site values file",
+      "hasOptions": false,
+      "label": "Override site values",
+      "name": "PATH_TO_SITE_VALUES_OVERRIDE_FILE",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "eric-crd-ns",
+      "description": "Namespace to purge CRD environment",
+      "hasOptions": false,
+      "label": "Namespace where CRDs exist on the namespace",
+      "name": "CRD_NAMESPACE",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "PARTIAL",
+      "description": "FULL will cleanup the deployment and crd namespaces and PARTIAL will only cleanup the deployment namespace",
+      "hasOptions": false,
+      "label": "Full/Partial Clean",
+      "name": "CLEANUP_TYPE",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "true",
+      "description": "Option to remove the namespace where the deployment takes place",
+      "hasOptions": false,
+      "label": "Delete the Namespace where Helm Releases are",
+      "name": "NAMESPACE_DELETION",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "refs/heads/master",
+      "description": "The Gerrit Refspec to the review under test",
+      "hasOptions": false,
+      "label": "Gerit Review Refspec",
+      "name": "GERRIT_REFSPEC",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "60",
+      "description": "Option to alter the timeout in waiting for the deletion of pvcs - Will abort the job if it reaches the timeout",
+      "hasOptions": false,
+      "label": "Timeout in seconds",
+      "name": "TIMEOUT_IN_SECONDS",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    }
+  ],
+  "schema": "1",
+  "spelEvaluator": "v4",
+  "stages": [
+    {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "CI-Test-Check-Helmfile-Deployment-Status",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Check Deployment Status",
+      "parameters": {
+        "CHECK_TAGS": "",
+        "CI_DOCKER_IMAGE": "${trigger['parameters']['CI_DOCKER_IMAGE']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['CI_GERRIT_REFSPEC']}",
+        "INT_CHART_NAME": "${trigger['parameters']['HELMFILE_NAME']}",
+        "INT_CHART_REPO": "${trigger['parameters']['HELMFILE_REPO']}",
+        "INT_CHART_VERSION": "${trigger['parameters']['HELMFILE_VERSION']}",
+        "KUBECONFIG_FILE": "${#stage(\"Gather Env Details\")[\"context\"][\"KUBE_CONFIG\"]}",
+        "NAMESPACE": "${#stage(\"Gather Env Details\")[\"context\"][\"NAMESPACE\"]}",
+        "PATH_TO_HELMFILE": "${trigger['parameters']['PATH_TO_HELMFILE']}",
+        "SLAVE_LABEL": "evo_docker_engine_athlone",
+        "TAGS": "${trigger['parameters']['TAGS']}"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Check Deployment Status",
+      "requisiteStageRefIds": [
+        "5"
+      ],
+      "stageEnabled": {
+        "expression": "\"${#stage('Pre deployment Tests')['status']}\" == \"SUCCEEDED\"",
+        "type": "expression"
+      },
+      "type": "jenkins",
+      "waitForCompletion": true
+    },
+    {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "CI-Test-Quarantine-Environment",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Quarantine Environment",
+      "parameters": {
+        "ENV_NAME": "${#stage(\"Reserve Namspace\")[\"context\"][\"RESOURCE_NAME\"]}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['CI_GERRIT_REFSPEC']}"
+      },
+      "refId": "Quarantine Environment",
+      "requisiteStageRefIds": [
+        "7"
+      ],
+      "stageEnabled": {
+        "expression": "${trigger['parameters']['QUARANTINE_ENV'].contains('true')} && \"${#stage('Install using Helmfile')['status']}\" == \"SUCCEEDED\"",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+    {
+      "continuePipeline": false,
+      "failPipeline": true,
+      "job": "CI-Test-Unreserve-Environment",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Unreserve Environment",
+      "parameters": {
+        "ENV_NAME": "${#stage(\"Reserve Namspace\")[\"context\"][\"RESOURCE_NAME\"]}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['CI_GERRIT_REFSPEC']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}"
+      },
+      "propertyFile": "",
+      "refId": "Unreserve Environment",
+      "requisiteStageRefIds": [
+        "Quarantine Environment"
+      ],
+      "type": "jenkins"
+    },
+    {
+      "name": "Flow Completed",
+      "preconditions": [
+        {
+          "context": {
+            "stageName": "Unreserve Environment",
+            "stageStatus": "SUCCEEDED"
+          },
+          "failPipeline": true,
+          "type": "stageStatus"
+        },
+        {
+          "context": {
+            "stageName": "Quarantine Environment",
+            "stageStatus": "SUCCEEDED"
+          },
+          "failPipeline": true,
+          "type": "stageStatus"
+        },
+        {
+          "context": {
+            "stageName": "Install using Helmfile",
+            "stageStatus": "SUCCEEDED"
+          },
+          "failPipeline": true,
+          "type": "stageStatus"
+        },
+        {
+          "context": {
+            "stageName": "Check Deployment Status",
+            "stageStatus": "SUCCEEDED"
+          },
+          "failPipeline": true,
+          "type": "stageStatus"
+        },
+        {
+          "context": {
+            "stageName": "Gather Env Details",
+            "stageStatus": "SUCCEEDED"
+          },
+          "failPipeline": true,
+          "type": "stageStatus"
+        },
+        {
+          "context": {
+            "stageName": "Clean Down Deployment",
+            "stageStatus": "SUCCEEDED"
+          },
+          "failPipeline": true,
+          "type": "stageStatus"
+        }
+      ],
+      "refId": "Flow Completed",
+      "requisiteStageRefIds": [
+        "Unreserve Environment"
+      ],
+      "type": "checkPreconditions"
+    },
+    {
+      "continuePipeline": false,
+      "failPipeline": true,
+      "job": "CI-Test-Reserve-Namespace",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Reserve Namspace",
+      "parameters": {
+        "ENV_LABEL": "${trigger['parameters']['ENV_LABEL']}",
+        "FLOW_URL": "https://spinnaker.rnd.gic.ericsson.se/#/applications/${execution['application']}/executions/details/${execution.id}",
+        "FLOW_URL_TAG": "${trigger['parameters']['FLOW_URL_TAG']}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['CI_GERRIT_REFSPEC']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "WAIT_TIME": "${trigger['parameters']['WAIT_TIME']}"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "1",
+      "requisiteStageRefIds": [],
+      "type": "jenkins"
+    },
+    {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "CI-Test-Gather-Env-Details",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Gather Env Details",
+      "parameters": {
+        "ENV_DETAILS_DIR": "${parameters['ENV_DETAILS_DIR']}",
+        "ENV_NAME": "${#stage(\"Reserve Namspace\")[\"context\"][\"RESOURCE_NAME\"]}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['CI_GERRIT_REFSPEC']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "2",
+      "requisiteStageRefIds": [
+        "1"
+      ],
+      "stageEnabled": {
+        "expression": "\"${#stage('Reserve Namspace')['status']}\" == \"SUCCEEDED\"",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+    {
+      "application": "ticketmaster-cicd",
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "name": "Pre deployment Tests",
+      "pipeline": "8a1900af-67de-4f77-a67d-5564067d143e",
+      "pipelineParameters": {
+        "ARMDOCKER_USER_SECRET": "${parameters['ARMDOCKER_USER_SECRET']}",
+        "CI_DOCKER_IMAGE": "${trigger['parameters']['CI_DOCKER_IMAGE']}",
+        "CRD_NAMESPACE": "eric-crd-ci-ns",
+        "EXECUTE_AM_PREDEPLOYMENT_STEP": "yes",
+        "GERRIT_REFSPEC": "${trigger['parameters']['CI_GERRIT_REFSPEC']}",
+        "KUBECONFIG_FILE": "${#stage(\"Gather Env Details\")[\"context\"][\"KUBE_CONFIG\"]}",
+        "NAMESPACE": "${#stage(\"Gather Env Details\")[\"context\"][\"NAMESPACE\"]}"
+      },
+      "refId": "5",
+      "requisiteStageRefIds": [
+        "6",
+        "8"
+      ],
+      "stageEnabled": {
+        "expression": "\"${#stage('Clean Down Deployment')['status']}\" == \"SUCCEEDED\"",
+        "type": "expression"
+      },
+      "type": "pipeline",
+      "waitForCompletion": true
+    },
+    {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "CI-Test-Purge-Namespace",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Clean Down Deployment",
+      "parameters": {
+        "CI_DOCKER_IMAGE": "${trigger['parameters']['CI_DOCKER_IMAGE']}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['CI_GERRIT_REFSPEC']}",
+        "KUBECONFIG_FILE": "${#stage(\"Gather Env Details\")[\"context\"][\"KUBE_CONFIG\"]}",
+        "NAMESPACE": "${#stage(\"Gather Env Details\")[\"context\"][\"NAMESPACE\"]}",
+        "SLAVE_LABEL": "evo_docker_engine_athlone"
+      },
+      "refId": "6",
+      "requisiteStageRefIds": [
+        "2"
+      ],
+      "stageEnabled": {
+        "expression": "\"${#stage('Gather Env Details')['status']}\" == \"SUCCEEDED\"",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+    {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failOnFailedExpressions": false,
+      "failPipeline": false,
+      "job": "CI-Test-helmfile-deploy",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Install using Helmfile",
+      "parameters": {
+        "ADC_HOSTNAME": "${#stage(\"Gather Env Details\")[\"context\"][\"EO_ADC_HOSTNAME\"]}",
+        "APPMGR_HOSTNAME": "${#stage(\"Gather Env Details\")[\"context\"][\"EO_APPMGR_HOSTNAME\"]}",
+        "ARMDOCKER_USER_SECRET": "${parameters['ARMDOCKER_USER_SECRET']}",
+        "CI_DOCKER_IMAGE": "${parameters['CI_DOCKER_IMAGE']}",
+        "COLLECT_LOGS_WITH_DM": "true",
+        "CRD_NAMESPACE": "eric-crd-ci-ns",
+        "DOCKER_REGISTRY": "${parameters['DOCKER_REGISTRY']}",
+        "DOCKER_REGISTRY_CREDENTIALS": "${parameters['DOCKER_REGISTRY_CREDENTIALS']}",
+        "ENV_CONFIG_FILE": "eo-integration-ci/honeypots/pooling/environments/hart105_CI_TEST_FLOW_INSTALL1.conf",
+        "FULL_PATH_TO_SITE_VALUES_FILE": "${parameters['PATH_TO_SITE_VALUES_FILE']}",
+        "FUNCTIONAL_USER_SECRET": "${parameters['FUNCTIONAL_USER_SECRET']}",
+        "GAS_HOSTNAME": "${#stage(\"Gather Env Details\")[\"context\"][\"EO_GAS_HOSTNAME\"]}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['CI_GERRIT_REFSPEC']}",
+        "IAM_HOSTNAME": "${#stage(\"Gather Env Details\")[\"context\"][\"IAM_HOSTNAME\"]}",
+        "INGRESS_IP": "${#stage(\"Gather Env Details\")[\"context\"][\"SM_IP\"]}",
+        "INT_CHART_NAME": "${parameters['HELMFILE_NAME']}",
+        "INT_CHART_REPO": "${parameters['HELMFILE_REPO']}",
+        "INT_CHART_VERSION": "${trigger['parameters']['HELMFILE_VERSION']}",
+        "IPV6_ENABLE": "true",
+        "KUBECONFIG_FILE": "${#stage(\"Gather Env Details\")[\"context\"][\"KUBE_CONFIG\"]}",
+        "NAMESPACE": "${#stage(\"Gather Env Details\")[\"context\"][\"NAMESPACE\"]}",
+        "OS_HOSTNAME": "${#stage(\"Gather Env Details\")[\"context\"][\"EO_OS_HOSTNAME\"]}",
+        "PATH_TO_CERTIFICATES_FILES": "eo-integration-ci/${#stage(\"Gather Env Details\")[\"context\"][\"PATH_TO_CERTIFICATES_FILES\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${parameters['PATH_TO_SITE_VALUES_OVERRIDE_FILE']}",
+        "PF_HOSTNAME": "${#stage(\"Gather Env Details\")[\"context\"][\"EO_PF_HOSTNAME\"]}",
+        "SLAVE_LABEL": "evo_docker_engine_athlone",
+        "SO_HOSTNAME": "${#stage(\"Gather Env Details\")[\"context\"][\"EO_SO_HOSTNAME\"]}",
+        "TAGS": "${parameters['TAGS']}",
+        "TH_HOSTNAME": "${#stage(\"Gather Env Details\")[\"context\"][\"EO_TH_HOSTNAME\"]}",
+        "UDS_HOSTNAME": "${#stage(\"Gather Env Details\")[\"context\"][\"EO_UDS_HOSTNAME\"]}",
+        "USE_DM_PREPARE": "true"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "7",
+      "requisiteStageRefIds": [
+        "Check Deployment Status"
+      ],
+      "stageEnabled": {
+        "expression": "\"${#stage('Check Deployment Status')['status']}\" == \"SUCCEEDED\"",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+    {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": false,
+      "failPipeline": true,
+      "job": "CI-Test-purge",
+      "markUnstableAsSuccessful": false,
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Clean Down Deployment - Purge.Jenkinsfile",
+      "parameters": {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "CI_DOCKER_IMAGE": "${trigger['parameters']['CI_DOCKER_IMAGE']}",
+        "CLEANUP_TYPE": "${trigger['parameters']['CLEANUP_TYPE']}",
+        "CRD_NAMESPACE": "${trigger['parameters']['CRD_NAMESPACE']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['GERRIT_REFSPEC']}",
+        "KUBECONFIG_FILE": "${#stage(\"Gather Env Details\")[\"context\"][\"KUBE_CONFIG\"]}",
+        "NAMESPACE": "${#stage(\"Gather Env Details\")[\"context\"][\"NAMESPACE\"]}",
+        "NAMESPACE_DELETION": "${trigger['parameters']['NAMESPACE_DELETION']}",
+        "SLAVE_LABEL": "evo_docker_engine_athlone",
+        "TIMEOUT_IN_SECONDS": "${trigger['parameters']['TIMEOUT_IN_SECONDS']}"
+      },
+      "refId": "8",
+      "requisiteStageRefIds": [
+        "2"
+      ],
+      "type": "jenkins"
+    }
+  ],
+  "triggers": []
+}

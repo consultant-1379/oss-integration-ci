@@ -1,0 +1,57 @@
+{
+  "appConfig": {},
+  "disabled": false,
+  "keepWaitingPipelines": false,
+  "lastModifiedBy": "emanjoh",
+  "limitConcurrent": true,
+  "parameterConfig": [],
+  "spelEvaluator": "v4",
+  "stages": [
+    {
+      "name": "Flow Completed",
+      "preconditions": [
+        {
+          "context": {
+            "expression": "\"${#stage('Product Staging Testing')['status']}\" == \"SUCCEEDED\""
+          },
+          "failPipeline": true,
+          "type": "expression"
+        }
+      ],
+      "refId": "35",
+      "requisiteStageRefIds": [
+        "36"
+      ],
+      "type": "checkPreconditions"
+    },
+    {
+      "application": "product-e2e-cicd",
+      "failPipeline": true,
+      "name": "Product Staging Testing",
+      "pipeline": "d8e85bad-3d55-433b-b7db-d3d3567e2553",
+      "pipelineParameters": {
+        "CHART_NAME": "${trigger['properties']['CHART_NAME']}",
+        "CHART_REPO": "${trigger['properties']['CHART_REPO']}",
+        "CHART_VERSION": "${trigger['properties']['CHART_VERSION']}",
+        "FLOW_URL_TAG": "Product Staging",
+        "INT_CHART_NAME": "${trigger['properties']['INT_CHART_NAME']}",
+        "INT_CHART_REPO": "${trigger['properties']['INT_CHART_NAME']}",
+        "INT_CHART_VERSION": "${trigger['properties']['INT_CHART_NAME']}"
+      },
+      "refId": "36",
+      "requisiteStageRefIds": [],
+      "type": "pipeline",
+      "waitForCompletion": true
+    }
+  ],
+  "triggers": [
+    {
+      "enabled": true,
+      "job": "platformTriggerProductStaging",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "propertyFile": "artifact.properties",
+      "type": "jenkins"
+    }
+  ],
+  "updateTs": "1628110229273"
+}

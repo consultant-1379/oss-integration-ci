@@ -1,0 +1,6 @@
+{
+  "test_autoscaling_resources": {
+    "skips": [],
+    "runTests": true
+  }
+}

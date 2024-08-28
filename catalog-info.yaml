@@ -1,0 +1,55 @@
+#
+# COPYRIGHT Ericsson 2024
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: oss-integration-ci
+  title: OSS Integration CI
+  description: >
+    'This repo holds all the CI Flow Jenkins Files, from CSAR build to helmfile deployment execution.
+     It is also used to home the site values that are used within the CI flows.'
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    backstage.io/source-location: url:https://gerrit-gamma.gic.ericsson.se/plugins/gitiles/OSS/com.ericsson.oss.aeonic/oss-integration-ci
+    gerrit/component: OSS/com.ericsson.oss.aeonic/oss-integration-ci
+    jira.com/project-keys: IDUN,SM
+    jira.com/filter-ids: "101524"
+    jira.com/instance: oss
+    jenkins:
+      fem5s11-eiffel052.eiffel.gic.ericsson.se:8443/OSS-CI-Precode-Tests
+  links:
+    - url: https://eteamspace.internal.ericsson.com/display/DGBase/Ticketmaster
+      title: Team Ticketmaster Confluence
+      icon: dashboard
+  tags:
+    - ericsson-intelligent-controller
+    - ericsson-orchestrator
+  roles:
+    microservice-architect: emanjoh
+    scrum-master: emarfah
+    product-owner: ekellmi
+    line-manager: emimcco
+    security-master: ercaada
+    ci-spoc: emanjoh
+  approval:
+    date: 27-02-2024
+    approver: emarfah
+spec:
+  lifecycle: production
+  owner: ticketmaster
+  type: microservice
+  system: generic-deployment-artefacts

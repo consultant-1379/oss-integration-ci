@@ -1,0 +1,80 @@
+# This override delta file was prepared for usage with main file:
+# site-values/eo/ci/template/site-values-latest.yaml
+
+global:
+  nodeSelector:
+    kubernetes.io/os: linux
+
+# tags:
+#   eoLm: true
+
+eric-eo-lifecycle-manager:
+  eric-oss-gitops-fx-management:
+    configuration:
+      createSkeleton: true
+      bootstrapFlux: true
+      shardCount: 2
+  git:
+    externalGit:
+      enabled: false
+    gitService: "null" #Give the git Service name if EO LM provided GITEA is not used ex: gerrit, gitlab, github
+    users:
+      fluxAdmin: "null"
+      fluxAdminPassword: "null"
+      fluxAdminRepoUrl: "null"
+      fluxAdminRepoBranch: "null"
+
+      fluxTenant: "null"
+      fluxTenantPass: "null"
+      fluxTenantBranch: "null"
+      fluxTenantRepoUrl: "null"
+
+eric-oss-common-base:
+  eric-cnom-server:
+    imageCredentials:
+      pullSecret: k8s-registry-secret-legacy
+
+eric-cloud-native-base:
+  eric-si-application-sys-info-handler:
+    asih:
+      uploadSwimInformation: false
+    applicationInfoService:
+      port: 9095
+  eric-lm-combined-server:
+    labels:
+      eric-si-application-sys-info-handler-access: "true"
+    licenseServerClient:
+      asih:
+        port: 8080
+      licenseServer:
+        thrift:
+          # Mandatory: licenseServerClient.licenseServer.thrift.host - The NELS thrift server address or service name
+          host: "nelsaas-vnf2-thrift.sero.gic.ericsson.se"
+          port: 9095
+  eric-fh-snmp-alarm-provider:
+    sendAlarm: false
+    service:
+      annotations:
+        sharedVIPLabel: "shared-vip"
+    imageCredentials:
+      pullSecret: k8s-registry-secret-legacy
+  eric-fh-alarm-handler:
+    imageCredentials:
+      pullSecret: k8s-registry-secret-legacy
+  eric-cloud-native-kvdb-rd-operand:
+    imageCredentials:
+      pullSecret: k8s-registry-secret-legacy
+  eric-tm-ingress-controller-cr:
+    service:
+      externalTrafficPolicy: Cluster
+  eric-data-key-value-database-rd:
+    resources:
+      kvdbOperator:
+        limits:
+          cpu: 100m
+          memory: 200Mi
+          ephemeral-storage: 2Gi
+    imageCredentials:
+      pullSecret: k8s-registry-secret-legacy
+  eric-sec-key-management:
+    logLevel: debug

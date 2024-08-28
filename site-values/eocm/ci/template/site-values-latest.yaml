@@ -1,0 +1,138 @@
+global:
+  createClusterRoles: true
+  hosts:
+    gas: 'GAS_HOST_REPLACE'
+    iam: 'IAM_HOST_REPLACE'
+    cm: 'CM_HOST_REPLACE'
+  registry:
+    password: 'PASSWORD_REPLACE'
+    url: 'DOCKER_REGISTRY_REPLACE'
+    username: 'USERNAME_REPLACE'
+  support:
+    ipv6:
+      enabled: IPV6_ENABLE_REPLACE
+  timezone: UTC
+  externalIPv4:
+    loadBalancerIP: FH_SNMP_ALARM_IP_REPLACE
+  externalIPv6:
+    loadBalancerIP: ''
+  clusterName: ''
+  domainName: ''
+  siteName: ''
+  ericsson:
+    licensing:
+      licenseDomains:
+      - customerId: 800119
+        productType: EDA
+        swltId: EDA2_01
+  licensing:
+    sites:
+    # Mandatory: global.licensing.sites[0].hostname - The NELS thrift server address or service name
+    - hostname: "nelsaas-vnf2-thrift.sero.gic.ericsson.se"
+
+tags:
+  eoCm: false
+
+eric-cloud-native-base:
+  eric-ctrl-bro:
+    persistence:
+      persistentVolumeClaim:
+        size: 20Gi
+  eric-sec-access-mgmt:
+    accountManager:
+      enabled: false
+      inactivityThreshold: 9999
+  eric-log-transformer:
+    egress:
+      syslog:
+        enabled: false
+        tls:
+          enabled: true
+        remoteHosts: []
+  eric-data-object-storage-mn:
+    persistentVolumeClaim:
+      size: 10Gi
+  eric-fh-snmp-alarm-provider:
+    sendAlarm: false
+
+eric-oss-function-orchestration-common:
+  eric-am-onboarding-service:
+    container:
+      registry:
+        enabled: true
+
+eric-oss-common-base:
+  service-mesh-ingress-gateway:
+    service:
+      loadBalancerIP: 'INGRESS_IP_REPLACE'
+      annotations:
+        cloudProviderLB: {}
+  sessionTokens:
+    maxSessionDurationSecs: 36000
+    maxIdleTimeSecs: 1800
+  system-user:
+    credentials:
+      username: 'system-user'
+      password: 'Ericsson123!'
+  gas:
+    defaultUser:
+      username: 'gas-user'
+      password: 'Ericsson123!'
+  eric-eo-usermgmt:
+    replicaCount: 2
+  eric-eo-usermgmt-ui:
+    replicaCount: 2
+
+eric-oss-common-base-config:
+  eric-oss-license-consumer-database-pg-creds:
+    custompwd: "LicenseDb_123"
+    superpwd: "LicenseDb!23"
+
+eric-eo-cm:
+  defaultUser:
+    password: ''
+  eric_eo_cm_broker_credentials:
+    password: ''
+  eric-eo-cm-db:
+    password: ''
+    superpwd: ''
+    db_cmdb_pass: ''
+    db_ecm_pass: ''
+    db_actprovadapter_pass: ''
+    db_eda_pass: ''
+  eric-eo-cm-ns-lcm:
+    eric-eo-cm-ns-lcm-db:
+      password: ''
+      superpwd: ''
+  eric-eo-cm-cust-wf:
+    enabled: false
+  eric-eo-cm-order-mgmt-ca:
+    eric-eo-cm-order-mgmt-ca-db:
+      password: ''
+      superpwd: ''
+  eric-eo-cm-idam:
+    domain: ''
+    cmdbSync_pass: ''
+    configStore:
+      amConfigPassword: ''
+      dsPassword: ''
+      monitorPassword: ''
+    userStore:
+      dsPassword: ''
+      monitorPassword: ''
+    ctsStore:
+      dsPassword: ''
+      openamCtsPassword: ''
+      monitorPassword: ''
+    ecmAdmin_pass: ''
+  eric-eo-cm-core:
+    credentials:
+      am_password: ''
+    edaConfigJob:
+      eoadminPassword: ''  # Activation password for "eoadmin@admin.local"
+      adminPassword: ''    # Activation password for "admin@admin.local"
+      ecmadminPassword: '' # Activation password for "ecmadmin@admin.local"
+      ecmActPassword: ''   # Activation password for "ecmAct"
+  toscaocm:
+    password: ''
+    superpwd: ''

@@ -1,0 +1,96 @@
+# This override delta file was prepared for usage with main file:
+# site-values/eo/ci/template/site-values-latest.yaml
+
+
+global:
+  nodeSelector:
+    kubernetes.io/os: linux
+  ericsson:
+    licensing:
+      licenseDomains:
+      - productType: "Ericsson_Orchestrator"
+        swltId: "STB-EVNFM-1"
+        customerId: 800141
+        applicationId: "800141_STB-EVNFM-1_Ericsson_Orchestrator"
+      nelsConfiguration:
+        primary:
+          hostname: "nelsaas-vnf2-thrift.sero.gic.ericsson.se"
+  log:
+    streamingMethod: "dual"
+  logShipper:
+    deployment:
+      type: "sidecar"
+
+eric-cloud-native-service-mesh:
+  eric-mesh-controller:
+    pilot:
+      env:
+        PILOT_ENABLE_INBOUND_PASSTHROUGH: false
+
+eric-eo-evnfm:
+  eric-lcm-container-registry:
+    persistence:
+      persistentVolumeClaim:
+        size: "40Gi"
+    resources:
+      brAgent:
+        limits:
+          memory: 1500Mi
+          cpu: 1500m
+          ephemeral-storage: 20Gi
+  eric-global-lcm-container-registry:
+    hostname: 'dummy'
+    username: 'dummy'
+    password: 'dummy'
+  application-manager-postgres:
+    probes:
+      logshipper:
+        livenessProbe:
+          initialDelaySeconds: 300
+  eric-lcm-helm-chart-registry:
+    ingress:
+      hostname: 'HELM_CHART_HOST_REPLACE'
+eric-oss-function-orchestration-common:
+  eric-am-onboarding-service:
+    onboarding:
+      skipCertificateValidation: false
+
+eric-cloud-native-base:
+  eric-data-search-engine:
+    autoSetRequiredWorkerNodeSysctl: false
+  eric-si-application-sys-info-handler:
+    asih:
+      uploadSwimInformation: false
+    applicationInfoService:
+      port: 9095
+  eric-lm-combined-server:
+    labels:
+      eric-si-application-sys-info-handler-access: "true"
+    licenseServerClient:
+      asih:
+        port: 8080
+      licenseServer:
+        thrift:
+          # Mandatory: licenseServerClient.licenseServer.thrift.host - The NELS thrift server address or service name
+          host: "nelsaas-vnf2-thrift.sero.gic.ericsson.se"
+          port: 9095
+  #setting podAffinity to soft as mentioned in object storage documentation to be able to deploy in clusters with 3 worker nodes(N239 Openshift)
+  #need to discuss, leave it as is, or request additional node for N239 cluster
+  eric-data-object-storage-mn:
+    affinity:
+      podAntiAffinity: 'soft'
+  eric-fh-snmp-alarm-provider:
+    sendAlarm: false
+    service:
+      annotations:
+        sharedVIPLabel: "shared-vip"
+  eric-tm-ingress-controller-cr:
+    service:
+      externalTrafficPolicy: Cluster
+  eric-data-key-value-database-rd:
+    resources:
+      kvdbOperator:
+        limits:
+          cpu: 100m
+          memory: 200Mi
+          ephemeral-storage: 2Gi

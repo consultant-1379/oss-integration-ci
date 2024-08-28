@@ -1,0 +1,82 @@
+global:
+  hosts:
+    gas: gas.dummy
+    iam: iam.dummy
+    cm: cm.dummy
+  ingressClass: eo_iccr
+  registry:
+    password: dummy_password
+    url: armdocker.rnd.ericsson.se
+    username: dummy_username
+  support:
+    ipv6:
+      enabled: true
+  externalIPv4:
+    loadBalancerIP: 1.1.1.1
+  clusterName: dummy-cluster-name
+  siteName: dummy-site
+  domainName: dummy-domain-name
+
+tags:
+  eoCm: true
+
+eric-oss-common-base:
+  service-mesh-ingress-gateway:
+    service:
+      loadBalancerIP: 1.1.1.1
+
+eric-eo-cm:
+  defaultUser:
+    password: CloudAdmin_123
+  eric_eo_cm_broker_credentials:
+    password: ecmNotif!23
+  toscaocm:
+    password: Edb_12St
+    superpwd: Edb_12St
+  eric-eo-cm-license-consumer-db:
+    custompwd: Edb_12St
+    superpwd: Edb_12St
+  eric-eo-cm-onboarding-db:
+    password: "1oNbo%-$!*+_ard"
+    superpwd: "1oNbo%-$!*+_ard"
+  eric-eo-cm-db:
+    password: Edb_12St
+    superpwd: Edb_12St
+    db_cmdb_pass: Edb_12St
+    db_ecm_pass: Edb_12St
+    db_actprovadapter_pass: Edb_12St
+    db_eda_pass: Edb_12St
+  eric-eo-cm-ns-lcm:
+    eric-eo-cm-ns-lcm-db:
+      password: feq9Re*5jnRLDw
+      superpwd: feq9Re*5jnRLDw
+  eric-eo-cm-cust-wf:
+    enabled: true
+  eric-eo-cm-order-mgmt-ca:
+    eric-eo-cm-order-mgmt-ca-db:
+      password: MnrE%=XDg6085H
+      superpwd: Mnr%$EXDg6SHCH
+  eric-eo-cm-idam:
+    cmdbSync_pass: Edb_12St
+    domain: ".athtem.eei.ericsson.se"
+    ecmAdmin_pass: 'CloudAdmin123'
+    configStore:
+      amConfigPassword: 'YXA2sNMmN2sPV55M7Atmg7toXuAuhzWp'
+      dsPassword: 'YXA2sNMmN2sPV55M7Atmg7toXuAuhzWp'
+      monitorPassword: 'YXA2sNMmN2sPV55M7Atmg7toXuAuhzWp'
+    userStore:
+      dsPassword: 'YXA2sNMmN2sPV55M7Atmg7toXuAuhzWp'
+      monitorPassword: 'YXA2sNMmN2sPV55M7Atmg7toXuAuhzWp'
+    ctsStore:
+      dsPassword: 'YXA2sNMmN2sPV55M7Atmg7toXuAuhzWp'
+      openamCtsPassword: 'YXA2sNMmN2sPV55M7Atmg7toXuAuhzWp'
+      monitorPassword: 'YXA2sNMmN2sPV55M7Atmg7toXuAuhzWp'
+  eric-eo-cm-core:
+    credentials:
+      am_password: 'Ericsson123!'
+    edaConfigJob:
+      adminPassword: eoAdmin2021_
+      onboardPassword: Admin2021$eo
+      eoadminPassword: eoAdmin2021_
+      ecmadminPassword: F5_#dm!N20_CM$
+      ecmActPassword: emaEcm!23

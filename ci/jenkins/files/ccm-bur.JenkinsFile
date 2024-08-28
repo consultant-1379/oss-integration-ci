@@ -1,0 +1,678 @@
+// Owner: App Staging Team PDLAPPSTAG@ericsson.com
+pipeline {
+    parameters {
+        credentials(
+            name: 'KUBECONFIG',
+            description: 'Select kubeconfig to connect to cluster.'
+            )
+        string(
+            name: 'OPERATION',
+            defaultValue: 'backup',
+            description: 'Choose operation, "backup" or "restore"'
+            )
+        string(
+            name: 'HOST_URL',
+            description: 'EO-CM Url with protocol'
+            )
+        string(
+            name: 'NAMESPACE',
+            defaultValue: 'cm-deploy',
+            description: 'CCM Namespace'
+            )
+        string(
+            name: 'PATH_TO_SITE_VALUES',
+            defaultValue: 'site-values/eo/ci/template/site-values-latest.yaml',
+            description: 'path to site-values'
+            )
+        string(
+            name: 'DM_VERSION',
+            description: 'Deployment manager version'
+            )
+        string(
+            name: 'DM_REPO',
+            description: 'Deployment manager repo',
+            defaultValue: 'armdocker.rnd.ericsson.se/proj-eric-oss-drop/eric-oss-deployment-manager'
+            )
+        string(
+            name: 'BACKUP_NAME',
+            defaultValue: 'cm-backup',
+            description: 'cCM backup name'
+            )
+        string(
+            name: 'USER_USERNAME',
+            defaultValue: 'gas-user',
+            description: 'User username'
+            )
+        string(
+            name: 'USER_PASSWORD',
+            defaultValue: 'Ericsson123!',
+            description: 'User password'
+            )
+        string(
+            name: 'SFTP_NAMESPACE',
+            description: 'SFTP Namespace'
+            )
+        string(
+            name: 'SFTP_SERVER_PATH',
+            description: 'SFTP server path'
+            )
+        string(
+            name: 'SFTP_USERNAME',
+            defaultValue: 'ericsson',
+            description: 'SFTP username'
+            )
+        string(
+            name: 'SFTP_PASSWORD',
+            defaultValue: 'ericsson',
+            description: 'SFTP password'
+            )
+        string(
+            name: 'REDEPLOY_SFTP',
+            defaultValue: 'true',
+            description: 'Redeploy SFTP namespace or not')
+        string(
+            name: 'AGENT_LABEL',
+            defaultValue: 'fem5dockerslave8',
+            description: 'Label of jenkins agent where job should be executed'
+            )
+        string(
+            name: 'GERRIT_REFSPEC',
+            defaultValue: 'refs/heads/master',
+            description: 'refs to use'
+            )
+    }
+    environment {
+        NAMESPACE = "${params.NAMESPACE}"
+        KUBECONFIG = credentials("${params.KUBECONFIG}")
+        HOST_URL = "${params.HOST_URL}"
+        SFTP_NAMESPACE = "${params.SFTP_NAMESPACE}"
+        SFTP_USERNAME = "${params.SFTP_USERNAME}"
+        SFTP_PASSWORD = "${params.SFTP_PASSWORD}"
+        USER_USERNAME = "${params.USER_USERNAME}"
+        USER_PASSWORD = "${params.USER_PASSWORD}"
+        BACKUP_NAME = "${params.BACKUP_NAME}"
+        SFTP_SERVER_PATH = "${params.SFTP_SERVER_PATH}"
+        PATH_TO_SITE_VALUES = "${params.PATH_TO_SITE_VALUES}"
+    }
+    agent {
+          label "${params.AGENT_LABEL}"
+    }
+    stages {
+        stage('Set build name') {
+            steps {
+                script {
+                    currentBuild.displayName = "${BUILD_NUMBER} ${params.OPERATION} ${NAMESPACE} ${params.KUBECONFIG.split("-|_")[0]}"
+                }
+            }
+        }
+        stage('add kubeconfig to workspace') {
+            steps {
+                script {
+                    sh 'mkdir -p ./kube_config'
+                    sh 'install -m 600 $KUBECONFIG ./kube_config/config'
+                }
+            }
+        }
+        stage('copy site-values to workspace') {
+            steps {
+                script {
+                    sh 'cp -f ${WORKSPACE}/${PATH_TO_SITE_VALUES} ${WORKSPACE}/site-values-latest.yaml'
+                }
+            }
+        }
+        stage('Backup creation mode') {
+            when {
+                equals(actual: params.OPERATION, expected: "backup")
+            }
+            stages {
+                stage('Setup SFTP Server') {
+                    when {
+                        equals(actual: params.REDEPLOY_SFTP, expected: "true")
+                    }
+                    agent {
+                        docker {
+                            image 'armdocker.rnd.ericsson.se/proj-adp-cicd-drop/bob-py3kubehelmbuilder:latest'
+                            reuseNode true
+                        }
+                    }
+                    steps {
+                        script {
+                            sh """
+                            echo 'removing SFTP namespace'
+                            kubectl delete namespace ${SFTP_NAMESPACE} || true
+                            """
+                        }
+                        script {
+                            sh """
+                            echo 'Setting up SFTP Server'
+                            kubectl create namespace ${SFTP_NAMESPACE}
+                            kubectl apply -f ci/jenkins/resources/bur/sftp.yaml -n ${SFTP_NAMESPACE}
+                            """
+                        }
+                        script {
+                            sh """
+                            echo 'Checking if SFTP server is up and running'
+                            while [ "\$(kubectl -n ${SFTP_NAMESPACE} get pods -l=app='sftp' -o jsonpath='{.items[*].status.containerStatuses[0].ready}')" != "true" ]; do
+                            sleep 5
+                            echo 'Waiting for SFTP to be ready'
+                            done
+                            echo 'SFTP server is up and running!'
+                            """
+                        }
+                    }
+                }
+                stage('Perform backup with scope OSMN') {
+                    steps {
+                        script {
+                            sh """
+                            bash -c 'expect ci/jenkins/resources/bur/backup-restore.exp create OSMN'
+                            """
+                        }
+                    }
+                }
+                stage('export OSMN backup to SFTP') {
+                    steps {
+                        script {
+                            sh """
+                            bash -c 'expect ci/jenkins/resources/bur/backup-restore.exp export OSMN'
+                            """
+                        }
+                    }
+                }
+                stage('Perform backup with scope PLATFORM') {
+                    steps {
+                        script {
+                            sh """
+                            bash -c 'expect ci/jenkins/resources/bur/backup-restore.exp create PLATFORM'
+                            """
+                        }
+                    }
+                }
+                stage('export PLATFORM backup to SFTP') {
+                    steps {
+                        script {
+                            sh """
+                            bash -c 'expect ci/jenkins/resources/bur/backup-restore.exp export PLATFORM'
+                            """
+                        }
+                    }
+                }
+                stage('Save KMS,EDA, Keycloak and PG secrets') {
+                    agent {
+                        docker {
+                            image 'armdocker.rnd.ericsson.se/proj-adp-cicd-drop/bob-py3kubehelmbuilder:latest'
+                            reuseNode true
+                        }
+                    }
+                    steps {
+                        script {
+                            sh """
+                            kubectl delete namespace ${NAMESPACE}-secret-backup || echo "Namespace ${NAMESPACE}-secret-backup doesn't exist"
+                            kubectl create namespace ${NAMESPACE}-secret-backup || echo "Namespace ${NAMESPACE}-secret-backup already exist"
+                            """
+                            SECRET_LIST = [
+                                'eric-sec-key-management-unseal-key',
+                                'wcdbcd-admin-credentials',
+                                'application-admin-credentials',
+                                'eric-act-cassandra-credentials',
+                                'eric-sec-access-mgmt-creds',
+                                'eric-eo-database-pg-secret'
+                                ]
+                            SECRET_LIST.each { secret ->
+                                backup_secret(secret)
+                            } 
+                        }
+                    }
+                }
+                stage('Save ESA and FM configmaps') {
+                    agent {
+                        docker {
+                            image 'armdocker.rnd.ericsson.se/proj-adp-cicd-drop/bob-py3kubehelmbuilder:latest'
+                            reuseNode true
+                        }
+                    }
+                    steps {
+                        script {
+                            CONFIGMAP_LIST = [
+                                'eric-eo-cm-esa-fmalarmdefinitions',
+                                'eric-eo-cm-esa-fmalarmtranslations',
+                                'eric-eo-cm-fm-fm-correlation',
+                                'eric-eo-cm-fm-fm-definition',
+                                'eric-eo-cm-fm-fm-correlation-ext'
+                                ]
+                            CONFIGMAP_LIST.each { configmap ->
+                                backup_configmap(configmap)
+                            } 
+                        }
+                    }
+                }
+            }
+        }
+        stage('Restore mode') {
+            when {
+                equals(actual: params.OPERATION, expected: "restore")
+            }
+            stages {
+                stage('import OSMN backup') {
+                    steps {
+                        script {
+                            sh """
+                            bash -c 'expect ci/jenkins/resources/bur/backup-restore.exp import OSMN'
+                            """
+                        }
+                    }
+                }
+                stage('import PLATFORM backup') {
+                    steps {
+                        script {
+                            sh """
+                            bash -c 'expect ci/jenkins/resources/bur/backup-restore.exp import PLATFORM'
+                            """
+                        }
+                    }
+                }
+                stage('Stop CCM applications') {
+                    agent {
+                        docker {
+                            image 'armdocker.rnd.ericsson.se/proj-adp-cicd-drop/bob-py3kubehelmbuilder:latest'
+                            reuseNode true
+                        }
+                    }
+                    steps {
+                        script {
+                            APPS = [
+                                'eric-eo-cm-core',
+                                'evnfm-toscao',
+                                'eric-eo-cm-order-mgmt-ca',
+                                'eric-eo-cm-ns-lcm',
+                                'eric-eo-cm-cust-wf',
+                                'eric-am-onboarding-service'
+                            ]
+                            stop_deployment(APPS)
+                        }
+                    }
+                }
+                stage('Perform restore with scope OSMN') {
+                    options { timeout(time: 3600, unit: "SECONDS") } //1hr timeout should catch problems in restore
+                    steps {
+                        script {
+                            sh """
+                            bash -c 'expect ci/jenkins/resources/bur/backup-restore.exp restore OSMN'
+                            """
+                        }
+                    }
+                }
+                stage('restore EDA secrets') {
+                    agent {
+                        docker {
+                            image 'armdocker.rnd.ericsson.se/proj-adp-cicd-drop/bob-py3kubehelmbuilder:latest'
+                            reuseNode true
+                        }
+                    }
+                    steps {
+                        script {
+                            SECRET_LIST = [
+                                'wcdbcd-admin-credentials',
+                                'application-admin-credentials',
+                                'eric-act-cassandra-credentials',
+                                ]
+                            SECRET_LIST.each { secret ->
+                                restore_secret(secret)
+                            } 
+                        }
+                    }
+                }
+                stage('Stop EDA services') {
+                    agent {
+                        docker {
+                            image 'armdocker.rnd.ericsson.se/proj-adp-cicd-drop/bob-py3kubehelmbuilder:latest'
+                            reuseNode true
+                        }
+                    }
+                    steps {
+                        script {
+                            stop_deployment(['eric-act-activation-engine'])
+                            stop_statefulset(['eric-act-activation-engine-cli'])
+                        }
+                    }
+                }
+                stage('restore KMS secret') {
+                    agent {
+                        docker {
+                            image 'armdocker.rnd.ericsson.se/proj-adp-cicd-drop/bob-py3kubehelmbuilder:latest'
+                            reuseNode true
+                        }
+                    }
+                    steps {
+                        script {
+                            restore_secret('eric-sec-key-management-unseal-key')
+                        }
+                    }
+                }
+                stage('Stop ESA and FM services') {
+                    agent {
+                        docker {
+                            image 'armdocker.rnd.ericsson.se/proj-adp-cicd-drop/bob-py3kubehelmbuilder:latest'
+                            reuseNode true
+                        }
+                    }
+                    steps {
+                        script {
+                            APPS = [
+                                'eric-bss-esa',
+                                'eric-eo-cm-fm'
+                            ]
+                            stop_deployment(APPS)
+                        }
+                    }
+                }
+                stage('restore ESA and FM configmaps') {
+                    agent {
+                        docker {
+                            image 'armdocker.rnd.ericsson.se/proj-adp-cicd-drop/bob-py3kubehelmbuilder:latest'
+                            reuseNode true
+                        }
+                    }
+                    steps {
+                        script {
+                            CONFIGMAP_LIST = [
+                                'eric-eo-cm-esa-fmalarmdefinitions',
+                                'eric-eo-cm-esa-fmalarmtranslations',
+                                'eric-eo-cm-fm-fm-correlation',
+                                'eric-eo-cm-fm-fm-definition',
+                                'eric-eo-cm-fm-fm-correlation-ext'
+                                ]
+                            CONFIGMAP_LIST.each { configmap ->
+                                restore_configmap(configmap)
+                            }
+                        }
+                    }
+                }
+                stage('Stop KMS and IdAM OpenAM service') {
+                    agent {
+                        docker {
+                            image 'armdocker.rnd.ericsson.se/proj-adp-cicd-drop/bob-py3kubehelmbuilder:latest'
+                            reuseNode true
+                        }
+                    }
+                    steps {
+                        script {
+                            STS_LIST = [
+                                'eric-sec-key-management-main',
+                                'eric-eo-cm-idam-openam'
+                            ]
+                            stop_statefulset(STS_LIST)
+                        }
+                    }
+                }
+                stage('Perform restore with scope PLATFORM') {
+                    options { timeout(time: 3600, unit: "SECONDS") } //1hr timeout should catch problems in restore
+                    steps {
+                        script {
+                            sh """
+                            bash -c 'expect ci/jenkins/resources/bur/backup-restore.exp restore PLATFORM'
+                            """
+                        }
+                    }
+                }
+                stage('Recover CCM applications') {
+                    parallel {
+                        stage('Recover main applications') {
+                            agent {
+                                docker {
+                                    image 'armdocker.rnd.ericsson.se/proj-adp-cicd-drop/bob-py3kubehelmbuilder:latest'
+                                    reuseNode true
+                                }
+                            }
+                            steps {
+                                script {
+                                    APPS = [
+                                        'eric-eo-cm-core',
+                                        'evnfm-toscao',
+                                        'eric-eo-cm-order-mgmt-ca',
+                                        'eric-eo-cm-ns-lcm',
+                                        'eric-eo-cm-cust-wf'
+                                    ]
+                                    recover_deployment(APPS,2)
+                                }
+                            }
+                        }
+                        stage('Recover onboarding') {
+                            agent {
+                                docker {
+                                    image 'armdocker.rnd.ericsson.se/proj-adp-cicd-drop/bob-py3kubehelmbuilder:latest'
+                                    reuseNode true
+                                }
+                            }
+                            steps {
+                                script {
+                                    recover_deployment(['eric-am-onboarding-service'],1)
+                                }
+                            }
+                        }
+                        stage('Recover KMS and IdAM OpenAM service') {
+                            agent {
+                                docker {
+                                    image 'armdocker.rnd.ericsson.se/proj-adp-cicd-drop/bob-py3kubehelmbuilder:latest'
+                                    reuseNode true
+                                }
+                            }
+                            steps {
+                                script {
+                                    STS_LIST = [
+                                        'eric-sec-key-management-main',
+                                        'eric-eo-cm-idam-openam'
+                                    ]
+                                    recover_statefulset(STS_LIST,2)
+                                }
+                            }
+                        }
+                        stage('Recover EDA services') {
+                            agent {
+                                docker {
+                                    image 'armdocker.rnd.ericsson.se/proj-adp-cicd-drop/bob-py3kubehelmbuilder:latest'
+                                    reuseNode true
+                                }
+                            }
+                            steps {
+                                script {
+                                    recover_deployment(['eric-act-activation-engine'],2)
+                                    recover_statefulset(['eric-act-activation-engine-cli'],1)
+                                }
+                            }
+                        }
+                    }
+                }
+                stage('Restart EDA services') {
+                    agent {
+                        docker {
+                            image 'armdocker.rnd.ericsson.se/proj-adp-cicd-drop/bob-py3kubehelmbuilder:latest'
+                            reuseNode true
+                        }
+                    }
+                    steps {
+                        script {
+                            SERVICES_LIST = [
+                                'eric-act-activation-orchestrator-deployer',
+                                'eric-act-activation-orchestrator',
+                                'eric-act-inbound-interfaces',
+                                'eric-act-proclog-manager',
+                                'eric-act-tomcat',
+                                'eric-act-aaa',
+                                'eric-act-activation-replicator',
+                                'eric-act-cudb-activation-blocker',
+                                'eric-act-inbound-async',
+                                'eric-act-inbound-batch-handler',
+                                'eric-act-inbound-mml',
+                                'eric-act-proclog-cassandra-stasher',
+                                'eric-act-rest-provisioning'
+                            ]
+                            restart_deployment(SERVICES_LIST)
+                        }
+                    }
+                }
+                stage('Recover ESA and FM services') {
+                    agent {
+                        docker {
+                            image 'armdocker.rnd.ericsson.se/proj-adp-cicd-drop/bob-py3kubehelmbuilder:latest'
+                            reuseNode true
+                        }
+                    }
+                    steps {
+                        script {
+                            APPS = [
+                                'eric-bss-esa',
+                                'eric-eo-cm-fm'
+                            ]
+                            recover_deployment(APPS,2)
+                        }
+                    }
+                }
+            }
+        }    
+    }
+    post {
+        failure {
+            script {
+                docker.image('armdocker.rnd.ericsson.se/proj-adp-cicd-drop/bob-py3kubehelmbuilder:latest').inside() {
+                    sh """
+                    kubectl logs -n ${NAMESPACE}  eric-ctrl-bro-0 > logs/eric-ctrl-bro.log
+                    """
+                }
+                archiveArtifacts allowEmptyArchive: true, artifacts: 'logs/eric-ctrl-bro.log', fingerprint: true
+            }
+        }
+    }
+}
+
+//custom functions for this pipeline
+def stop_deployment(LIST) {
+    LIST.each { app ->
+        sh """
+        kubectl -n ${NAMESPACE} scale deployment ${app} --replicas=0 || echo "${app} cannot be scaled down"
+        """
+    }
+    LIST.each { app ->
+        sh """
+            while [ "\$(kubectl -n ${NAMESPACE} get deployment ${app} -o jsonpath='{.status.readyReplicas}')" ]; do
+            sleep 5
+            echo "waiting for ${app} to scale down"
+            done
+            echo "${app} stopped."
+        """
+    }
+}
+def recover_deployment(LIST,number) {
+    LIST.each { app ->
+        sh """
+            kubectl -n ${NAMESPACE} scale deployment ${app} --replicas=${number} || echo "${app} cannot be recovered"
+        """
+    }
+    LIST.each { app ->
+        sh """
+            ready_replicas=\$(kubectl -n ${NAMESPACE} get deployment ${app} -o jsonpath='{.status.readyReplicas}')
+            until [[ ("\$ready_replicas" -eq "${number}") ]]; do
+                echo "-waiting until all ${app} pods are in running state"
+                ready_replicas=\$(kubectl -n ${NAMESPACE} get deployment ${app} -o jsonpath='{.status.readyReplicas}')
+            sleep 5
+            done
+            echo "${app} recovered."
+        """
+    }
+}
+def restart_deployment(LIST) {
+    LIST.each { app ->
+        sh """
+            kubectl -n ${NAMESPACE} rollout restart deployment ${app} || echo "${app} cannot be restarted"
+        """
+    }
+    LIST.each { app ->
+        sh """
+            spec_replicas=\$(kubectl -n ${NAMESPACE} get deployment ${app} -o jsonpath='{.spec.replicas}')
+            ready_replicas=\$(kubectl -n ${NAMESPACE} get deployment ${app} -o jsonpath='{.status.readyReplicas}')
+            until [[ ("\$ready_replicas" -eq "\$spec_replicas") ]]; do
+                echo "-waiting until all ${app} pods are in running state"
+                ready_replicas=\$(kubectl -n ${NAMESPACE} get deployment ${app} -o jsonpath='{.status.readyReplicas}')
+            sleep 5
+            done
+            echo "${app} restarted."
+        """
+    }
+}
+def stop_statefulset(LIST) {
+    LIST.each { app ->
+        sh """
+            kubectl -n ${NAMESPACE} scale --replicas=0 statefulset/${app} || echo "${app} cannot be scaled down"
+        """
+        }
+    LIST.each { app ->
+        sh """
+            while [ "\$(kubectl -n ${NAMESPACE} get statefulset ${app} -o jsonpath='{.status.readyReplicas}')" ]; do
+            sleep 5
+            echo "waiting for ${app} to scale down"
+            done
+            echo "${app} stopped."
+        """
+    }
+}
+def recover_statefulset(LIST,number) {
+    LIST.each { app ->
+        sh """
+            kubectl -n ${NAMESPACE} scale --replicas=${number} statefulset/${app} || echo "${app} cannot be recovered"
+        """
+    }
+    LIST.each { app ->
+        sh """
+            ready_replicas=\$(kubectl -n ${NAMESPACE} get statefulset ${app} -o jsonpath='{.status.readyReplicas}')
+            until [[ ("\$ready_replicas" -eq "${number}") ]]; do
+                echo "-waiting until all ${app} pods are in running state"
+                ready_replicas=\$(kubectl -n ${NAMESPACE} get statefulset ${app} -o jsonpath='{.status.readyReplicas}')
+            sleep 5
+            done
+            echo "${app} restarted."
+        """
+    }
+}
+
+def backup_secret(secret) {
+    sh """
+        kubectl get secret ${secret} -o yaml -n ${NAMESPACE} > ${secret}.yaml || echo "Secret ${secret} not found"
+        sed -i -e 's/${NAMESPACE}/${NAMESPACE}-secret-backup/g' ${secret}.yaml
+        if [[ ${secret} -eq "eric-sec-key-management-unseal-key" ]]; then
+        sed -i '/creationTimestamp*/d;/resourceVersion*/d;/uid*/d;/selfLink*/d' ${secret}.yaml;
+        fi
+        kubectl apply -f ${secret}.yaml -n ${NAMESPACE}-secret-backup || echo "Secret ${secret} not backed up to ${NAMESPACE}-secret-backup"
+    """
+}
+
+def restore_secret(secret) {
+    sh """
+        kubectl get secret ${secret} -o yaml -n ${NAMESPACE}-secret-backup > ${secret}.yaml || echo "Secret ${secret} not found"
+        sed -i -e 's/${NAMESPACE}-secret-backup/${NAMESPACE}/g' ${secret}.yaml
+        sed -i '/creationTimestamp*/d;/resourceVersion*/d;/uid*/d;/selfLink*/d' ${secret}.yaml || echo "Nothing to change"
+        kubectl delete secret ${secret} -n ${NAMESPACE} || echo "Unable to delete existing secret ${secret}"
+        kubectl apply -f ${secret}.yaml -n ${NAMESPACE} || echo "Unable to restore secret ${secret}"
+    """
+}
+
+def backup_configmap(configmap) {
+    sh """
+        kubectl -n ${NAMESPACE} get configmap ${configmap} -o yaml > ${configmap}.yaml || echo "ConfigMap ${configmap} not found"
+        sed -i -e 's/${NAMESPACE}/${NAMESPACE}-secret-backup/g' ${configmap}.yaml
+        sed -i '/creationTimestamp*/d;/resourceVersion*/d;/uid*/d;/selfLink*/d' ${configmap}.yaml
+        kubectl -n ${NAMESPACE}-secret-backup apply -f ${configmap}.yaml || echo "Configmap ${configmap} not backed up to ${NAMESPACE}-secret-backup"
+    """
+}
+def restore_configmap(configmap) {
+    sh """
+        kubectl -n ${NAMESPACE}-secret-backup get configmap ${configmap} -o yaml > ${configmap}.yaml
+        if [ \$? -eq 1 ]; then
+        echo "Configmap ${configmap} not found in namespace ${NAMESPACE}-secret-backup"
+        else
+        sed -i '/creationTimestamp*/d;/resourceVersion*/d;/uid*/d;/selfLink*/d' ${configmap}.yaml
+        sed -i -e 's/${NAMESPACE}-secret-backup/${NAMESPACE}/g' ${configmap}.yaml
+        kubectl -n ${NAMESPACE} delete configmap ${configmap} || echo "Unable to delete existing configmap ${configmap}"
+        kubectl -n ${NAMESPACE} apply -f ${configmap}.yaml || echo "Unable to restore configmap ${configmap}"
+        fi
+    """
+}

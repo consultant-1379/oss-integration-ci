@@ -1,0 +1,87 @@
+global:
+  hosts:
+    iam: ""
+    gas: ""
+  registry:
+    # If deploying from the director node on a CCD environment, the url can be retrieved using:
+    # kubectl get ingress eric-lcm-container-registry-ingress -n kube-system -o jsonpath="{.spec.tls[*].hosts[0]}"; echo
+    url: ""
+    # Docker registry username
+    username: ""
+    # Docker registry password
+    password: ""
+  support:
+    ipv6:
+      enabled: false
+  timezone: UTC
+  createClusterRoles: true
+
+# Warning! If changing these application tags from true to false and that application
+# is already installed, then that application will be removed and data will be lost!
+tags:
+  so: false
+  pf: false
+  uds: false
+  adc : false
+  dmm : false
+  th : false
+  eas: false
+  ch: false
+  appmgr: false
+  ta: false
+  os: false
+  pmh: false
+
+eric-cloud-native-base:
+  eric-data-search-engine-curator:
+    cronjob:
+      curator:
+        schedule: "0 */2 * * *"
+    actions: ''
+
+  eric-sec-access-mgmt:
+    replicaCount: 2
+  # Please refer to the dimensioning guide for the appropriate size of the BRO volume
+  # The size will be dependent on which applications are being deployed
+  eric-ctrl-bro:
+    persistence:
+      persistentVolumeClaim:
+        size: ""
+    sftp:
+      username: ""
+      password: ""
+
+  eric-log-transformer:
+    egress:
+      syslog:
+        enabled: false
+        remoteHosts: []
+
+  eric-data-search-engine:
+    service:
+      network:
+        protocol:
+          IPv6: false
+    persistence:
+      data:
+        persistentVolumeClaim:
+          size: "10Gi"
+
+  eric-data-object-storage-mn:
+    brAgent:
+      properties:
+        backup_data_path: "bucket1/data1.txt"
+
+  eric-fh-snmp-alarm-provider:
+    sendAlarm: false
+
+eric-oss-common-base:
+  sessionTokens:
+    maxSessionDurationSecs: 36000
+    maxIdleTimeSecs: 1800
+  service-mesh-ingress-gateway:
+    service:
+      loadBalancerIP: ""
+      annotations:
+        cloudProviderLB: {}
+    externalTrafficPolicy: 'Cluster'

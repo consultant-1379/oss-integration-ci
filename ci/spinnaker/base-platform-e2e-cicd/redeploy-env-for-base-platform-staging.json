@@ -1,0 +1,438 @@
+{
+  "appConfig": {},
+  "application": "base-platform-e2e-cicd",
+  "disabled": true,
+  "id": "75e724eb-562e-4829-8286-d2abb941d0fa",
+  "index": 2,
+  "keepWaitingPipelines": false,
+  "lastModifiedBy": "epakagn",
+  "limitConcurrent": false,
+  "name": "redeploy-env-for-base-platform-staging",
+  "notifications": [  {
+    "address": "PDLAPPSTAG@pdl.internal.ericsson.com",
+    "level": "pipeline",
+    "type": "email",
+    "when": ["pipeline.failed"]
+  }],
+  "parameterConfig":   [
+        {
+      "default": "install",
+      "description": "Option to set the deployment type set either \"install\" or \"upgrade\"",
+      "hasOptions": false,
+      "label": "DEPLOYMENT_TYPE",
+      "name": "DEPLOYMENT_TYPE",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "eric-eiae-helmfile",
+      "description": "Name of the Helmfile to deploy",
+      "hasOptions": false,
+      "label": "INT_CHART_NAME",
+      "name": "INT_CHART_NAME",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "0.0.0",
+      "description": "version of the Helmfile",
+      "hasOptions": false,
+      "label": "INT_CHART_VERSION",
+      "name": "INT_CHART_VERSION",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "https://arm.seli.gic.ericsson.se/artifactory/proj-eric-oss-drop-helm",
+      "description": "Repository that hold the Helm file",
+      "hasOptions": false,
+      "label": "INT_CHART_REPO",
+      "name": "INT_CHART_REPO",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "3600",
+      "description": "Time in seconds for the deployment manager to wait for the deployment to complete",
+      "hasOptions": false,
+      "label": "HELM_TIMEOUT",
+      "name": "HELM_TIMEOUT",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "site-values/bp-staging/bp_site-values-latest.yaml",
+      "description": "The Path where all the necessary site values are located for the install/upgrade",
+      "hasOptions": false,
+      "label": "PATH_TO_SITE_VALUES_FILE",
+      "name": "PATH_TO_SITE_VALUES_FILE",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "NONE",
+      "description": "Path within the Repo to the location of the site values override file. Content of this file will override the content for the site values set in the FULL_PATH_TO_SITE_VALUES_FILE paramater.",
+      "hasOptions": false,
+      "label": "",
+      "name": "PATH_TO_SITE_VALUES_OVERRIDE_FILE",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "",
+      "description": "Namespace to install the EO Chart",
+      "hasOptions": false,
+      "label": "NAMESPACE",
+      "name": "NAMESPACE",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "so",
+      "description": "Site values tags which has to be set to true during deployment",
+      "hasOptions": false,
+      "label": "",
+      "name": "TAGS",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "EO SO HOSTNAME",
+      "hasOptions": false,
+      "label": "SO_HOSTNAME",
+      "name": "SO_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "EO PF HOSTNAME",
+      "hasOptions": false,
+      "label": "PF_HOSTNAME",
+      "name": "PF_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "UDS HOSTNAME",
+      "hasOptions": false,
+      "label": "UDS_HOSTNAME",
+      "name": "UDS_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "IAM HOSTNAME",
+      "hasOptions": false,
+      "label": "IAM_HOSTNAME",
+      "name": "IAM_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "",
+      "description": "The Path where all the necessary certs are located for the install/upgrade",
+      "hasOptions": false,
+      "label": "PATH_TO_CERTIFICATES_FILES",
+      "name": "PATH_TO_CERTIFICATES_FILES",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "",
+      "description": "ID of the Kube Config file to use that is stoged in Jenkins",
+      "hasOptions": false,
+      "label": "KUBE_CONFIG",
+      "name": "KUBE_CONFIG",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "eoadm100-user-creds",
+      "description": "Functional user credential secret to get access to the arm docker during the deployment using the deployment manager",
+      "hasOptions": false,
+      "label": "FUNCTIONAL_USER_SECRET",
+      "name": "FUNCTIONAL_USER_SECRET",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "",
+      "description": "This is the name of the Resource To Unreserve",
+      "hasOptions": false,
+      "label": "RESOURCE_NAME",
+      "name": "RESOURCE_NAME",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "Hostname for GAS",
+      "hasOptions": false,
+      "label": "GAS_HOSTNAME",
+      "name": "GAS_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "Hostname for TH",
+      "hasOptions": false,
+      "label": "TH_HOSTNAME",
+      "name": "TH_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "",
+      "description": "Jenkins Slave to use to execute the jenkins file against",
+      "hasOptions": false,
+      "label": "SLAVE_LABEL",
+      "name": "SLAVE_LABEL",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "",
+      "description": "Secret for armdocker user",
+      "hasOptions": false,
+      "label": "ARMDOCKER_USER_SECRET",
+      "name": "ARMDOCKER_USER_SECRET",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "None",
+      "description": "",
+      "hasOptions": false,
+      "label": "WHAT_CHANGED",
+      "name": "WHAT_CHANGED",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "default",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "ELASTIC_INGRESS_HOST",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "PROMETHEUS_INGRESS_HOST",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "",
+      "hasOptions": false,
+      "label": "SM_IP",
+      "name": "SM_IP",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "false",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "DEPLOY_ALL_CRDS",
+      "options":       [
+        {"value": "true"},
+        {"value": "false"}
+      ],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "true",
+      "description": "Set to true to use the Deploymet Manager function \"prepare\" to generate the site values file",
+      "hasOptions": false,
+      "label": "",
+      "name": "USE_DM_PREPARE",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "IP for the SNMP Alarm Provider",
+      "hasOptions": false,
+      "label": "FH_SNMP_ALARM_IP",
+      "name": "FH_SNMP_ALARM_IP",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "Environment configuration file stored in repo",
+      "hasOptions": false,
+      "label": "ENV_CONFIG_FILE",
+      "name": "ENV_CONFIG_FILE",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "false",
+      "description": "Set to true to use \"--use-certm\" flag during deployment",
+      "hasOptions": false,
+      "label": "",
+      "name": "USE_CERTM",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    }
+  ],
+  "schema": "1",
+  "spelEvaluator": "v4",
+  "stages":   [
+        {
+      "continuePipeline": false,
+      "failPipeline": true,
+      "job": "OSS-Integration-Unreserve-Environment",
+      "master": "oss-fem8s11-eiffel052",
+      "name": "Unreserve Namespace",
+      "parameters": {"ENV_NAME": "${parameters['RESOURCE_NAME']}"},
+      "refId": "57",
+      "requisiteStageRefIds": ["58"],
+      "type": "jenkins"
+    },
+        {
+      "application": "base-platform-e2e-cicd",
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "dummy",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Redeploy Namespace",
+      "parameters": {},
+      "pipeline": "08535c6d-871c-4b85-81bb-6f4f5c568969",
+      "pipelineParameters":       {
+        "ARMDOCKER_USER_SECRET": "${parameters['ARMDOCKER_USER_SECRET']}",
+        "DEPLOY_ALL_CRDS": "${parameters['DEPLOY_ALL_CRDS']}",
+        "ELASTIC_INGRESS_HOST": "${ parameters[\"ELASTIC_INGRESS_HOST\"] }",
+        "ENV_CONFIG_FILE": "${parameters[\"ENV_CONFIG_FILE\"]}",
+        "FUNCTIONAL_USER_SECRET": "${parameters['FUNCTIONAL_USER_SECRET']}",
+        "HELM_TIMEOUT": "${parameters['HELM_TIMEOUT']}",
+        "INT_CHART_NAME": "${parameters['INT_CHART_NAME']}",
+        "INT_CHART_REPO": "${parameters['INT_CHART_REPO']}",
+        "INT_CHART_VERSION": "${#stage(\"Get Latest Helmfile Version\")[\"context\"][\"II_BASELINE_INT_CHART_VERSION\"]}",
+        "KUBE_CONFIG": "${parameters[\"KUBE_CONFIG\"]}",
+        "NAMESPACE": "${parameters[\"NAMESPACE\"]}",
+        "PATH_TO_CERTIFICATES_FILES": "${parameters['PATH_TO_CERTIFICATES_FILES']}",
+        "PATH_TO_SITE_VALUES_FILE": "${parameters['PATH_TO_SITE_VALUES_FILE']}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${parameters['PATH_TO_SITE_VALUES_OVERRIDE_FILE']}",
+        "PROMETHEUS_INGRESS_HOST": "${ parameters[\"PROMETHEUS_INGRESS_HOST\"] }",
+        "SLAVE_LABEL": "${parameters['SLAVE_LABEL']}",
+        "TAGS": "${parameters[\"TAGS\"]}",
+        "USE_CERTM": "${parameters['USE_CERTM']}",
+        "USE_DM_PREPARE": "${parameters[\"USE_DM_PREPARE\"]}",
+        "WHAT_CHANGED": "None"
+      },
+      "refId": "58",
+      "requisiteStageRefIds":       [
+        "59",
+        "61"
+      ],
+      "type": "pipeline",
+      "waitForCompletion": true
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "BASE-VERS_Retrieve_Baseline_Version",
+      "markUnstableAsSuccessful": true,
+      "master": "oss-fem5s11-eiffel216",
+      "name": "Get Latest Helmfile Version",
+      "parameters":       {
+        "KEY_TO_RETRIEVE_BASELINE_VERSION_OF": "II_BASELINE_INT_CHART_VERSION",
+        "VERSIONS_FILENAME": "versions"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "59",
+      "requisiteStageRefIds": [],
+      "type": "jenkins"
+    },
+        {
+      "name": "Flow Completed",
+      "preconditions":       [
+                {
+          "context": {"expression": "\"${#stage('Get Latest Helmfile Version')['status']}\" == \"SUCCEEDED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Redeploy Namespace')['status']}\" == \"SUCCEEDED\""},
+          "failPipeline": true,
+          "type": "expression"
+        }
+      ],
+      "refId": "60",
+      "requisiteStageRefIds": ["57"],
+      "sendNotifications": false,
+      "type": "checkPreconditions"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "DDC_logs_upload_trigger",
+      "master": "oss-fem8s11-eiffel052",
+      "name": "DDC_logs_upload",
+      "notifications": [      {
+        "address": "PDLAPPSTAG@pdl.internal.ericsson.com",
+        "level": "stage",
+        "message": {"stage.failed": {"text": "Please check why the DDC upload stage failed"}},
+        "type": "email",
+        "when": ["stage.failed"]
+      }],
+      "parameters":       {
+        "KUBECONFIG_FILE": "${parameters[\"KUBE_CONFIG\"]}",
+        "NAMESPACE": "${parameters[\"NAMESPACE\"]}"
+      },
+      "refId": "61",
+      "requisiteStageRefIds": [],
+      "sendNotifications": true,
+      "type": "jenkins"
+    }
+  ],
+  "triggers": [],
+  "updateTs": "1718629070560"
+}

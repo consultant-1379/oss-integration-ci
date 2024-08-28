@@ -1,0 +1,8 @@
+eric-data-document-database-pg:
+  highAvailability:
+    synchronousModeEnabled: false
+    replicaCount: 1
+  credentials:
+    kubernetesSecretName: eric-eo-database-pg-secret
+  persistentVolumeClaim:
+    size: 0.1Gi

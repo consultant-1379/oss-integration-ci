@@ -1,0 +1,430 @@
+{
+  "appConfig": {},
+  "disabled": false,
+  "keepWaitingPipelines": false,
+  "lastModifiedBy": "emanjoh",
+  "limitConcurrent": true,
+  "parameterConfig": [
+    {
+      "default": "eric-oss-common-base",
+      "description": "Name of the integration chart that holds the new microservice",
+      "hasOptions": false,
+      "label": "INT_CHART_NAME",
+      "name": "INT_CHART_NAME",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": true
+    },
+    {
+      "default": "0.0.0",
+      "description": "Version of the Integration Chart that holds the new microservice",
+      "hasOptions": false,
+      "label": "INT_CHART_VERSION",
+      "name": "INT_CHART_VERSION",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": true
+    },
+    {
+      "default": "https://arm.seli.gic.ericsson.se/artifactory/proj-eric-oss-drop-helm",
+      "description": "Repo of the Integration Chart that holds the new microservice",
+      "hasOptions": false,
+      "label": "INT_CHART_REPO",
+      "name": "INT_CHART_REPO",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": true
+    },
+    {
+      "default": "install",
+      "description": "Used to set the deployment Type, option install or upgrade",
+      "hasOptions": false,
+      "label": "Deployment Type",
+      "name": "DEPLOYMENT_TYPE",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": true
+    },
+    {
+      "default": "true",
+      "description": "Option to Deploy SO set either \"true\" or \"false\"",
+      "hasOptions": false,
+      "label": "SO_DEPLOY",
+      "name": "SO_DEPLOY",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": true
+    },
+    {
+      "default": "true",
+      "description": "Option to Deploy UDS set either \"true\" or \"false\"",
+      "hasOptions": false,
+      "label": "UDS_DEPLOY",
+      "name": "UDS_DEPLOY",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": true
+    },
+    {
+      "default": "true",
+      "description": "Option to Deploy PF set either \"true\" or \"false\"",
+      "hasOptions": false,
+      "label": "PF_DEPLOY",
+      "name": "PF_DEPLOY",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": true
+    },
+    {
+      "default": "true",
+      "description": "Option to Deploy Platform set either \"true\" or \"false\"",
+      "hasOptions": false,
+      "label": "PLATFORM_DEPLOY",
+      "name": "PLATFORM_DEPLOY",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": true
+    },
+    {
+      "default": "",
+      "description": "This is the directory within the Repo specified within the Gather-Env-Details Jenkins job where to find the pooling environment details",
+      "hasOptions": false,
+      "label": "ENV_DETAILS_DIR",
+      "name": "ENV_DETAILS_DIR",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "honeypots/ci/site-values/site_values-latest.yaml",
+      "description": "The Path where all the necessary site values are located for the install/upgrade",
+      "hasOptions": false,
+      "label": "PATH_TO_SITE_VALUES_FILE",
+      "name": "PATH_TO_SITE_VALUES_FILE",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": true
+    },
+    {
+      "default": "ciloopman-docker-auth-config",
+      "description": "User secret from jenkins to create the Docker login configuration file",
+      "hasOptions": false,
+      "label": "ARMDOCKER_USER_SECRET",
+      "name": "ARMDOCKER_USER_SECRET",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "honeypots",
+      "description": "This is the label to search for that is attached to the environments in the Lockable Resource Plugin on Jenkins",
+      "hasOptions": false,
+      "label": "",
+      "name": "ENV_LABEL",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "Base Platform Staging",
+      "description": "Flow URL Tag is used when locking the invironment to add a tag to descript what has locked the environment for easier tracking",
+      "hasOptions": false,
+      "label": "FLOW_URL_TAG",
+      "name": "FLOW_URL_TAG",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "120",
+      "description": "This is the time to wait for an Environment to become available. After the time expirers the job will fail out",
+      "hasOptions": false,
+      "label": "WAIT_TIME",
+      "name": "WAIT_TIME",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "",
+      "description": "The Spinnaker Flow ID of the Flow that has executed this flow i.e. \"${execution['id']}\"",
+      "hasOptions": false,
+      "label": "SPINNAKER_FLOW_ID",
+      "name": "SPINNAKER_FLOW_ID",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "evo_docker_engine",
+      "description": "Label to choose which Jenkins slave to execute Jenkinsfiles against",
+      "hasOptions": false,
+      "label": "",
+      "name": "SLAVE_LABEL",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "",
+      "description": "Functional user for logging into armdocker",
+      "hasOptions": false,
+      "label": "FUNCTIONAL_USER_SECRET",
+      "name": "FUNCTIONAL_USER_SECRET",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "",
+      "description": "Timeout for helmfile deploy",
+      "hasOptions": false,
+      "label": "HELM_TIMEOUT",
+      "name": "HELM_TIMEOUT",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "",
+      "description": "GAS Hostname",
+      "hasOptions": false,
+      "label": "GAS_HOSTNAME",
+      "name": "GAS_HOSTNAME",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": true
+    },
+    {
+      "default": "",
+      "description": "IAM Hostname",
+      "hasOptions": false,
+      "label": "IAM_HOSTNAME",
+      "name": "IAM_HOSTNAME",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": true
+    },
+    {
+      "default": "",
+      "description": "PF HOSTNAME",
+      "hasOptions": false,
+      "label": "PF_HOSTNAME",
+      "name": "PF_HOSTNAME",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": true
+    },
+    {
+      "default": "",
+      "description": "SO Hostname Entry",
+      "hasOptions": false,
+      "label": "SO_HOSTNAME",
+      "name": "SO_HOSTNAME",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": true
+    },
+    {
+      "default": "",
+      "description": "UDS Hostname Entry",
+      "hasOptions": false,
+      "label": "UDS_HOSTNAME",
+      "name": "UDS_HOSTNAME",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": true
+    },
+    {
+      "default": "",
+      "description": "Kubernetes Config File name that is stored in Jenkins",
+      "hasOptions": false,
+      "label": "KUBE_CONFIG",
+      "name": "KUBE_CONFIG",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "",
+      "description": "Path to the Certificates with the repo",
+      "hasOptions": false,
+      "label": "PATH_TO_CERTIFICATES_FILES",
+      "name": "PATH_TO_CERTIFICATES_FILES",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "",
+      "description": "Kubernetes Namespace to deploy the system into",
+      "hasOptions": false,
+      "label": "NAMESPACE",
+      "name": "NAMESPACE",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    }
+  ],
+  "spelEvaluator": "v4",
+  "stages": [
+    {
+      "name": "Flow Completed",
+      "preconditions": [
+        {
+          "context": {
+            "expression": "\"${#stage('Deployment')['status']}\" == \"SUCCEEDED\""
+          },
+          "failPipeline": true,
+          "type": "expression"
+        }
+      ],
+      "refId": "35",
+      "requisiteStageRefIds": [
+        "55"
+      ],
+      "type": "checkPreconditions"
+    },
+    {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failOnFailedExpressions": false,
+      "failPipeline": false,
+      "job": "base-platform-install",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Deployment",
+      "parameters": {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "DEPLOYMENT_TYPE": "${trigger['parameters']['DEPLOYMENT_TYPE']}",
+        "FULL_PATH_TO_SITE_VALUES_FILE": "${trigger['parameters']['PATH_TO_SITE_VALUES_FILE']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "GAS_HOSTNAME": "${trigger['parameters']['GAS_HOSTNAME']}",
+        "HELM_TIMEOUT": "${trigger['parameters']['HELM_TIMEOUT']}",
+        "IAM_HOSTNAME": "${trigger['parameters']['IAM_HOSTNAME']}",
+        "INT_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "INT_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "INT_CHART_VERSION": "${trigger['parameters']['INT_CHART_VERSION']}",
+        "KUBECONFIG_FILE": "${trigger['parameters'][\"KUBE_CONFIG\"]}",
+        "NAMESPACE": "${trigger['parameters'][\"NAMESPACE\"]}",
+        "PATH_TO_CERTIFICATES_FILES": "${trigger['parameters'][\"PATH_TO_CERTIFICATES_FILES\"]}",
+        "PF_DEPLOY": "${trigger['parameters']['PF_DEPLOY']}",
+        "PF_HOSTNAME": "${trigger['parameters']['PF_HOSTNAME']}",
+        "PLATFORM_DEPLOY": "${trigger['parameters']['PLATFORM_DEPLOY']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SO_DEPLOY": "${trigger['parameters']['SO_DEPLOY']}",
+        "SO_HOSTNAME": "${trigger['parameters']['SO_HOSTNAME']}",
+        "UDS_DEPLOY": "${trigger['parameters']['UDS_DEPLOY']}",
+        "UDS_HOSTNAME": "${trigger['parameters']['UDS_HOSTNAME']}"
+      },
+      "refId": "55",
+      "requisiteStageRefIds": [],
+      "type": "jenkins"
+    }
+  ],
+  "triggers": [],
+  "updateTs": "1628109927228"
+}

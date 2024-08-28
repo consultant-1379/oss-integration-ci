@@ -1,0 +1,373 @@
+global:
+  security:
+    tls:
+      enabled: false
+
+geo-redundancy:
+  enabled: true
+
+eric-oss-common-base:
+  eric-gr-bur-orchestrator:
+    credentials:
+      username: "gr-user"
+      password: "Ericsson123!"
+    gr:
+      primaryCycleIntervalSeconds: 300
+      logging:
+        config: "classpath:logback-plain-text.xml"
+      bro:
+        autoDelete:
+          backupsLimit: 10
+      sftp:
+        url: 10.131.184.195:22/eso/esoa-gr
+        username: "ericsson"
+        password: "ericsson"
+      cluster:
+        role: "SECONDARY"
+        secondary_hostnames:
+          - "gr.13046-iccr.flexilab.sero.gic.ericsson.se"
+      registry:
+        secondarySiteContainerRegistryHostname: "gr.13046-iccr.flexilab.sero.gic.ericsson.se"
+
+  eric-oss-notification-service:
+    resources:
+      eric-oss-notification-service:
+        requests:
+          memory: 512Mi
+          cpu: 500m
+        limits:
+          memory: 1Gi
+          cpu: 700m
+
+  eric-adp-gui-aggregator-service:
+    resources:
+      main:
+        requests:
+          cpu: 15m
+          memory: 150Mi
+
+  eric-cnom-server:
+    imageCredentials:
+      pullSecret: k8s-registry-secret-legacy
+    resources:
+      server:
+        requests:
+          memory: 150Mi
+          cpu: 10m
+      logshipper:
+        requests:
+          memory: 30Mi
+          cpu: 50m
+
+  eric-eo-api-gateway:
+    resources:
+      requests:
+        memory: 512Mi
+        cpu: 20m
+
+  eric-eo-subsystem-management:
+    resources:
+      requests:
+        memory: "450M"
+        cpu: 15m
+
+  eric-eo-usermgmt:
+    resources:
+      eric-eo-usermgmt:
+        requests:
+          memory: "400M"
+          cpu: "200m"
+
+  eric-eo-usermgmt-ui:
+    resources:
+      eric-eo-usermgmt-ui:
+        requests:
+          memory: "32M"
+          cpu: "10m"
+
+  eric-oss-dmaap:
+    resources:
+      eric-oss-dmaap:
+        requests:
+          memory: "500M"
+          cpu: "50m"
+
+  eric-oss-notification-service-database-pg:
+    resources:
+      brm:
+        requests:
+          memory: "32Mi"
+          cpu: "15m"
+      bra:
+        requests:
+          memory: "256Mi"
+          cpu: "15m"
+
+  eric-eo-subsystem-management-database-pg:
+    resources:
+      brm:
+        requests:
+          memory: "32Mi"
+          cpu: "15m"
+      bra:
+        requests:
+          memory: "256Mi"
+          cpu: "15m"
+
+  eric-oss-common-postgres:
+    resources:
+      brm:
+        requests:
+          memory: "32Mi"
+          cpu: "15m"
+      bra:
+        requests:
+          memory: "256Mi"
+          cpu: "15m"
+
+eric-cloud-native-base:
+  eric-si-application-sys-info-handler:
+    asih:
+      uploadSwimInformation: false
+    applicationInfoService:
+      port: 9095
+
+  eric-sec-access-mgmt:
+    resources:
+      iam:
+        requests:
+          memory: "512Mi"
+          cpu: "20m"
+  eric-ctrl-bro:
+    resources:
+      backupAndRestore:
+        requests:
+          cpu: "10m"
+          memory: "700Mi"
+
+  eric-log-transformer:
+    resources:
+      logtransformer:
+        requests:
+          cpu: 150m
+          memory: 4Gi
+
+  eric-data-coordinator-zk:
+    resources:
+      datacoordinatorzk:
+        requests:
+          cpu: "100m"
+          memory: "256Mi"
+
+  eric-data-message-bus-kf:
+    resources:
+      messagebuskf:
+        requests:
+          cpu: "100m"
+          memory: "1Gi"
+
+  #setting podAffinity to soft as mentioned in object storage documentation to be able to deploy in clusters with 3 worker nodes(N239 Openshift)
+  #need to discuss, leave it as is, or request additional node for N239 cluster
+  eric-data-object-storage-mn:
+    affinity:
+      podAntiAffinity: 'soft'
+    resources:
+      server:
+        requests:
+          memory: 512Mi
+          cpu: 50m
+
+  eric-log-shipper:
+    resources:
+      logshipper:
+        requests:
+          memory: "100Mi"
+          cpu: "30m"
+
+  eric-pm-server:
+    resources:
+      eric-pm-server:
+        requests:
+          cpu: "100m"
+          memory: "512Mi"
+      eric-pm-configmap-reload:
+        requests:
+          cpu: "10m"
+          memory: "8Mi"
+      eric-pm-exporter:
+        requests:
+          cpu: "10m"
+          memory: "8Mi"
+
+  eric-sec-key-management:
+    resources:
+      shelter:
+        requests:
+          memory: "100Mi"
+          cpu: "20m"
+      vault:
+        requests:
+          memory: "100Mi"
+          cpu: "20m"
+
+  eric-sec-sip-tls:
+    resources:
+      sip-tls:
+        requests:
+          memory: "100Mi"
+          cpu: "30m"
+      sip-tls-supervisor:
+        requests:
+          memory: "100Mi"
+          cpu: "30m"
+
+  eric-sec-access-mgmt-db-pg:
+    resources:
+      brm:
+        requests:
+          memory: "32Mi"
+          cpu: "15m"
+      bra:
+        requests:
+          memory: "256Mi"
+          cpu: "15m"
+
+  eric-fh-snmp-alarm-provider:
+    imageCredentials:
+      pullSecret: k8s-registry-secret-legacy
+
+  eric-fh-alarm-handler:
+    imageCredentials:
+      pullSecret: k8s-registry-secret-legacy
+
+  eric-data-key-value-database-rd:
+    imageCredentials:
+      pullSecret: k8s-registry-secret-legacy
+
+  eric-cloud-native-kvdb-rd-operand:
+    imageCredentials:
+      pullSecret: k8s-registry-secret-legacy
+
+eric-topology-handling:
+  ingress:
+    enabled: true
+  eric-oss-common-topology-svc:
+    eric-oss-cmn-topology-svc-core:
+      resources:
+        eric-inventory-core:
+          requests:
+            cpu: 1200m
+      defaultUser:
+        username: "cts-user"
+        password: "Ericsson123!"
+      useGasHost:
+        enabled: true
+
+  eric-topology-handling-database-pg:
+    resources:
+      brm:
+        requests:
+          memory: "32Mi"
+          cpu: "15m"
+      bra:
+        requests:
+          memory: "256Mi"
+          cpu: "15m"
+
+eric-oss-ericsson-adaptation:
+  eric-eo-enm-stub:
+    enabled: true
+  eric-oss-enm-notification-simulator:
+    enabled: true
+
+  eric-oss-ran-topology-adapter:
+    rtaUser:
+      username: "rta-user"
+      password: "Ericsson123!"
+
+  eric-oss-enm-discovery-adapter-database-pg:
+    resources:
+      brm:
+        requests:
+          memory: "32Mi"
+          cpu: "15m"
+      bra:
+        requests:
+          memory: "256Mi"
+          cpu: "15m"
+
+  eric-oss-enm-notification-adapter-database-pg:
+    resources:
+      brm:
+        requests:
+          memory: "32Mi"
+          cpu: "15m"
+      bra:
+        requests:
+          memory: "256Mi"
+          cpu: "15m"
+
+  eric-oss-enm-model-adapter-database-pg:
+    resources:
+      brm:
+        requests:
+          memory: "32Mi"
+          cpu: "15m"
+      bra:
+        requests:
+          memory: "256Mi"
+          cpu: "15m"
+
+eric-oss-dmm:
+  eric-oss-data-catalog:
+    resources:
+      eric-oss-data-catalog:
+        requests:
+          cpu: "50m"
+
+  eric-schema-registry-sr:
+    resources:
+      schemaregistry:
+        requests:
+          cpu: "30m"
+
+  eric-oss-dmm-data-coordinator-zk:
+    resources:
+      datacoordinatorzk:
+        requests:
+          cpu: "50m"
+          memory: "512Mi"
+
+  eric-oss-dmm-data-message-bus-kf:
+    persistence:
+      persistentVolumeClaim:
+        size: 2Gi
+    resources:
+      messagebuskf:
+        requests:
+          cpu: "100m"
+          memory: "512Mi"
+  eric-oss-dmm-kf-op-sz:
+    kafka-cluster:
+      kafka:
+        jbod:
+          size: 2Gi
+      zookeeper:
+        jbod:
+          size: 2Gi
+
+#core parser restarts - IDUN-62090
+eric-oss-adc:
+  eric-oss-3gpp-pm-xml-core-parser:
+    spring:
+      kafka:
+        admin:
+          request_timeout_ms: 60000
+    probes:
+      eric-oss-3gpp-pm-xml-core-parser:
+        livenessProbe:
+          initialDelaySeconds: 120
+          periodSeconds: 20
+        readinessProbe:
+          initialDelaySeconds: 90
+          periodSeconds: 15

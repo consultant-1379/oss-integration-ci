@@ -1,0 +1,144 @@
+# This override delta file was prepared for usage with main file:
+# site-values/ci/site-values-latest.yaml
+
+global:
+  security:
+    tls:
+      enabled: false
+    mtls2Iam:
+      enabled: false
+  bdr:
+    enabled: true
+  eic:
+    enabled: true
+  hosts:
+    bdr: 'BDR_HOST_REPLACE'
+    iam: 'EIC_HOST_REPLACE'
+  storageEncryption:
+    enabled: true
+    storageClassName: "enc-sc-NAMESPACE"
+    backingStorageClass: "network-block"
+  licensing:
+    sites:
+      - hostname: eric-test-nels-simulator
+
+optionality:
+  eric-oss-common-base:
+    eric-oss-key-management-agent:
+      enabled: true
+    eric-pm-kube-state-metrics:
+      enabled: true
+
+eric-cloud-native-base:
+  eric-data-search-engine:
+    service:
+      network:
+        protocol:
+          IPv6: false
+  eric-data-object-storage-mn:
+    openID:
+      enabled: true
+  eric-sec-access-mgmt:
+    replicaCount: 1
+  eric-odca-diagnostic-data-collector:
+    sftpServerHost: "sftp-server:22"
+  eric-lm-combined-server:
+    labels:
+      eric-test-nels-simulator-access: "true"
+    licenseServerClient:
+      timer:
+        licenseRemovalGracePeriod: 0
+  eric-si-application-sys-info-handler:
+    labels:
+      eric-test-nels-simulator-access: "true"
+  #Trace Logging Enabled
+  eric-dst-collector:
+    samplingConfig: |-
+      {
+        "service_strategies": [],
+        "default_strategy": {
+          "type": "probabilistic",
+          "param": 1.0
+        }
+      }
+  eric-ctrl-bro:
+    persistence:
+      persistentVolumeClaim:
+        size: 15Gi # IDUN-126463
+
+eric-oss-common-base:
+  eric-oss-ddc:
+    autoUpload:
+      ddpid: DDP_ID
+      account: DDP_ACCOUNT
+      password: "DDP_PASSWORD"
+  eric-pm-alert-manager:
+    enabled: true
+    alarmHandlerWebhook:
+      enabled: true
+    alarmMappingYml:
+      serviceName: [['labels','serviceName'],  ['labels','deployment'],  ['labels','statefulset'],  ['labels','daemonset']]
+      faultyResource: [['labels','faultyResource'],  ['labels','instance']]
+  eric-oss-license-consumer:
+    enforcingAgent:
+      periodicity:
+        interval: 5
+    licenseConsumer:
+      licensesValidityPeriod: 0
+  eric-adp-gui-aggregator-service:
+    dst:
+      enabled: true
+      sampler:
+        samplingRate: 1
+  eric-oss-help-aggregator:
+    dst:
+      enabled: true
+      sampler:
+        samplingRate: 1
+
+eric-cnbase-oss-config:
+  configAlertRules:
+    alarmConfigurationParameters:
+      documentDatabasePg:
+        diskSpaceThreshold: 0 # %rate
+        holdOnOffTime: 0 # minutes
+        severity: Major
+      dataSearchEngine:
+        volumeThreshold: 0 # %rate
+        volumeHoldOnOffTime: 0 # minutes
+        volumeSeverity: Major
+        missingPShardHoldOnOffTime: 0 # minutes
+        missingPShardSeverity: Major
+        missingReplicaHoldOnOffTime: 0 # minutes
+        missingReplicaSeverity: Major
+      dataObjectStorageMn:
+        diskSpaceThreshold: 0 # %rate
+        diskSpaceholdOnOffTime: 0 # minutes
+        diskSpaceSeverity: Major
+        diskOfflineThreshold: 0 # %rate
+        diskOfflineholdOnOffTime: 0 # minutes
+        diskOfflineSeverity: Major
+      backupAndRestoreOrchestrator:
+        diskSpaceThreshold: 0 # %rate
+        holdOnOffTime: 0 # minutes
+        volumeSeverity: Major
+        noSuccessfulBackupDaysThreshold: 0 # days
+        noSuccessfulBackupDaysSeverity: Warning
+        exportBackupOperationFailedSeverity: Major
+        createBackupOperationFailedSeverity: Major
+        restoreBackupOperationFailedSeverity: Major
+        deleteBackupOperationFailedSeverity: Major
+      pmServer:
+        diskSpaceThreshold: 0 # %rate
+        diskSpaceholdOnOffTime: 0 # minutes
+        diskSpaceSeverity: Major
+        containerMemoryThreshold: 0 # %rate
+        containerMemoryHoldOffTime: 0 # minutes
+        containerMemorySeverity: Warning
+        containerCpuThreshold: 0 # %rate
+        containerCpuHoldOffTime: 0 # minutes
+        containerCpuSeverity: Warning
+      distributedCoordinatorEd:
+        diskSpaceThreshold: 0 # %rate
+        holdOnOffTime: 0 # minutes
+        severity: Major

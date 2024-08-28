@@ -1,0 +1,233 @@
+{
+  "appConfig": {},
+  "disabled": false,
+  "keepWaitingPipelines": false,
+  "lastModifiedBy": "emanjoh",
+  "limitConcurrent": true,
+  "notifications": [
+    {
+      "address": "5cc48793.ericsson.onmicrosoft.com@emea.teams.ms",
+      "level": "pipeline",
+      "type": "email",
+      "when": [
+        "pipeline.failed"
+      ]
+    }
+  ],
+  "parameterConfig": [
+    {
+      "default": "eric-eiae-helmfile",
+      "description": "Name of the helmfile that holds the Application to build into CSAR's",
+      "hasOptions": false,
+      "label": "INT_CHART_NAME",
+      "name": "INT_CHART_NAME",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "0.0.0",
+      "description": "Version of the Integration Chart that holds the new microservice",
+      "hasOptions": false,
+      "label": "INT_CHART_VERSION",
+      "name": "INT_CHART_VERSION",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "https://arm.seli.gic.ericsson.se/artifactory/proj-eric-oss-drop-helm",
+      "description": "Repo of the Integration Chart that holds the new microservice",
+      "hasOptions": false,
+      "label": "INT_CHART_REPO",
+      "name": "INT_CHART_REPO",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    }
+  ],
+  "stages": [
+    {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": false,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Build UDS CSAR",
+      "parameters": {
+        "ARMDOCKER_USER_SECRET": "ciloopman-docker-auth-config",
+        "INT_CHART_NAME": "eric-oss-uds",
+        "INT_CHART_REPO": "https://arm.rnd.ki.sw.ericsson.se/artifactory/proj-so-gs-all-helm/",
+        "INT_CHART_VERSION": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-uds\"]}",
+        "POPULATED_VALUES_FILE_LOCATION": "site-values/csar-build/uds/site-values.yaml",
+        "SSH_REPO_URL": "ssh://gerrit.ericsson.se:29418/OSS/com.ericsson.oss.aeonic/oss-integration-ci"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "1",
+      "requisiteStageRefIds": [
+        "2"
+      ],
+      "type": "jenkins"
+    },
+    {
+      "continuePipeline": false,
+      "failPipeline": true,
+      "job": "GetAppVersionFromHelmfile",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Get App Version from HelmFile",
+      "parameters": {
+        "INT_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "INT_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "INT_CHART_VERSION": "${trigger['parameters']['INT_CHART_VERSION']}",
+        "SLAVE_LABEL": "evo_docker_engine"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "2",
+      "requisiteStageRefIds": [
+        "9"
+      ],
+      "type": "jenkins"
+    },
+    {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": false,
+      "failPipeline": true,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Build PF CSAR",
+      "parameters": {
+        "ARMDOCKER_USER_SECRET": "ciloopman-docker-auth-config",
+        "INT_CHART_NAME": "eric-oss-pf",
+        "INT_CHART_REPO": "https://arm.rnd.ki.sw.ericsson.se/artifactory/proj-so-gs-all-helm/",
+        "INT_CHART_VERSION": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-pf\"]}",
+        "POPULATED_VALUES_FILE_LOCATION": "site-values/csar-build/pf/site-values.yaml",
+        "SSH_REPO_URL": "ssh://gerrit.ericsson.se:29418/OSS/com.ericsson.oss.aeonic/oss-integration-ci"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "3",
+      "requisiteStageRefIds": [
+        "2"
+      ],
+      "type": "jenkins"
+    },
+    {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": false,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Build SO CSAR",
+      "parameters": {
+        "ARMDOCKER_USER_SECRET": "ciloopman-docker-auth-config",
+        "INT_CHART_NAME": "eric-eo-so",
+        "INT_CHART_REPO": "https://arm.rnd.ki.sw.ericsson.se/artifactory/proj-so-gs-all-helm/",
+        "INT_CHART_VERSION": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-so\"]}",
+        "POPULATED_VALUES_FILE_LOCATION": "site-values/csar-build/so/site-values.yaml",
+        "SSH_REPO_URL": "ssh://gerrit.ericsson.se:29418/OSS/com.ericsson.oss.aeonic/oss-integration-ci"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "5",
+      "requisiteStageRefIds": [
+        "2"
+      ],
+      "type": "jenkins"
+    },
+    {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": false,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Build Cloud Native Base (ADP) CSAR",
+      "parameters": {
+        "ARMDOCKER_USER_SECRET": "ciloopman-docker-auth-config",
+        "INT_CHART_NAME": "eric-cloud-native-base",
+        "INT_CHART_REPO": "https://arm.sero.gic.ericsson.se/artifactory/proj-adp-umbrella-released-helm",
+        "INT_CHART_VERSION": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-cloud-native-base\"]}",
+        "POPULATED_VALUES_FILE_LOCATION": "site-values/csar-build/adp-base/site-values.yaml",
+        "SSH_REPO_URL": "ssh://gerrit.ericsson.se:29418/OSS/com.ericsson.oss.aeonic/oss-integration-ci"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "6",
+      "requisiteStageRefIds": [
+        "2"
+      ],
+      "type": "jenkins"
+    },
+    {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": false,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Build OSS Common Base CSAR",
+      "parameters": {
+        "ARMDOCKER_USER_SECRET": "ciloopman-docker-auth-config",
+        "INT_CHART_NAME": "eric-oss-common-base",
+        "INT_CHART_REPO": "https://arm.seli.gic.ericsson.se/artifactory/proj-eric-oss-drop-helm-local/",
+        "INT_CHART_VERSION": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-common-base\"]}",
+        "POPULATED_VALUES_FILE_LOCATION": "csar-build/site-values/site-values.yaml",
+        "SSH_REPO_URL": "ssh://gerrit.ericsson.se:29418/OSS/com.ericsson.oss/oss-common-base"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "7",
+      "requisiteStageRefIds": [
+        "2"
+      ],
+      "type": "jenkins"
+    },
+    {
+      "continuePipeline": false,
+      "failPipeline": true,
+      "job": "getCsarProperties",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Generate CSAR Properties",
+      "parameters": {
+        "INT_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "INT_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "INT_CHART_VERSION": "${trigger['parameters']['INT_CHART_VERSION']}"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "8",
+      "requisiteStageRefIds": [
+        "1",
+        "3",
+        "5",
+        "6",
+        "7"
+      ],
+      "type": "jenkins"
+    },
+    {
+      "continuePipeline": false,
+      "failPipeline": true,
+      "job": "Get-Latest-ChartOrHelmfile",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Get Latest HelmFile Version",
+      "parameters": {
+        "INT_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "INT_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "INT_CHART_VERSION": "${trigger['parameters']['INT_CHART_VERSION']}",
+        "SLAVE_LABEL": "evo_docker_engine"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "9",
+      "requisiteStageRefIds": [],
+      "type": "jenkins"
+    }
+  ],
+  "triggers": [],
+  "updateTs": "1628109965902"
+}

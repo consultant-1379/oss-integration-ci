@@ -1,0 +1,193 @@
+#!/usr/bin/env groovy
+
+/* This pipeline will get json files from spinnaker piplines defined in variable "PIPELINES_FOR_BACKUP".
+ * And if there will be any change - it will push commit to oss-integration-ci repo with changed files under variable "BACKUP_FOLDER"
+ * It will create directory structure with folders named as spinnaker applicaitons with pipelines json files there.
+ * !!! It have hardcoded username ossapps100  and it used to merge changes as a review in gerrit.
+ */
+
+import java.time.*
+import groovy.json.*
+
+def now = new Date()
+
+def BACKUP_FOLDER = 'ci/spinnaker'
+
+// Define set of spinnaker applications and pipelines there for backup
+def PIPELINES_FOR_BACKUP = [
+  [
+    spinnaker_application: 'base-platform-e2e-cicd',
+    pipelines: [
+      'base-platform-staging',
+      'deploy-using-helmfile',
+      'redeploy-env-for-base-platform-staging',
+      'BASE-PLATFORM-release-E2E-Flow'
+    ]
+  ],
+  [
+    spinnaker_application: 'evnfm-e2e-cicd',
+    pipelines: [
+      'EVNFM_Baseline_Staging',
+      'EVNFM-release-E2E-Flow'
+    ]
+  ],
+  [
+    spinnaker_application: 'so-e2e-cicd',
+    pipelines: [
+      'SO_Baseline_Staging',
+      'SO-release-E2E-Flow'
+    ]
+  ],
+  [
+    spinnaker_application: 'common-e2e-cicd',
+    pipelines: [
+      'Clean-AppStaging-Jenkins-Agents',
+      'Create_NameSpace_IDUN_AppStaging',
+      'EO-Pre-Deployment',
+      'IDUN-Pre-Deployment',
+      'OSS-Common-Create-Namespace-Pre-Deployment',
+      'OSS-Common-Pre-Deployment',
+      'Onboard_new_IDUN_Application',
+      'RecreateNamespace',
+      'Redeploy-Namespace',
+      'check_PRA_and_Non_PRA_version',
+      'eo-csar-build',
+      'oss-csar-build-flow',
+      'reserve-and-gather-env-details-helmfile'
+    ]
+  ]
+]
+
+pipeline {
+  agent {
+    label params.NODE_LABEL
+  }
+  parameters {
+    string(name: 'SPINNAKER_SVC_CRED_ID',
+      defaultValue: 'ossapps100-user-credentials',
+      description: 'Jenkins secret ID for ARM Registry Credentials')
+
+    string(name: 'NODE_LABEL',
+      defaultValue: 'evo_docker_engine',
+      description: 'Nodes having this label can execute this pipeline')
+
+    string(name: 'DISTRIBUTION_EMAIL',
+      defaultValue: 'PDLAPPSTAG@pdl.internal.ericsson.com',
+      description: 'Email address to send notification status of the Jenkins job.')
+  }
+  options {
+    timestamps()
+    timeout(time: 60, unit: 'MINUTES')
+    buildDiscarder logRotator(numToKeepStr: '20')
+  }
+  stages {
+    stage('Checkout from master branch') {
+      steps {
+        script {
+            // This stage required to avoid push jenkinsfile changes when job triggered from review patchset.
+            sh  'git reset --hard origin/master && git clean -df && git checkout master && git fetch && git reset --hard origin/master'
+        }
+      }
+    }
+    stage('Collect Pipelines JSON') {
+      steps {
+        script {
+          emailBody = "<h3 style=\"font-weight: 600;\">OSS-APP Backup Spinnaker Pipelines</h3>\n"
+          emailBody += "<h3 style=\"font-weight: normal;\">Pipeline URL: ${BUILD_URL}</h3>\n"
+          emailBody += "<h3 style=\"font-weight: normal;\">List of pipelines:</h3>\n"
+          emailBody += '<ul>\n'
+
+          withCredentials([usernameColonPassword(credentialsId: "${env:SPINNAKER_SVC_CRED_ID}", variable: 'SPINNAKER_SVC_CRED')]) {
+            PIPELINES_FOR_BACKUP.each {
+              println 'Spinnaker application: ' + it
+              application = it['spinnaker_application']
+              pipelinelist = it['pipelines']
+
+              emailBody += "<li>${application}:<ul>\n"
+              //looping each pipeline name through url and writing resulting request status codeto apiResponseCode variable
+              pipelinelist.each { pipeline ->
+                apiResponseCode = sh(returnStdout: true, script: """\
+                    curl -s -o response.json -w "%{http_code}" \
+                    -H "Content-Type: application/json" \
+                    --user "${SPINNAKER_SVC_CRED}" \
+                    "https://spinnaker-api.rnd.gic.ericsson.se/applications/${application}/pipelineConfigs/${pipeline}" \
+                    """)
+                //write JSON string to results variable
+                results = readJSON file: 'response.json'
+
+                if(apiResponseCode == "200"){
+                  //write formatted pretty JSON to file with pipeline name
+                  println "Save pipeline to the file: ${BACKUP_FOLDER}/${application}/${pipeline}.json"
+                  writeJSON file: "${BACKUP_FOLDER}/${application}/${pipeline}.json", json: results, pretty: 2
+                  emailBody += "<li>${pipeline}</li>\n"
+                } else if(apiResponseCode == "404") {
+                  println "WARNING: Spinnaker pipeline not found: https://spinnaker-api.rnd.gic.ericsson.se/applications/${application}/pipelineConfigs/${pipeline}"
+                  emailBody += "<li style=\"color:orange\">WARNING: ${pipeline} not found</li>\n"
+                }
+                else {
+                  error("ERROR: Spinnaker returned error code: ${apiResponseCode}\n Spinnaker response body:\n ${results}")
+                }
+              }
+              emailBody += '</ul>\n'
+            }
+            emailBody += '</li></ul>\n'
+          }
+        }
+      }
+    }
+    stage('Push config files to the repository') {
+      steps {
+        script {
+          sh  """
+            echo 'List of changed pipelines'
+            git status --porcelain ${BACKUP_FOLDER}
+
+            if test -z "\$(git status --porcelain ${BACKUP_FOLDER})"; then
+              echo "No new changes to commit"
+              exit 0
+            fi
+
+            echo "pushing to the repository"
+
+            # Required to get change-id for a gerrit review
+            scp -p -P 29418 ossapps100@gerrit-gamma.gic.ericsson.se:hooks/commit-msg \$(git rev-parse --git-dir)/hooks/
+
+            git add ${BACKUP_FOLDER}
+            git commit -m "BACKUP of spinnaker pipelines with job: fem8s11 - OSS-Integration-Backup-Pipelines"
+            git pull -r origin master
+            git push origin HEAD:refs/for/master%submit
+            """
+        }
+      }
+    }
+  }
+  post {
+    success {
+      script {
+        //sending success notification
+        emailext subject: "JFYI :: OSS APP Spinnaker Pipelines Backup successfully completed ${now.format('dd.MM.yy (HH:mm)', TimeZone.getTimeZone('UTC'))}",
+                      from: 'NoReply@ericsson.com',
+                      to: "${params.DISTRIBUTION_EMAIL}",
+                      mimeType: 'text/html',
+                      body: emailBody
+      }
+    }
+    failure {
+      script {
+        failed_emailBody  = "<h3 style=\"font-weight: 600;\">OSS-APP Backup Spinnaker Pipelines</h3>\n"
+        failed_emailBody += "<h3 style=\"font-weight: normal;\">Pipeline URL: ${BUILD_URL}\n</h3>"
+        failed_emailBody += "<h3 style=\"font-weight: normal;\">Status: <span style=\"color:red\">FAILED</span></h3>\n"
+
+        //sending fail notification
+        emailext subject: "JFYI :: OSS APP Spinnaker Pipelines Backup FAILED ${now.format('dd.MM.yy (HH:mm)', TimeZone.getTimeZone('UTC'))}",
+                      from: 'NoReply@ericsson.com',
+                      to: "${params.DISTRIBUTION_EMAIL}",
+                      mimeType: 'text/html',
+                      body: failed_emailBody
+      }
+    }
+    always {
+      cleanWs()
+    }
+  }
+}

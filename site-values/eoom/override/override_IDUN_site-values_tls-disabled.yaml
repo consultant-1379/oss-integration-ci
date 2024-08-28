@@ -1,0 +1,10 @@
+# This override delta file was prepared for usage with main file:
+# site-values/ci/site-values-latest.yaml
+
+# used solely for the purpose of EOOM PoC
+
+eric-cloud-native-base:
+  eric-sec-access-mgmt:
+    http:
+      hostValidation:
+        allowedHosts: keycloak.6637-iccr.flexilab.seli.gic.ericsson.se,ecm.6637-iccr.flexilab.seli.gic.ericsson.se,eoc.6637-iccr.flexilab.seli.gic.ericsson.se,keycloak.7106-iccr.flexilab.seli.gic.ericsson.se,ecm.7106-iccr.flexilab.seli.gic.ericsson.se,eoc.7106-iccr.flexilab.seli.gic.ericsson.se,keycloak.7123-iccr.flexilab.seli.gic.ericsson.se,ecm.7123-iccr.flexilab.seli.gic.ericsson.se,eoc.7123-iccr.flexilab.seli.gic.ericsson.se,keycloak.7124-iccr.flexilab.seli.gic.ericsson.se,ecm.7124-iccr.flexilab.seli.gic.ericsson.se,eoc.7124-iccr.flexilab.seli.gic.ericsson.se

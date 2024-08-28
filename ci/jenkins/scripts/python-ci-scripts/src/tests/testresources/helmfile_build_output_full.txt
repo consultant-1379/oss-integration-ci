@@ -1,0 +1,2326 @@
+---
+#  Source: crds-helmfile.yaml
+
+filepath: crds-helmfile.yaml
+helmBinary: helm
+bases:
+- repositories.yaml
+repositories:
+- name: adp-umbrella-released
+  url: https://arm.sero.gic.ericsson.se/artifactory/proj-adp-umbrella-released-helm/
+- name: eric-oss-drop
+  url: https://arm.seli.gic.ericsson.se/artifactory/proj-eric-oss-drop-helm-local
+- name: so-gs-all
+  url: https://arm.rnd.ki.sw.ericsson.se/artifactory/proj-so-gs-all-helm/
+- name: adp-gs-all
+  url: https://arm.sero.gic.ericsson.se/artifactory/proj-adp-gs-all-helm
+releases:
+- chart: adp-gs-all/eric-tm-ingress-controller-cr-crd
+  version: 11.0.0+29
+  condition: eric-tm-ingress-controller-cr-crd.enabled
+  name: eric-tm-ingress-controller-cr-crd
+  namespace: eric-crd-ns
+  labels:
+    csar: eric-cloud-native-base
+  values:
+  - ./values-templates/eric-tm-ingress-controller-cr-crd-site-values.yaml.gotmpl
+templates: {}
+renderedvalues:
+  eric-cloud-native-base:
+    eric-ctrl-bro:
+      persistence:
+        persistentVolumeClaim:
+          size: 15Gi
+      sftp:
+        password: dummy
+        username: dummy
+    eric-data-object-storage-mn:
+      brAgent:
+        properties:
+          backup_data_path: bucket1/data1.txt
+      objects_lifecycle_cfg: ""
+    eric-data-search-engine:
+      persistence:
+        data:
+          persistentVolumeClaim:
+            size: 10Gi
+      service:
+        network:
+          protocol:
+            IPv6: true
+    eric-data-search-engine-curator:
+      actions: ""
+      cronjob:
+        curator:
+          schedule: 0 */2 * * *
+    eric-fh-snmp-alarm-provider:
+      sendAlarm: true
+    eric-lm-combined-server:
+      licenseServerClient:
+        licenseServer:
+          thrift:
+            host: ""
+    eric-log-transformer:
+      egress:
+        syslog:
+          enabled: true
+          remoteHosts:
+          - host: 10.10.10.10
+            port: 514
+            protocol: TCP
+    eric-sec-access-mgmt:
+      replicaCount: 2
+  eric-cncs-oss-config:
+    ingress:
+      enabled: false
+  eric-cncs-oss-pre-config:
+    alertRules:
+      alarmConfigurationParameters:
+        documentDatabasePg:
+          diskSpaceThreshold: 80
+          holdOnOffTime: 3
+          severity: Major
+    enabled: true
+    faultMappings:
+      eric-appmgr-data-document-db.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-cm-mediator-db-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-ctrl-bro.json: |-
+        [
+            {
+                "faultName": "CreateBackupOperationFailed",
+                "specificProblem": "Create Backup Operation Failed",
+                "defaultSeverity": "Major",
+                "defaultDescription": "Last create backup operation failed",
+                "defaultExpiration": 3600,
+                "code": 10002
+            },
+            {
+                "faultName": "RestoreOperationFailed",
+                "specificProblem": "Restore Operation Failed",
+                "defaultSeverity": "Major",
+                "defaultDescription": "Last restore operation failed",
+                "defaultExpiration": 3600,
+                "code": 10002
+            },
+            {
+                "faultName": "DeleteBackupOperationFailed",
+                "specificProblem": "Delete Backup Operation Failed",
+                "defaultSeverity": "Major",
+                "defaultDescription": "Last delete backup operation failed",
+                "defaultExpiration": 3600,
+                "code": 10002
+            }
+        ]
+      eric-dmm-common-db.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-eo-cm-database-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-eo-playbook-database-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-eo-subsystem-management-database-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-eo-tenantmgmt-database-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-eo-workflow-database-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-fh-alarm-handler-db-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-gr-bur-database-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-lm-combined-server-db-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-oss-app-lcm-data.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-oss-app-onboarding-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-oss-common-base-alarm-mapping.json: |-
+        [
+          {
+            "faultName": "connectedSystemEOCMUnreachable",
+            "vendor": 193,
+            "code": 9905937,
+            "defaultDescription": "Unable to connect to EO CM.",
+            "defaultExpiration": 600,
+            "defaultSeverity": "Major",
+            "probableCause": 22,
+            "category": "CommunicationsAlarm",
+            "specificProblem": "Connected System EO CM Unreachable."
+          }
+        ]
+      eric-oss-common-postgres.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-oss-enm-discovery-adapter-database-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-oss-enm-model-adapter-database-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-oss-enm-notification-adapter-database-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-oss-ericsson-adaptation.json: |-
+        [
+          {
+            "faultName": "connectedSystemENMUnreachable",
+            "vendor": 193,
+            "code": 9250577,
+            "defaultDescription": "Unable to connect to ENM.",
+            "defaultExpiration": 600,
+            "defaultSeverity": "Major",
+            "probableCause": 22,
+            "category": "CommunicationsAlarm",
+            "specificProblem": "Connected System ENM Unreachable."
+          }
+        ]
+      eric-oss-flow-automation-db-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-oss-ncmp-database-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-oss-notification-service-database-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-pm-kpi-data-v2.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-sec-access-mgmt-db-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-sec-certm.json: |-
+        [
+            {
+                "faultName": "CertMCertificateToExpire",
+                "createAlarm": true,
+                "defaultDescription": "Certificate Management, the Certificate is about to Expire",
+                "defaultExpiration": 3600,
+                "defaultSeverity": "Warning",
+                "vendor": 193,
+                "code": 9699329,
+                "category": "ProcessingErrorAlarm",
+                "probableCause": 351,
+                "specificProblem": "The certificate will expire in <x> days and should be renewed to prevent service failure"
+            },
+            {
+                "faultName": "CertMTrustedCertificateToExpire",
+                "createAlarm": true,
+                "defaultDescription": "Certificate Management, the Trusted Certificate is about to Expire",
+                "defaultExpiration": 3600,
+                "defaultSeverity": "Warning",
+                "vendor": 193,
+                "code": 9699330,
+                "category": "ProcessingErrorAlarm",
+                "probableCause": 351,
+                "specificProblem": "The trusted certificate will expire in <x> days and should be renewed to prevent service failure"
+            },
+            {
+                "faultName": "CertMAutomaticEnrollmentFailed",
+                "createAlarm": true,
+                "defaultDescription": "Certificate Management, Automatic Enrollment Failed",
+                "defaultExpiration": 3600,
+                "defaultSeverity": "Warning",
+                "vendor": 193,
+                "code": 9699331,
+                "category": "ProcessingErrorAlarm",
+                "probableCause": 307,
+                "specificProblem": "Automatic certificate renewal using enrollment protocol <protocol> failed due to local misconfiguration or remote enrollment service denial"
+            }
+        ]
+      eric-sec-sip-tls.json: |-
+        [
+          {
+            "faultName": "InternalCAInternalCertificateCreationFailure",
+            "vendor": 193,
+            "code": 10223618,
+            "defaultSeverity": "Major",
+            "probableCause": 302,
+            "defaultDescription": "",
+            "specificProblem": "Internal CA Internal Certificate Creation Failure",
+            "category": "ProcessingErrorAlarm"}
+        ]
+      eric-so-alarm-mapping.json: |-
+        [
+          {
+            "faultName": "connectedSystemNFVOUnreachable",
+            "vendor": 193,
+            "code": 9873169,
+            "defaultDescription": "Unable to connect to NFVO.",
+            "defaultExpiration": 600,
+            "defaultSeverity": "Major",
+            "probableCause": 22,
+            "category": "CommunicationsAlarm",
+            "specificProblem": "Connected System NFVO Unreachable."
+          }
+        ]
+      eric-topology-handling-database-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      toscao-database-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+  eric-csm-st:
+    global:
+      sasl:
+        enabled: true
+      tls:
+        enabled: true
+    service:
+      endpoints:
+        st:
+          nb:
+            tls:
+              enforced: required
+          pm:
+            tls:
+              enforced: required
+          sb:
+            tls:
+              enforced: required
+              verifyClientCertificate: true
+  eric-data-wide-column-database-cd-crd:
+    enabled: true
+  eric-eo-so:
+    defaultUser:
+      password: Ericsson123!
+      username: so-user
+    eric-oss-topo-trouble-mngmt-ui:
+      enabled: false
+    ingress:
+      enabled: false
+    so-pm-alert-manager:
+      enabled: false
+  eric-mesh-controller-crd:
+    enabled: true
+  eric-oss-adc:
+    eric-oss-enm-fns:
+      enabled: true
+    ingress:
+      enabled: false
+      tls:
+        secretName: ves-tls-secret
+  eric-oss-app-mgr:
+    eric-lcm-container-registry:
+      ingress:
+        enabled: false
+    ingress:
+      enabled: false
+  eric-oss-common-base:
+    eric-eo-usermgmt:
+      replicaCount: 2
+    eric-eo-usermgmt-ui:
+      replicaCount: 2
+    gas:
+      defaultUser:
+        password: Ericsson123!
+        username: gas-user
+    ingress:
+      enabled: false
+    service-mesh-ingress-gateway:
+      externalTrafficPolicy: Cluster
+      service:
+        annotations:
+          cloudProviderLB: {}
+        externalTrafficPolicy: Cluster
+        loadBalancerIP: 1.1.1.1
+    sessionTokens:
+      maxIdleTimeSecs: 1800
+      maxSessionDurationSecs: 36000
+    system-user:
+      credentials:
+        password: Ericsson123!
+        username: system-user
+  eric-oss-config-handling:
+    cps-user:
+      credentials:
+        password: Ericsson123!
+        username: cps-user
+    dmi-user:
+      credentials:
+        password: Ericsson123!
+        username: dmi-user
+  eric-oss-ericsson-adaptation:
+    eric-oss-ran-topology-adapter:
+      rtaUser:
+        password: Ericsson123!
+        username: rta-user
+  eric-oss-kf-sz-op-crd:
+    enabled: true
+  eric-oss-oran-support:
+    eric-oss-a1-policy-mngmt-svc:
+      defaultUser:
+        password: DefaultP12345!
+        username: a1-user
+  eric-oss-pf:
+    defaultUser:
+      password: Ericsson123!
+      username: pf-user
+    ingress:
+      enabled: false
+  eric-oss-uds:
+    defaultUser:
+      password: Ericsson123!
+      username: uds-user
+    ingress:
+      enabled: false
+  eric-sec-sip-tls-crd:
+    enabled: true
+  eric-tm-ingress-controller-cr-crd:
+    enabled: false
+  eric-topology-handling:
+    eric-oss-common-topology-svc:
+      eric-oss-cmn-topology-svc-core:
+        defaultUser:
+          password: Ericsson123!
+          username: cts-user
+        useGasHost:
+          enabled: true
+    eric-oss-common-topology-ui:
+      enabled: true
+  global:
+    createClusterRoles: true
+    hosts:
+      adc: adc.dummy
+      appmgr: appmgr.dummy
+      gas: gas.dummy
+      iam: iam.dummy
+      os: os.dummy
+      pf: pf.dummy
+      so: so.dummy
+      ta: ta.dummy
+      th: th.dummy
+      uds: uds.dummy
+    iam:
+      adminSecret: eric-sec-access-mgmt-creds
+      clientId: eo
+      passwordKey: kcpasswd
+      tlsSecret: iam-tls-secret
+      userKey: kcadminid
+    iccrAppIngresses: false
+    ingressClass: oss_iccr
+    log:
+      streamingMethod: indirect
+    networkPolicy:
+      enabled: true
+    pullSecret: k8s-registry-secret
+    registry:
+      password: dummy_password
+      url: armdocker.rnd.ericsson.se
+      username: dummy_username
+    security:
+      oauth:
+        enabled: false
+      outboundPolicy:
+        registryOnly:
+          enabled: false
+      sasl:
+        enabled: true
+      tls:
+        enabled: false
+    serviceMesh:
+      enabled: true
+    support:
+      ipv6:
+        enabled: true
+    timezone: UTC
+  notification-service:
+    enabled: true
+  optionality:
+    eric-cloud-native-base:
+      eric-cm-mediator:
+        enabled: false
+      eric-cm-mediator-db-pg:
+        enabled: false
+      eric-data-document-database-pg:
+        enabled: false
+      eric-data-object-storage-mn:
+        enabled: true
+      eric-fh-alarm-handler-db-pg:
+        enabled: false
+      eric-lm-combined-server-db-pg:
+        enabled: false
+      eric-sec-sip-tls:
+        enabled: true
+      eric-tm-ingress-controller-cr:
+        enabled: false
+    eric-oss-common-base:
+      eric-eo-ecmsol005-stub:
+        enabled: false
+      eric-eo-evnfm-crypto:
+        enabled: false
+      eric-eo-evnfm-nbi:
+        enabled: false
+      eric-gr-bur-database-pg:
+        enabled: false
+      eric-gr-bur-orchestrator:
+        enabled: false
+      eric-oss-ddc:
+        enabled: false
+      eric-oss-metrics-stager:
+        enabled: false
+      eric-pm-kube-state-metrics:
+        enabled: false
+  secret-eric-data-object-storage-mn:
+    enabled: true
+  tags:
+    adc: true
+    appmgr: true
+    ch: true
+    dmm: true
+    eas: true
+    os: true
+    pf: true
+    pmh: true
+    so: true
+    ta: true
+    th: true
+    uds: true
+---
+#  Source: helmfile.yaml
+
+filepath: helmfile.yaml
+helmBinary: helm
+environments:
+  build:
+    values:
+    - ./build-environment/optionality_maximum.yaml
+    - ./build-environment/tags_true.yaml
+    - ./default-values/values.yaml.gotmpl
+  default:
+    values:
+    - ./optionality.yaml
+    - ./default-values/values.yaml.gotmpl
+bases:
+- environment.yaml
+- repositories.yaml
+- apiversions.gotmpl
+helmDefaults:
+  tillerless: false
+  verify: false
+  devel: false
+  wait: true
+  waitForJobs: true
+  timeout: 2000
+  recreatePods: false
+  force: false
+  atomic: false
+  skipDeps: false
+  tls: false
+helmfiles:
+- path: crds-helmfile.yaml
+  values:
+  - eric-tm-ingress-controller-cr-crd:
+      enabled: false
+  - eric-mesh-controller-crd:
+      enabled: true
+  - eric-sec-sip-tls-crd:
+      enabled: true
+  - eric-data-wide-column-database-cd-crd:
+      enabled: true
+  - eric-oss-kf-sz-op-crd:
+      enabled: true
+  - eric-cloud-native-base:
+      eric-ctrl-bro:
+        persistence:
+          persistentVolumeClaim:
+            size: 15Gi
+        sftp:
+          password: dummy
+          username: dummy
+      eric-data-object-storage-mn:
+        brAgent:
+          properties:
+            backup_data_path: bucket1/data1.txt
+        objects_lifecycle_cfg: ""
+      eric-data-search-engine:
+        persistence:
+          data:
+            persistentVolumeClaim:
+              size: 10Gi
+        service:
+          network:
+            protocol:
+              IPv6: true
+      eric-data-search-engine-curator:
+        actions: ""
+        cronjob:
+          curator:
+            schedule: 0 */2 * * *
+      eric-fh-snmp-alarm-provider:
+        sendAlarm: true
+      eric-lm-combined-server:
+        licenseServerClient:
+          licenseServer:
+            thrift:
+              host: ""
+      eric-log-transformer:
+        egress:
+          syslog:
+            enabled: true
+            remoteHosts:
+            - host: 10.10.10.10
+              port: 514
+              protocol: TCP
+      eric-sec-access-mgmt:
+        replicaCount: 2
+    eric-cncs-oss-config:
+      ingress:
+        enabled: false
+    eric-cncs-oss-pre-config:
+      alertRules:
+        alarmConfigurationParameters:
+          documentDatabasePg:
+            diskSpaceThreshold: 80
+            holdOnOffTime: 3
+            severity: Major
+      enabled: true
+      faultMappings:
+        eric-appmgr-data-document-db.json: |-
+          [
+            {
+              "faultName": "DocumentDatabaseLowDiskSpace",
+              "specificProblem": "Database PVC Low Disk Space",
+              "defaultSeverity": "Major",
+              "defaultDescription": "Over a predefined percentuage of disk space is used",
+              "defaultExpiration": 0,
+              "code": 10002
+            }
+          ]
+        eric-cm-mediator-db-pg.json: |-
+          [
+            {
+              "faultName": "DocumentDatabaseLowDiskSpace",
+              "specificProblem": "Database PVC Low Disk Space",
+              "defaultSeverity": "Major",
+              "defaultDescription": "Over a predefined percentuage of disk space is used",
+              "defaultExpiration": 0,
+              "code": 10002
+            }
+          ]
+        eric-ctrl-bro.json: |-
+          [
+              {
+                  "faultName": "CreateBackupOperationFailed",
+                  "specificProblem": "Create Backup Operation Failed",
+                  "defaultSeverity": "Major",
+                  "defaultDescription": "Last create backup operation failed",
+                  "defaultExpiration": 3600,
+                  "code": 10002
+              },
+              {
+                  "faultName": "RestoreOperationFailed",
+                  "specificProblem": "Restore Operation Failed",
+                  "defaultSeverity": "Major",
+                  "defaultDescription": "Last restore operation failed",
+                  "defaultExpiration": 3600,
+                  "code": 10002
+              },
+              {
+                  "faultName": "DeleteBackupOperationFailed",
+                  "specificProblem": "Delete Backup Operation Failed",
+                  "defaultSeverity": "Major",
+                  "defaultDescription": "Last delete backup operation failed",
+                  "defaultExpiration": 3600,
+                  "code": 10002
+              }
+          ]
+        eric-dmm-common-db.json: |-
+          [
+            {
+              "faultName": "DocumentDatabaseLowDiskSpace",
+              "specificProblem": "Database PVC Low Disk Space",
+              "defaultSeverity": "Major",
+              "defaultDescription": "Over a predefined percentuage of disk space is used",
+              "defaultExpiration": 0,
+              "code": 10002
+            }
+          ]
+        eric-eo-cm-database-pg.json: |-
+          [
+            {
+              "faultName": "DocumentDatabaseLowDiskSpace",
+              "specificProblem": "Database PVC Low Disk Space",
+              "defaultSeverity": "Major",
+              "defaultDescription": "Over a predefined percentuage of disk space is used",
+              "defaultExpiration": 0,
+              "code": 10002
+            }
+          ]
+        eric-eo-playbook-database-pg.json: |-
+          [
+            {
+              "faultName": "DocumentDatabaseLowDiskSpace",
+              "specificProblem": "Database PVC Low Disk Space",
+              "defaultSeverity": "Major",
+              "defaultDescription": "Over a predefined percentuage of disk space is used",
+              "defaultExpiration": 0,
+              "code": 10002
+            }
+          ]
+        eric-eo-subsystem-management-database-pg.json: |-
+          [
+            {
+              "faultName": "DocumentDatabaseLowDiskSpace",
+              "specificProblem": "Database PVC Low Disk Space",
+              "defaultSeverity": "Major",
+              "defaultDescription": "Over a predefined percentuage of disk space is used",
+              "defaultExpiration": 0,
+              "code": 10002
+            }
+          ]
+        eric-eo-tenantmgmt-database-pg.json: |-
+          [
+            {
+              "faultName": "DocumentDatabaseLowDiskSpace",
+              "specificProblem": "Database PVC Low Disk Space",
+              "defaultSeverity": "Major",
+              "defaultDescription": "Over a predefined percentuage of disk space is used",
+              "defaultExpiration": 0,
+              "code": 10002
+            }
+          ]
+        eric-eo-workflow-database-pg.json: |-
+          [
+            {
+              "faultName": "DocumentDatabaseLowDiskSpace",
+              "specificProblem": "Database PVC Low Disk Space",
+              "defaultSeverity": "Major",
+              "defaultDescription": "Over a predefined percentuage of disk space is used",
+              "defaultExpiration": 0,
+              "code": 10002
+            }
+          ]
+        eric-fh-alarm-handler-db-pg.json: |-
+          [
+            {
+              "faultName": "DocumentDatabaseLowDiskSpace",
+              "specificProblem": "Database PVC Low Disk Space",
+              "defaultSeverity": "Major",
+              "defaultDescription": "Over a predefined percentuage of disk space is used",
+              "defaultExpiration": 0,
+              "code": 10002
+            }
+          ]
+        eric-gr-bur-database-pg.json: |-
+          [
+            {
+              "faultName": "DocumentDatabaseLowDiskSpace",
+              "specificProblem": "Database PVC Low Disk Space",
+              "defaultSeverity": "Major",
+              "defaultDescription": "Over a predefined percentuage of disk space is used",
+              "defaultExpiration": 0,
+              "code": 10002
+            }
+          ]
+        eric-lm-combined-server-db-pg.json: |-
+          [
+            {
+              "faultName": "DocumentDatabaseLowDiskSpace",
+              "specificProblem": "Database PVC Low Disk Space",
+              "defaultSeverity": "Major",
+              "defaultDescription": "Over a predefined percentuage of disk space is used",
+              "defaultExpiration": 0,
+              "code": 10002
+            }
+          ]
+        eric-oss-app-lcm-data.json: |-
+          [
+            {
+              "faultName": "DocumentDatabaseLowDiskSpace",
+              "specificProblem": "Database PVC Low Disk Space",
+              "defaultSeverity": "Major",
+              "defaultDescription": "Over a predefined percentuage of disk space is used",
+              "defaultExpiration": 0,
+              "code": 10002
+            }
+          ]
+        eric-oss-app-onboarding-pg.json: |-
+          [
+            {
+              "faultName": "DocumentDatabaseLowDiskSpace",
+              "specificProblem": "Database PVC Low Disk Space",
+              "defaultSeverity": "Major",
+              "defaultDescription": "Over a predefined percentuage of disk space is used",
+              "defaultExpiration": 0,
+              "code": 10002
+            }
+          ]
+        eric-oss-common-base-alarm-mapping.json: |-
+          [
+            {
+              "faultName": "connectedSystemEOCMUnreachable",
+              "vendor": 193,
+              "code": 9905937,
+              "defaultDescription": "Unable to connect to EO CM.",
+              "defaultExpiration": 600,
+              "defaultSeverity": "Major",
+              "probableCause": 22,
+              "category": "CommunicationsAlarm",
+              "specificProblem": "Connected System EO CM Unreachable."
+            }
+          ]
+        eric-oss-common-postgres.json: |-
+          [
+            {
+              "faultName": "DocumentDatabaseLowDiskSpace",
+              "specificProblem": "Database PVC Low Disk Space",
+              "defaultSeverity": "Major",
+              "defaultDescription": "Over a predefined percentuage of disk space is used",
+              "defaultExpiration": 0,
+              "code": 10002
+            }
+          ]
+        eric-oss-enm-discovery-adapter-database-pg.json: |-
+          [
+            {
+              "faultName": "DocumentDatabaseLowDiskSpace",
+              "specificProblem": "Database PVC Low Disk Space",
+              "defaultSeverity": "Major",
+              "defaultDescription": "Over a predefined percentuage of disk space is used",
+              "defaultExpiration": 0,
+              "code": 10002
+            }
+          ]
+        eric-oss-enm-model-adapter-database-pg.json: |-
+          [
+            {
+              "faultName": "DocumentDatabaseLowDiskSpace",
+              "specificProblem": "Database PVC Low Disk Space",
+              "defaultSeverity": "Major",
+              "defaultDescription": "Over a predefined percentuage of disk space is used",
+              "defaultExpiration": 0,
+              "code": 10002
+            }
+          ]
+        eric-oss-enm-notification-adapter-database-pg.json: |-
+          [
+            {
+              "faultName": "DocumentDatabaseLowDiskSpace",
+              "specificProblem": "Database PVC Low Disk Space",
+              "defaultSeverity": "Major",
+              "defaultDescription": "Over a predefined percentuage of disk space is used",
+              "defaultExpiration": 0,
+              "code": 10002
+            }
+          ]
+        eric-oss-ericsson-adaptation.json: |-
+          [
+            {
+              "faultName": "connectedSystemENMUnreachable",
+              "vendor": 193,
+              "code": 9250577,
+              "defaultDescription": "Unable to connect to ENM.",
+              "defaultExpiration": 600,
+              "defaultSeverity": "Major",
+              "probableCause": 22,
+              "category": "CommunicationsAlarm",
+              "specificProblem": "Connected System ENM Unreachable."
+            }
+          ]
+        eric-oss-flow-automation-db-pg.json: |-
+          [
+            {
+              "faultName": "DocumentDatabaseLowDiskSpace",
+              "specificProblem": "Database PVC Low Disk Space",
+              "defaultSeverity": "Major",
+              "defaultDescription": "Over a predefined percentuage of disk space is used",
+              "defaultExpiration": 0,
+              "code": 10002
+            }
+          ]
+        eric-oss-ncmp-database-pg.json: |-
+          [
+            {
+              "faultName": "DocumentDatabaseLowDiskSpace",
+              "specificProblem": "Database PVC Low Disk Space",
+              "defaultSeverity": "Major",
+              "defaultDescription": "Over a predefined percentuage of disk space is used",
+              "defaultExpiration": 0,
+              "code": 10002
+            }
+          ]
+        eric-oss-notification-service-database-pg.json: |-
+          [
+            {
+              "faultName": "DocumentDatabaseLowDiskSpace",
+              "specificProblem": "Database PVC Low Disk Space",
+              "defaultSeverity": "Major",
+              "defaultDescription": "Over a predefined percentuage of disk space is used",
+              "defaultExpiration": 0,
+              "code": 10002
+            }
+          ]
+        eric-pm-kpi-data-v2.json: |-
+          [
+            {
+              "faultName": "DocumentDatabaseLowDiskSpace",
+              "specificProblem": "Database PVC Low Disk Space",
+              "defaultSeverity": "Major",
+              "defaultDescription": "Over a predefined percentuage of disk space is used",
+              "defaultExpiration": 0,
+              "code": 10002
+            }
+          ]
+        eric-sec-access-mgmt-db-pg.json: |-
+          [
+            {
+              "faultName": "DocumentDatabaseLowDiskSpace",
+              "specificProblem": "Database PVC Low Disk Space",
+              "defaultSeverity": "Major",
+              "defaultDescription": "Over a predefined percentuage of disk space is used",
+              "defaultExpiration": 0,
+              "code": 10002
+            }
+          ]
+        eric-sec-certm.json: |-
+          [
+              {
+                  "faultName": "CertMCertificateToExpire",
+                  "createAlarm": true,
+                  "defaultDescription": "Certificate Management, the Certificate is about to Expire",
+                  "defaultExpiration": 3600,
+                  "defaultSeverity": "Warning",
+                  "vendor": 193,
+                  "code": 9699329,
+                  "category": "ProcessingErrorAlarm",
+                  "probableCause": 351,
+                  "specificProblem": "The certificate will expire in <x> days and should be renewed to prevent service failure"
+              },
+              {
+                  "faultName": "CertMTrustedCertificateToExpire",
+                  "createAlarm": true,
+                  "defaultDescription": "Certificate Management, the Trusted Certificate is about to Expire",
+                  "defaultExpiration": 3600,
+                  "defaultSeverity": "Warning",
+                  "vendor": 193,
+                  "code": 9699330,
+                  "category": "ProcessingErrorAlarm",
+                  "probableCause": 351,
+                  "specificProblem": "The trusted certificate will expire in <x> days and should be renewed to prevent service failure"
+              },
+              {
+                  "faultName": "CertMAutomaticEnrollmentFailed",
+                  "createAlarm": true,
+                  "defaultDescription": "Certificate Management, Automatic Enrollment Failed",
+                  "defaultExpiration": 3600,
+                  "defaultSeverity": "Warning",
+                  "vendor": 193,
+                  "code": 9699331,
+                  "category": "ProcessingErrorAlarm",
+                  "probableCause": 307,
+                  "specificProblem": "Automatic certificate renewal using enrollment protocol <protocol> failed due to local misconfiguration or remote enrollment service denial"
+              }
+          ]
+        eric-sec-sip-tls.json: |-
+          [
+            {
+              "faultName": "InternalCAInternalCertificateCreationFailure",
+              "vendor": 193,
+              "code": 10223618,
+              "defaultSeverity": "Major",
+              "probableCause": 302,
+              "defaultDescription": "",
+              "specificProblem": "Internal CA Internal Certificate Creation Failure",
+              "category": "ProcessingErrorAlarm"}
+          ]
+        eric-so-alarm-mapping.json: |-
+          [
+            {
+              "faultName": "connectedSystemNFVOUnreachable",
+              "vendor": 193,
+              "code": 9873169,
+              "defaultDescription": "Unable to connect to NFVO.",
+              "defaultExpiration": 600,
+              "defaultSeverity": "Major",
+              "probableCause": 22,
+              "category": "CommunicationsAlarm",
+              "specificProblem": "Connected System NFVO Unreachable."
+            }
+          ]
+        eric-topology-handling-database-pg.json: |-
+          [
+            {
+              "faultName": "DocumentDatabaseLowDiskSpace",
+              "specificProblem": "Database PVC Low Disk Space",
+              "defaultSeverity": "Major",
+              "defaultDescription": "Over a predefined percentuage of disk space is used",
+              "defaultExpiration": 0,
+              "code": 10002
+            }
+          ]
+        toscao-database-pg.json: |-
+          [
+            {
+              "faultName": "DocumentDatabaseLowDiskSpace",
+              "specificProblem": "Database PVC Low Disk Space",
+              "defaultSeverity": "Major",
+              "defaultDescription": "Over a predefined percentuage of disk space is used",
+              "defaultExpiration": 0,
+              "code": 10002
+            }
+          ]
+    eric-csm-st:
+      global:
+        sasl:
+          enabled: true
+        tls:
+          enabled: true
+      service:
+        endpoints:
+          st:
+            nb:
+              tls:
+                enforced: required
+            pm:
+              tls:
+                enforced: required
+            sb:
+              tls:
+                enforced: required
+                verifyClientCertificate: true
+    eric-eo-so:
+      defaultUser:
+        password: Ericsson123!
+        username: so-user
+      eric-oss-topo-trouble-mngmt-ui:
+        enabled: false
+      ingress:
+        enabled: false
+      so-pm-alert-manager:
+        enabled: false
+    eric-oss-adc:
+      eric-oss-enm-fns:
+        enabled: true
+      ingress:
+        enabled: false
+        tls:
+          secretName: ves-tls-secret
+    eric-oss-app-mgr:
+      eric-lcm-container-registry:
+        ingress:
+          enabled: false
+      ingress:
+        enabled: false
+    eric-oss-common-base:
+      eric-eo-usermgmt:
+        replicaCount: 2
+      eric-eo-usermgmt-ui:
+        replicaCount: 2
+      gas:
+        defaultUser:
+          password: Ericsson123!
+          username: gas-user
+      ingress:
+        enabled: false
+      service-mesh-ingress-gateway:
+        externalTrafficPolicy: Cluster
+        service:
+          annotations:
+            cloudProviderLB: {}
+          externalTrafficPolicy: Cluster
+          loadBalancerIP: 1.1.1.1
+      sessionTokens:
+        maxIdleTimeSecs: 1800
+        maxSessionDurationSecs: 36000
+      system-user:
+        credentials:
+          password: Ericsson123!
+          username: system-user
+    eric-oss-config-handling:
+      cps-user:
+        credentials:
+          password: Ericsson123!
+          username: cps-user
+      dmi-user:
+        credentials:
+          password: Ericsson123!
+          username: dmi-user
+    eric-oss-ericsson-adaptation:
+      eric-oss-ran-topology-adapter:
+        rtaUser:
+          password: Ericsson123!
+          username: rta-user
+    eric-oss-oran-support:
+      eric-oss-a1-policy-mngmt-svc:
+        defaultUser:
+          password: DefaultP12345!
+          username: a1-user
+    eric-oss-pf:
+      defaultUser:
+        password: Ericsson123!
+        username: pf-user
+      ingress:
+        enabled: false
+    eric-oss-uds:
+      defaultUser:
+        password: Ericsson123!
+        username: uds-user
+      ingress:
+        enabled: false
+    eric-topology-handling:
+      eric-oss-common-topology-svc:
+        eric-oss-cmn-topology-svc-core:
+          defaultUser:
+            password: Ericsson123!
+            username: cts-user
+          useGasHost:
+            enabled: true
+      eric-oss-common-topology-ui:
+        enabled: true
+    global:
+      createClusterRoles: true
+      hosts:
+        adc: adc.dummy
+        appmgr: appmgr.dummy
+        gas: gas.dummy
+        iam: iam.dummy
+        os: os.dummy
+        pf: pf.dummy
+        so: so.dummy
+        ta: ta.dummy
+        th: th.dummy
+        uds: uds.dummy
+      iam:
+        adminSecret: eric-sec-access-mgmt-creds
+        clientId: eo
+        passwordKey: kcpasswd
+        tlsSecret: iam-tls-secret
+        userKey: kcadminid
+      iccrAppIngresses: false
+      ingressClass: oss_iccr
+      log:
+        streamingMethod: indirect
+      networkPolicy:
+        enabled: true
+      pullSecret: k8s-registry-secret
+      registry:
+        password: dummy_password
+        url: armdocker.rnd.ericsson.se
+        username: dummy_username
+      security:
+        oauth:
+          enabled: false
+        outboundPolicy:
+          registryOnly:
+            enabled: false
+        sasl:
+          enabled: true
+        tls:
+          enabled: false
+      serviceMesh:
+        enabled: true
+      support:
+        ipv6:
+          enabled: true
+      timezone: UTC
+    notification-service:
+      enabled: true
+    optionality:
+      eric-cloud-native-base:
+        eric-cm-mediator:
+          enabled: false
+        eric-cm-mediator-db-pg:
+          enabled: false
+        eric-data-document-database-pg:
+          enabled: false
+        eric-data-object-storage-mn:
+          enabled: true
+        eric-fh-alarm-handler-db-pg:
+          enabled: false
+        eric-lm-combined-server-db-pg:
+          enabled: false
+        eric-sec-sip-tls:
+          enabled: true
+        eric-tm-ingress-controller-cr:
+          enabled: false
+      eric-oss-common-base:
+        eric-eo-ecmsol005-stub:
+          enabled: false
+        eric-eo-evnfm-crypto:
+          enabled: false
+        eric-eo-evnfm-nbi:
+          enabled: false
+        eric-gr-bur-database-pg:
+          enabled: false
+        eric-gr-bur-orchestrator:
+          enabled: false
+        eric-oss-ddc:
+          enabled: false
+        eric-oss-metrics-stager:
+          enabled: false
+        eric-pm-kube-state-metrics:
+          enabled: false
+    secret-eric-data-object-storage-mn:
+      enabled: true
+    tags:
+      adc: true
+      appmgr: true
+      ch: true
+      dmm: true
+      eas: true
+      os: true
+      pf: true
+      pmh: true
+      so: true
+      ta: true
+      th: true
+      uds: true
+repositories:
+- name: adp-umbrella-released
+  url: https://arm.sero.gic.ericsson.se/artifactory/proj-adp-umbrella-released-helm/
+- name: eric-oss-drop
+  url: https://arm.seli.gic.ericsson.se/artifactory/proj-eric-oss-drop-helm-local
+- name: so-gs-all
+  url: https://arm.rnd.ki.sw.ericsson.se/artifactory/proj-so-gs-all-helm/
+- name: adp-gs-all
+  url: https://arm.sero.gic.ericsson.se/artifactory/proj-adp-gs-all-helm
+releases:
+- chart: /tmp/chartify2053629024/eric-app-ns/secret-eric-data-object-storage-mn
+  installed: false
+  name: secret-eric-data-object-storage-mn
+  namespace: eric-app-ns
+- chart: adp-gs-all/eric-mesh-controller
+  version: 10.0.0+34
+  installed: false
+  name: eric-mesh-controller
+  namespace: eric-app-ns
+  labels:
+    csar: eric-mesh-controller
+  values:
+  - ./default-values/state-dependent-values.yaml.gotmpl
+  - ./values-templates/eric-mesh-controller-site-values.yaml.gotmpl
+- chart: charts/eric-cncs-oss-pre-config
+  installed: false
+  needs:
+  - eric-mesh-controller
+  name: eric-cncs-oss-pre-config
+  namespace: eric-app-ns
+  values:
+  - eric-cm-mediator:
+      enabled: false
+    eric-cm-mediator-db-pg:
+      enabled: false
+    eric-data-document-database-pg:
+      enabled: false
+    eric-data-object-storage-mn:
+      enabled: true
+    eric-fh-alarm-handler-db-pg:
+      enabled: false
+    eric-lm-combined-server-db-pg:
+      enabled: false
+    eric-sec-sip-tls:
+      enabled: true
+    eric-tm-ingress-controller-cr:
+      enabled: false
+  - ./default-values/state-dependent-values.yaml.gotmpl
+  - ./charts/eric-cncs-oss-pre-config/eric-cncs-oss-pre-config.yaml.gotmpl
+- chart: adp-umbrella-released/eric-cloud-native-base
+  version: 79.9.0
+  installed: true
+  needs:
+  - eric-cncs-oss-pre-config
+  - eric-mesh-controller
+  name: eric-cloud-native-base
+  namespace: eric-app-ns
+  labels:
+    csar: eric-cloud-native-base
+  values:
+  - eric-cm-mediator:
+      enabled: false
+    eric-cm-mediator-db-pg:
+      enabled: false
+    eric-data-document-database-pg:
+      enabled: false
+    eric-data-object-storage-mn:
+      enabled: true
+    eric-fh-alarm-handler-db-pg:
+      enabled: false
+    eric-lm-combined-server-db-pg:
+      enabled: false
+    eric-sec-sip-tls:
+      enabled: true
+    eric-tm-ingress-controller-cr:
+      enabled: false
+  - ./values-templates/eric-cloud-native-base-site-values.yaml.gotmpl
+  - ./values-templates/release-site-values.yaml.gotmpl
+  - ./values-templates/streaming-method.compatibility.yaml.gotmpl
+  - ./values-templates/deployment-type.compatibility.yaml.gotmpl
+- chart: eric-oss-drop/eric-cncs-oss-config
+  version: 0.0.0-48
+  installed: false
+  needs:
+  - eric-cloud-native-base
+  - eric-mesh-controller
+  name: eric-cncs-oss-config
+  namespace: eric-app-ns
+  labels:
+    csar: eric-cncs-oss-config
+  values:
+  - eric-cm-mediator:
+      enabled: false
+    eric-cm-mediator-db-pg:
+      enabled: false
+    eric-data-document-database-pg:
+      enabled: false
+    eric-data-object-storage-mn:
+      enabled: true
+    eric-fh-alarm-handler-db-pg:
+      enabled: false
+    eric-lm-combined-server-db-pg:
+      enabled: false
+    eric-sec-sip-tls:
+      enabled: true
+    eric-tm-ingress-controller-cr:
+      enabled: false
+  - ./default-values/state-dependent-values.yaml.gotmpl
+  - ./values-templates/eric-cncs-oss-config-site-values.yaml.gotmpl
+  - ./values-templates/eric-cloud-native-base-site-values.yaml.gotmpl
+- chart: eric-oss-drop/eric-oss-common-base
+  version: 0.1.0-1236
+  installed: false
+  needs:
+  - eric-cloud-native-base
+  - eric-mesh-controller
+  name: eric-oss-common-base
+  namespace: eric-app-ns
+  labels:
+    csar: eric-oss-common-base
+  values:
+  - eric-eo-ecmsol005-stub:
+      enabled: false
+    eric-eo-evnfm-crypto:
+      enabled: false
+    eric-eo-evnfm-nbi:
+      enabled: false
+    eric-gr-bur-database-pg:
+      enabled: false
+    eric-gr-bur-orchestrator:
+      enabled: false
+    eric-oss-ddc:
+      enabled: false
+    eric-oss-metrics-stager:
+      enabled: false
+    eric-pm-kube-state-metrics:
+      enabled: false
+  - ./default-values/state-dependent-values.yaml.gotmpl
+  - ./values-templates/eric-oss-common-base-site-values.yaml.gotmpl
+  - ./values-templates/streaming-method.compatibility.yaml.gotmpl
+- chart: eric-oss-drop/eric-oss-oran-support
+  version: 0.0.0-75
+  installed: false
+  needs:
+  - eric-cloud-native-base
+  - eric-oss-common-base
+  - eric-mesh-controller
+  name: eric-oss-oran-support
+  namespace: eric-app-ns
+  labels:
+    csar: eric-oss-oran-support
+  values:
+  - ./default-values/state-dependent-values.yaml.gotmpl
+  - ./values-templates/eric-oss-oran-support-site-values.yaml.gotmpl
+- chart: so-gs-all/eric-eo-so
+  version: 3.13.0-37
+  installed: false
+  needs:
+  - eric-cloud-native-base
+  - eric-mesh-controller
+  - eric-oss-common-base
+  name: eric-eo-so
+  namespace: eric-app-ns
+  labels:
+    csar: eric-eo-so
+  values:
+  - ./default-values/state-dependent-values.yaml.gotmpl
+  - ./values-templates/eric-eo-so-site-values.yaml.gotmpl
+- chart: so-gs-all/eric-oss-pf
+  version: 2.17.0-15
+  installed: false
+  needs:
+  - eric-cloud-native-base
+  - eric-mesh-controller
+  - eric-oss-common-base
+  name: eric-oss-pf
+  namespace: eric-app-ns
+  labels:
+    csar: eric-oss-pf
+  values:
+  - ./default-values/state-dependent-values.yaml.gotmpl
+  - ./values-templates/pf-oss-service-site-values.yaml.gotmpl
+- chart: so-gs-all/eric-oss-uds
+  version: 5.11.0-24
+  installed: false
+  needs:
+  - eric-cloud-native-base
+  - eric-mesh-controller
+  - eric-oss-common-base
+  name: eric-oss-uds
+  namespace: eric-app-ns
+  labels:
+    csar: eric-oss-uds
+  values:
+  - ./default-values/state-dependent-values.yaml.gotmpl
+  - ./values-templates/eric-oss-uds-site-values.yaml.gotmpl
+- chart: eric-oss-drop/eric-oss-adc
+  version: 0.0.2-827
+  installed: false
+  needs:
+  - eric-cloud-native-base
+  - eric-mesh-controller
+  - eric-oss-common-base
+  - eric-oss-dmm
+  name: eric-oss-adc
+  namespace: eric-app-ns
+  labels:
+    csar: eric-oss-adc
+  values:
+  - ./default-values/state-dependent-values.yaml.gotmpl
+  - ./values-templates/eric-oss-adc-site-values.yaml.gotmpl
+- chart: eric-oss-drop/eric-oss-dmm
+  version: 0.0.0-223
+  installed: true
+  needs:
+  - eric-cloud-native-base
+  - eric-mesh-controller
+  - eric-oss-common-base
+  name: eric-oss-dmm
+  namespace: eric-app-ns
+  labels:
+    csar: eric-oss-dmm
+  values:
+  - ./default-values/state-dependent-values.yaml.gotmpl
+  - ./values-templates/eric-oss-dmm-site-values.yaml.gotmpl
+- chart: eric-oss-drop/eric-topology-handling
+  version: 0.0.2-143
+  installed: false
+  needs:
+  - eric-cloud-native-base
+  - eric-mesh-controller
+  - eric-oss-common-base
+  name: eric-topology-handling
+  namespace: eric-app-ns
+  labels:
+    csar: eric-topology-handling
+  values:
+  - ./default-values/state-dependent-values.yaml.gotmpl
+  - ./values-templates/eric-topology-handling-site-values.yaml.gotmpl
+- chart: eric-oss-drop/eric-oss-ericsson-adaptation
+  version: 0.1.0-979
+  installed: false
+  needs:
+  - eric-cloud-native-base
+  - eric-mesh-controller
+  - eric-oss-common-base
+  name: eric-oss-ericsson-adaptation
+  namespace: eric-app-ns
+  labels:
+    csar: eric-oss-ericsson-adaptation
+  values:
+  - ./default-values/state-dependent-values.yaml.gotmpl
+  - ./values-templates/eric-oss-ericsson-adaptation-site-values.yaml.gotmpl
+- chart: eric-oss-drop/eric-oss-app-mgr
+  version: 1.1.0-428
+  installed: false
+  needs:
+  - eric-cloud-native-base
+  - eric-mesh-controller
+  - eric-oss-common-base
+  name: eric-oss-app-mgr
+  namespace: eric-app-ns
+  labels:
+    csar: eric-oss-app-mgr
+  values:
+  - ./default-values/state-dependent-values.yaml.gotmpl
+  - ./values-templates/eric-oss-app-mgr-site-values.yaml.gotmpl
+- chart: eric-oss-drop/eric-oss-config-handling
+  version: 0.0.0-173
+  installed: false
+  needs:
+  - eric-cloud-native-base
+  - eric-mesh-controller
+  - eric-oss-common-base
+  name: eric-oss-config-handling
+  namespace: eric-app-ns
+  labels:
+    csar: eric-oss-config-handling
+  values:
+  - ./default-values/state-dependent-values.yaml.gotmpl
+  - ./values-templates/eric-oss-config-handling-site-values.yaml.gotmpl
+- chart: eric-oss-drop/eric-oss-pm-stats-calc-handling
+  version: 0.0.0-220
+  installed: false
+  needs:
+  - eric-cloud-native-base
+  - eric-oss-common-base
+  - eric-mesh-controller
+  name: eric-oss-pm-stats-calc-handling
+  namespace: eric-app-ns
+  labels:
+    csar: eric-oss-pm-stats-calc-handling
+  values:
+  - ./default-values/state-dependent-values.yaml.gotmpl
+  - ./values-templates/eric-oss-pm-stats-calc-handling-site-values.yaml.gotmpl
+hooks:
+- name: ""
+  events:
+  - postsync
+  command: ./scripts/purge-smi.sh
+  args:
+  - eric-service-mesh-integration
+  - eric-app-ns
+  showlogs: true
+templates: {}
+renderedvalues:
+  eric-cloud-native-base:
+    eric-ctrl-bro:
+      persistence:
+        persistentVolumeClaim:
+          size: 15Gi
+      sftp:
+        password: dummy
+        username: dummy
+    eric-data-object-storage-mn:
+      brAgent:
+        properties:
+          backup_data_path: bucket1/data1.txt
+      objects_lifecycle_cfg: ""
+    eric-data-search-engine:
+      persistence:
+        data:
+          persistentVolumeClaim:
+            size: 10Gi
+      service:
+        network:
+          protocol:
+            IPv6: true
+    eric-data-search-engine-curator:
+      actions: ""
+      cronjob:
+        curator:
+          schedule: 0 */2 * * *
+    eric-fh-snmp-alarm-provider:
+      sendAlarm: true
+    eric-lm-combined-server:
+      licenseServerClient:
+        licenseServer:
+          thrift:
+            host: ""
+    eric-log-transformer:
+      egress:
+        syslog:
+          enabled: true
+          remoteHosts:
+          - host: 10.10.10.10
+            port: 514
+            protocol: TCP
+    eric-sec-access-mgmt:
+      replicaCount: 2
+  eric-cncs-oss-config:
+    ingress:
+      enabled: false
+  eric-cncs-oss-pre-config:
+    alertRules:
+      alarmConfigurationParameters:
+        documentDatabasePg:
+          diskSpaceThreshold: 80
+          holdOnOffTime: 3
+          severity: Major
+    enabled: true
+    faultMappings:
+      eric-appmgr-data-document-db.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-cm-mediator-db-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-ctrl-bro.json: |-
+        [
+            {
+                "faultName": "CreateBackupOperationFailed",
+                "specificProblem": "Create Backup Operation Failed",
+                "defaultSeverity": "Major",
+                "defaultDescription": "Last create backup operation failed",
+                "defaultExpiration": 3600,
+                "code": 10002
+            },
+            {
+                "faultName": "RestoreOperationFailed",
+                "specificProblem": "Restore Operation Failed",
+                "defaultSeverity": "Major",
+                "defaultDescription": "Last restore operation failed",
+                "defaultExpiration": 3600,
+                "code": 10002
+            },
+            {
+                "faultName": "DeleteBackupOperationFailed",
+                "specificProblem": "Delete Backup Operation Failed",
+                "defaultSeverity": "Major",
+                "defaultDescription": "Last delete backup operation failed",
+                "defaultExpiration": 3600,
+                "code": 10002
+            }
+        ]
+      eric-dmm-common-db.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-eo-cm-database-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-eo-playbook-database-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-eo-subsystem-management-database-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-eo-tenantmgmt-database-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-eo-workflow-database-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-fh-alarm-handler-db-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-gr-bur-database-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-lm-combined-server-db-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-oss-app-lcm-data.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-oss-app-onboarding-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-oss-common-base-alarm-mapping.json: |-
+        [
+          {
+            "faultName": "connectedSystemEOCMUnreachable",
+            "vendor": 193,
+            "code": 9905937,
+            "defaultDescription": "Unable to connect to EO CM.",
+            "defaultExpiration": 600,
+            "defaultSeverity": "Major",
+            "probableCause": 22,
+            "category": "CommunicationsAlarm",
+            "specificProblem": "Connected System EO CM Unreachable."
+          }
+        ]
+      eric-oss-common-postgres.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-oss-enm-discovery-adapter-database-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-oss-enm-model-adapter-database-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-oss-enm-notification-adapter-database-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-oss-ericsson-adaptation.json: |-
+        [
+          {
+            "faultName": "connectedSystemENMUnreachable",
+            "vendor": 193,
+            "code": 9250577,
+            "defaultDescription": "Unable to connect to ENM.",
+            "defaultExpiration": 600,
+            "defaultSeverity": "Major",
+            "probableCause": 22,
+            "category": "CommunicationsAlarm",
+            "specificProblem": "Connected System ENM Unreachable."
+          }
+        ]
+      eric-oss-flow-automation-db-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-oss-ncmp-database-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-oss-notification-service-database-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-pm-kpi-data-v2.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-sec-access-mgmt-db-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      eric-sec-certm.json: |-
+        [
+            {
+                "faultName": "CertMCertificateToExpire",
+                "createAlarm": true,
+                "defaultDescription": "Certificate Management, the Certificate is about to Expire",
+                "defaultExpiration": 3600,
+                "defaultSeverity": "Warning",
+                "vendor": 193,
+                "code": 9699329,
+                "category": "ProcessingErrorAlarm",
+                "probableCause": 351,
+                "specificProblem": "The certificate will expire in <x> days and should be renewed to prevent service failure"
+            },
+            {
+                "faultName": "CertMTrustedCertificateToExpire",
+                "createAlarm": true,
+                "defaultDescription": "Certificate Management, the Trusted Certificate is about to Expire",
+                "defaultExpiration": 3600,
+                "defaultSeverity": "Warning",
+                "vendor": 193,
+                "code": 9699330,
+                "category": "ProcessingErrorAlarm",
+                "probableCause": 351,
+                "specificProblem": "The trusted certificate will expire in <x> days and should be renewed to prevent service failure"
+            },
+            {
+                "faultName": "CertMAutomaticEnrollmentFailed",
+                "createAlarm": true,
+                "defaultDescription": "Certificate Management, Automatic Enrollment Failed",
+                "defaultExpiration": 3600,
+                "defaultSeverity": "Warning",
+                "vendor": 193,
+                "code": 9699331,
+                "category": "ProcessingErrorAlarm",
+                "probableCause": 307,
+                "specificProblem": "Automatic certificate renewal using enrollment protocol <protocol> failed due to local misconfiguration or remote enrollment service denial"
+            }
+        ]
+      eric-sec-sip-tls.json: |-
+        [
+          {
+            "faultName": "InternalCAInternalCertificateCreationFailure",
+            "vendor": 193,
+            "code": 10223618,
+            "defaultSeverity": "Major",
+            "probableCause": 302,
+            "defaultDescription": "",
+            "specificProblem": "Internal CA Internal Certificate Creation Failure",
+            "category": "ProcessingErrorAlarm"}
+        ]
+      eric-so-alarm-mapping.json: |-
+        [
+          {
+            "faultName": "connectedSystemNFVOUnreachable",
+            "vendor": 193,
+            "code": 9873169,
+            "defaultDescription": "Unable to connect to NFVO.",
+            "defaultExpiration": 600,
+            "defaultSeverity": "Major",
+            "probableCause": 22,
+            "category": "CommunicationsAlarm",
+            "specificProblem": "Connected System NFVO Unreachable."
+          }
+        ]
+      eric-topology-handling-database-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+      toscao-database-pg.json: |-
+        [
+          {
+            "faultName": "DocumentDatabaseLowDiskSpace",
+            "specificProblem": "Database PVC Low Disk Space",
+            "defaultSeverity": "Major",
+            "defaultDescription": "Over a predefined percentuage of disk space is used",
+            "defaultExpiration": 0,
+            "code": 10002
+          }
+        ]
+  eric-csm-st:
+    global:
+      sasl:
+        enabled: true
+      tls:
+        enabled: true
+    service:
+      endpoints:
+        st:
+          nb:
+            tls:
+              enforced: required
+          pm:
+            tls:
+              enforced: required
+          sb:
+            tls:
+              enforced: required
+              verifyClientCertificate: true
+  eric-eo-so:
+    defaultUser:
+      password: Ericsson123!
+      username: so-user
+    eric-oss-topo-trouble-mngmt-ui:
+      enabled: false
+    ingress:
+      enabled: false
+    so-pm-alert-manager:
+      enabled: false
+  eric-oss-adc:
+    eric-oss-enm-fns:
+      enabled: true
+    ingress:
+      enabled: false
+      tls:
+        secretName: ves-tls-secret
+  eric-oss-app-mgr:
+    eric-lcm-container-registry:
+      ingress:
+        enabled: false
+    ingress:
+      enabled: false
+  eric-oss-common-base:
+    eric-eo-usermgmt:
+      replicaCount: 2
+    eric-eo-usermgmt-ui:
+      replicaCount: 2
+    gas:
+      defaultUser:
+        password: Ericsson123!
+        username: gas-user
+    ingress:
+      enabled: false
+    service-mesh-ingress-gateway:
+      externalTrafficPolicy: Cluster
+      service:
+        annotations:
+          cloudProviderLB: {}
+        externalTrafficPolicy: Cluster
+        loadBalancerIP: 1.1.1.1
+    sessionTokens:
+      maxIdleTimeSecs: 1800
+      maxSessionDurationSecs: 36000
+    system-user:
+      credentials:
+        password: Ericsson123!
+        username: system-user
+  eric-oss-config-handling:
+    cps-user:
+      credentials:
+        password: Ericsson123!
+        username: cps-user
+    dmi-user:
+      credentials:
+        password: Ericsson123!
+        username: dmi-user
+  eric-oss-ericsson-adaptation:
+    eric-oss-ran-topology-adapter:
+      rtaUser:
+        password: Ericsson123!
+        username: rta-user
+  eric-oss-oran-support:
+    eric-oss-a1-policy-mngmt-svc:
+      defaultUser:
+        password: DefaultP12345!
+        username: a1-user
+  eric-oss-pf:
+    defaultUser:
+      password: Ericsson123!
+      username: pf-user
+    ingress:
+      enabled: false
+  eric-oss-uds:
+    defaultUser:
+      password: Ericsson123!
+      username: uds-user
+    ingress:
+      enabled: false
+  eric-topology-handling:
+    eric-oss-common-topology-svc:
+      eric-oss-cmn-topology-svc-core:
+        defaultUser:
+          password: Ericsson123!
+          username: cts-user
+        useGasHost:
+          enabled: true
+    eric-oss-common-topology-ui:
+      enabled: true
+  global:
+    createClusterRoles: true
+    hosts:
+      adc: adc.dummy
+      appmgr: appmgr.dummy
+      gas: gas.dummy
+      iam: iam.dummy
+      os: os.dummy
+      pf: pf.dummy
+      so: so.dummy
+      ta: ta.dummy
+      th: th.dummy
+      uds: uds.dummy
+    iam:
+      adminSecret: eric-sec-access-mgmt-creds
+      clientId: eo
+      passwordKey: kcpasswd
+      tlsSecret: iam-tls-secret
+      userKey: kcadminid
+    iccrAppIngresses: false
+    ingressClass: oss_iccr
+    log:
+      streamingMethod: indirect
+    networkPolicy:
+      enabled: true
+    pullSecret: k8s-registry-secret
+    registry:
+      password: dummy_password
+      url: armdocker.rnd.ericsson.se
+      username: dummy_username
+    security:
+      oauth:
+        enabled: false
+      outboundPolicy:
+        registryOnly:
+          enabled: false
+      sasl:
+        enabled: true
+      tls:
+        enabled: false
+    serviceMesh:
+      enabled: true
+    support:
+      ipv6:
+        enabled: true
+    timezone: UTC
+  notification-service:
+    enabled: true
+  optionality:
+    eric-cloud-native-base:
+      eric-cm-mediator:
+        enabled: false
+      eric-cm-mediator-db-pg:
+        enabled: false
+      eric-data-document-database-pg:
+        enabled: false
+      eric-data-object-storage-mn:
+        enabled: true
+      eric-fh-alarm-handler-db-pg:
+        enabled: false
+      eric-lm-combined-server-db-pg:
+        enabled: false
+      eric-sec-sip-tls:
+        enabled: true
+      eric-tm-ingress-controller-cr:
+        enabled: false
+    eric-oss-common-base:
+      eric-eo-ecmsol005-stub:
+        enabled: false
+      eric-eo-evnfm-crypto:
+        enabled: false
+      eric-eo-evnfm-nbi:
+        enabled: false
+      eric-gr-bur-database-pg:
+        enabled: false
+      eric-gr-bur-orchestrator:
+        enabled: false
+      eric-oss-ddc:
+        enabled: false
+      eric-oss-metrics-stager:
+        enabled: false
+      eric-pm-kube-state-metrics:
+        enabled: false
+  secret-eric-data-object-storage-mn:
+    enabled: true
+  tags:
+    adc: true
+    appmgr: true
+    ch: true
+    dmm: true
+    eas: true
+    os: true
+    pf: true
+    pmh: true
+    so: true
+    ta: true
+    th: true
+    uds: true

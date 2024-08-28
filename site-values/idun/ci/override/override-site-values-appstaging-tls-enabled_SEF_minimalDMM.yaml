@@ -1,0 +1,296 @@
+# This override delta file was prepared for usage with main file:
+# site-values/idun/ci/template/site-values-latest.yaml
+
+global:
+  security:
+    tls:
+      enabled: true
+  eic:
+    enabled: true
+  hosts:
+    iam: 'EIC_HOST_REPLACE'
+  licensing:
+    sites:
+      - hostname: eric-test-nels-simulator
+
+# AppMgr AppStaging specific values to enable CNLCM and ACMR
+eric-oss-app-mgr:
+  eric-oss-am-cnlcm-adapter:
+    enabled: true
+  eric-oss-acm-runtime:
+    enabled: true
+
+# For EAS tests
+eric-oss-ericsson-adaptation:
+  eric-oss-ran-topology-adapter:
+    eric-oss-top-inv-exposure:
+      enable: true
+    dst:
+      enabled: true
+  eric-eo-enm-adapter:
+    dst:
+      enabled: true
+  eric-oss-enm-discovery-adapter:
+    dst:
+      enabled: true
+  eric-oss-enm-model-adapter:
+    dst:
+      enabled: true
+  eric-oss-enm-notification-adapter:
+    dst:
+      enabled: true
+eric-top-inv-exposure-handling:
+  eric-oss-top-inv-ingestion:
+    dataCatalog:
+      enabled: false
+    kafka:
+      subscription:
+        consumer:
+          enabled: false
+
+eric-oss-config-handling:
+  eric-oss-ncmp:
+    dst:
+      enabled: true
+
+# Required for ADC functional testing
+eric-oss-adc:
+  preHookJobs:
+    enabled: true
+  eric-oss-4g-pm-event-parser:
+    ignoreSubscription: false
+    config:
+      inputTopic: "4g-pm-event-file-transfer-and-processing"
+  eric-oss-sftp-filetrans-ran-2:
+    enabled: true
+    replicaCount: 1
+  eric-oss-sftp-filetrans-core-1:
+    enabled: true
+  eric-oss-3gpp-pm-xml-core-parser:
+    enabled: true
+  eric-oss-stats-parser-configurator:
+    reg:
+      core: true
+      ebsn: true
+  eric-oss-enm-fns:
+    configuredQueries: |-
+      enms:
+        - name: enm1
+          periodSeconds: 60
+          queries:
+            - name: query1
+              topic: sftp-filetrans
+              fileType: ""
+              fileLocation: ""
+              dmmDataTypeRegistrationParameters:
+                dataSpace: "4G5G"
+                dataCategory: PM_COUNTERS
+              enmFileLookupServiceParameters:
+                dataType: PM_STATISTICAL
+                nodeType: "RadioNode"
+                id: -1
+            - name: query2
+              topic: 5g-event
+              fileType: ""
+              fileLocation: ".*_1_\\d+\\.gpb(?:\\.gz)?$"
+              dmmDataTypeRegistrationParameters:
+                dataSpace: 5G
+                dataCategory: PM_EVENTS
+              enmFileLookupServiceParameters:
+                dataType: "PM_CELLTRACE_*"
+                nodeType: ""
+                id: -1
+            - name: query4G
+              topic: 4g-event
+              fileType: bin.gz
+              fileLocation: ".*_1\\.bin(?:\\.gz)?$"
+              dmmDataTypeRegistrationParameters:
+                dataSpace: "4G"
+                dataCategory: "PM_EVENTS"
+              enmFileLookupServiceParameters:
+                dataType: PM_CELLTRACE
+                nodeType: ""
+                id: -1
+            - name: queryPCC
+              topic: pcc_pcg
+              fileType: xml.gz
+              fileLocation: ""
+              dmmDataTypeRegistrationParameters:
+                dataSpace: "PCC-PCG"
+                dataCategory: PM_COUNTERS
+              enmFileLookupServiceParameters:
+                dataType: PM_STATISTICAL
+                nodeType: PCC
+                id: -1
+            - name: queryPCG
+              topic: pcc_pcg
+              fileType: xml.gz
+              fileLocation: ""
+              dmmDataTypeRegistrationParameters:
+                dataSpace: "PCC-PCG"
+                dataCategory: PM_COUNTERS
+              enmFileLookupServiceParameters:
+                dataType: PM_STATISTICAL
+                nodeType: PCG
+                id: -1
+            - name: queryEBSN
+              topic: sftp-filetrans
+              fileType: ""
+              fileLocation: ""
+              dmmDataTypeRegistrationParameters:
+                dataSpace: "4G5G"
+                dataCategory: PM_COUNTERS
+              enmFileLookupServiceParameters:
+                dataType: PM_EBSN_*
+                nodeType: "RadioNode"
+                id: -1
+        - name: enm2
+          periodSeconds: 60
+          queries:
+            - name: query1
+              topic: sftp-filetrans
+              fileType: ""
+              fileLocation: ""
+              dmmDataTypeRegistrationParameters:
+                dataSpace: "4G5G"
+                dataCategory: PM_COUNTERS
+              enmFileLookupServiceParameters:
+                dataType: PM_STATISTICAL
+                nodeType: "RadioNode"
+                id: -1
+            - name: query2
+              topic: 5g-event
+              fileType: ""
+              fileLocation: ".*_1_\\d+\\.gpb(?:\\.gz)?$"
+              dmmDataTypeRegistrationParameters:
+                dataSpace: 5G
+                dataCategory: PM_EVENTS
+              enmFileLookupServiceParameters:
+                dataType: "PM_CELLTRACE_*"
+                nodeType: ""
+                id: -1
+            - name: queryPCC
+              topic: pcc_pcg
+              fileType: xml.gz
+              fileLocation: ""
+              dmmDataTypeRegistrationParameters:
+                dataSpace: "PCC-PCG"
+                dataCategory: PM_COUNTERS
+              enmFileLookupServiceParameters:
+                dataType: PM_STATISTICAL
+                nodeType: PCC
+                id: -1
+            - name: queryPCG
+              topic: pcc_pcg
+              fileType: xml.gz
+              fileLocation: ""
+              dmmDataTypeRegistrationParameters:
+                dataSpace: "PCC-PCG"
+                dataCategory: PM_COUNTERS
+              enmFileLookupServiceParameters:
+                dataType: PM_STATISTICAL
+                nodeType: PCG
+                id: -1
+  init:
+    sftp-username: flsuser1                          #FLS User's username
+    sftp-password: flspass@12                        #FLS User's passowrd
+    sftp-port: 2020
+    scriptingVM: eric-oss-pm-solution-enm-1.NAMESPACE.svc.cluster.local
+    scriptingVM2: eric-oss-pm-solution-enm-2.NAMESPACE.svc.cluster.local
+    url: http://eric-oss-fls-enm-1.NAMESPACE.svc.cluster.local:8080
+    url-enm-stub-2: http://eric-oss-fls-enm-2.NAMESPACE.svc.cluster.local:8080
+    clusterName: EIC
+
+eric-oss-dmm:
+  tags:
+    data-catalog: false
+    dmm-common-db: false
+    schema-registry: false
+    strimzi-op: true
+    data-collection-controller: false
+    resource-manager: false
+    object-storage-access-manager: false
+  init:
+    internal:
+     port:
+     - 9093
+  eric-oss-dmm-data-message-bus-kf:
+    persistence:
+      persistentVolumeClaim:
+        size: 8Gi
+  eric-oss-dmm-kf-op-sz:
+    kafka-cluster:
+      kafka:
+        jbod:
+          size: 75Gi
+
+eric-topology-handling:
+  eric-oss-common-topology-svc:
+    eric-oss-cmn-topology-svc-core:
+      defaultUser:
+        username: "cts-user"
+        password: "Ericsson123!"
+      useGasHost:
+        enabled: true
+
+eric-oss-common-base:
+  eric-oss-ddc:
+    autoUpload:
+      ddpid: DDP_ID
+      account: DDP_ACCOUNT
+      password: "DDP_PASSWORD"
+  eric-oss-license-consumer:
+    enforcingAgent:
+      periodicity:
+        interval: 5
+    licenseConsumer:
+      licensesValidityPeriod: 0
+  eric-adp-gui-aggregator-service:
+    dst:
+      enabled: true
+      sampler:
+        samplingRate: 1
+  eric-oss-help-aggregator:
+    dst:
+      enabled: true
+      sampler:
+        samplingRate: 1
+
+eric-cloud-native-base:
+  eric-data-object-storage-mn:
+    persistence:
+      persistentVolumeClaim:
+        size: 40Gi
+  eric-lm-combined-server:
+    labels:
+      eric-test-nels-simulator-access: "true"
+    licenseServerClient:
+      timer:
+        licenseRemovalGracePeriod: 0
+  eric-si-application-sys-info-handler:
+    labels:
+      eric-test-nels-simulator-access: "true"
+  eric-odca-diagnostic-data-collector:
+    sftpServerHost: "sftp-server:22"
+#Trace Logging Enabled
+  eric-dst-collector:
+    samplingConfig: |-
+      {
+        "service_strategies": [],
+        "default_strategy": {
+          "type": "probabilistic",
+          "param": 1.0
+        }
+      }
+
+# Required for PMH
+eric-oss-pm-stats-calc-handling:
+  sef:
+    enabled: true
+
+# IDUN-127149
+eric-service-exposure-framework:
+  eric-sef-exposure-api-gateway:
+    log:
+      transaction:
+        enabled: false

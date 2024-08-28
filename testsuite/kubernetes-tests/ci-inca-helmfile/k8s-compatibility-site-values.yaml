@@ -1,0 +1,21 @@
+global:
+  hosts:
+    appmgr: 'dummy'
+  registry:
+    url: 'dummy'
+  support:
+    ipv6:
+      enabled: true
+  timezone: UTC
+  createClusterRoles: true
+  licensing:
+    sites:
+      - hostname: 'nelsaas-vnf2-thrift.sero.gic.ericsson.se'
+  ericsson:
+    licensing:
+      licenseDomains:
+        - productType: 'EIC'
+          swltId: 'STB-EIC-2'
+          customerId: 800141
+tags:
+  appmgr: false

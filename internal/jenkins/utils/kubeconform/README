@@ -1,0 +1,13 @@
+- Download master branch code from repo:
+https://github.com/yannh/kubeconform
+
+- Build linux binary (using multipass VM), run:
+make
+
+- Copy bin/kubeconform and scripts/openapi2jsonschema.py to oss-integration-ci internal/jenkins/utils/kubeconform
+
+- Build image:
+docker build -t armdocker.rnd.ericsson.se/proj-eric-oss-drop/eric-oss-ci-kubeconform .
+
+- Using suitable credentials, push:
+docker push armdocker.rnd.ericsson.se/proj-eric-oss-drop/eric-oss-ci-kubeconform

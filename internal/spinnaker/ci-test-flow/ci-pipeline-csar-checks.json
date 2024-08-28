@@ -1,0 +1,250 @@
+{
+  "appConfig": {},
+  "description": "The is a CI Release pipeline to be used by Team TicketMaster",
+  "disabled": false,
+  "keepWaitingPipelines": false,
+  "lastModifiedBy": "ecepand",
+  "limitConcurrent": false,
+  "notifications": [],
+  "parameterConfig": [
+    {
+      "default": "ciloopman-docker-auth-config",
+      "description": "ARM Docker secret which holds the username and password to log into the ARM Docker repositories.",
+      "hasOptions": false,
+      "label": "ARM Docker Secret",
+      "name": "ARMDOCKER_USER_SECRET",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "",
+      "description": "",
+      "hasOptions": false,
+      "label": "Gerrit Ref Spec under test",
+      "name": "GERRIT_REFSPEC",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "evo_docker_engine_athlone",
+      "description": "Jenkins Slave to execute the flow against",
+      "hasOptions": false,
+      "label": "Jenkins Slave",
+      "name": "SLAVE_LABEL",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "armdocker.rnd.ericsson.se/proj-eric-oss-drop/eric-oss-ci-scripts:latest",
+      "description": "",
+      "hasOptions": false,
+      "label": "CI Docker image under test",
+      "name": "CI_DOCKER_IMAGE",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "",
+      "description": "",
+      "hasOptions": false,
+      "label": "Helmfile Name",
+      "name": "INT_CHART_NAME",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "2.5.0-127",
+      "description": "",
+      "hasOptions": false,
+      "label": "Helm File Version",
+      "name": "INT_CHART_VERSION",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "",
+      "description": "",
+      "hasOptions": false,
+      "label": "Helmfile Repo",
+      "name": "INT_CHART_REPO",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    }
+  ],
+  "schema": "1",
+  "spelEvaluator": "v4",
+  "stages": [
+    {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "CI-Test-CSAR-Check",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "CSAR Check",
+      "parameters": {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "CI_DOCKER_IMAGE": "${trigger['parameters']['CI_DOCKER_IMAGE']}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['GERRIT_REFSPEC']}",
+        "INT_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "INT_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "INT_CHART_VERSION": "${trigger['parameters']['INT_CHART_VERSION']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}"
+      },
+      "propertyFile": "csar_check.properties",
+      "refId": "7",
+      "requisiteStageRefIds": [],
+      "type": "jenkins"
+    },
+    {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "Ci-Test-CSAR-Builder",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "CSAR Builder",
+      "parameters": {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "CI_DOCKER_IMAGE": "${trigger['parameters']['CI_DOCKER_IMAGE']}",
+        "FORCE_CSAR_REBUILD": "true",
+        "GERRIT_REFSPEC": "${trigger['parameters']['GERRIT_REFSPEC']}",
+        "HELMFILE_CHART_NAME": "eric-ci-helmfile",
+        "HELMFILE_CHART_REPO": "https://arm.seli.gic.ericsson.se/artifactory/proj-eric-oss-drop-helm-local",
+        "HELMFILE_CHART_VERSION": "1.0.0-1",
+        "INT_CHART_NAMES": "eric-oss-ericsson-adaptation",
+        "INT_CHART_REPOS": "https://arm.seli.gic.ericsson.se/artifactory/proj-eric-oss-drop-helm-local",
+        "INT_CHART_VERSIONS": "0.1.0-811",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "site-values/idun/ci/override/override-site-values-ci-test.yaml",
+        "POPULATED_VALUES_FILE_LOCATION": "csar-build/site_values.yaml",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "ssh://gerrit-gamma.gic.ericsson.se:29418/OSS/com.ericsson.oss.tic/eric-oss-ericsson-adaptation",
+        "STATE_VALUES_FILE": "site-values/idun/ci/template/site-values-latest.yaml"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "8",
+      "requisiteStageRefIds": [],
+      "type": "jenkins"
+    },
+    {
+      "name": "Check CSAR Preconditions",
+      "preconditions": [
+        {
+          "context": {
+            "stageName": "CSAR Check",
+            "stageStatus": "SUCCEEDED"
+          },
+          "failPipeline": true,
+          "type": "stageStatus"
+        },
+        {
+          "context": {
+            "stageName": "CSAR Builder",
+            "stageStatus": "SUCCEEDED"
+          },
+          "failPipeline": true,
+          "type": "stageStatus"
+        },
+        {
+          "context": {
+            "stageName": "CSAR Properties",
+            "stageStatus": "SUCCEEDED"
+          },
+          "failPipeline": true,
+          "type": "stageStatus"
+        },
+        {
+          "context": {
+            "stageName": "Mini CSAR Builder",
+            "stageStatus": "SUCCEEDED"
+          },
+          "failPipeline": true,
+          "type": "stageStatus"
+        }
+      ],
+      "refId": "9",
+      "requisiteStageRefIds": [
+        "7",
+        "8",
+        "10",
+        "11"
+      ],
+      "type": "checkPreconditions"
+    },
+    {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "CI-Test-getCsarProperties",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "CSAR Properties",
+      "parameters": {
+        "CI_DOCKER_IMAGE": "${trigger['parameters']['CI_DOCKER_IMAGE']}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['GERRIT_REFSPEC']}",
+        "INT_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "INT_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "INT_CHART_VERSION": "${trigger['parameters']['INT_CHART_VERSION']}",
+        "PATH_TO_HELMFILE": "${trigger['parameters']['INT_CHART_NAME']}/helmfile.yaml",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "STATE_VALUES_FILE": "${trigger['parameters']['INT_CHART_NAME']}/build-environment/tags_true.yaml"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "10",
+      "requisiteStageRefIds": [],
+      "type": "jenkins"
+    },
+    {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "CI-Test-Mini-CSAR-Builder",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Mini CSAR Builder",
+      "parameters": {
+        "CI_DOCKER_IMAGE": "${trigger['parameters']['CI_DOCKER_IMAGE']}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['GERRIT_REFSPEC']}",
+        "INT_CHART_NAME": "eric-ci-helmfile",
+        "INT_CHART_VERSION": "${trigger['parameters']['INT_CHART_VERSION']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}"
+      },
+      "propertyFile": "",
+      "refId": "11",
+      "requisiteStageRefIds": [],
+      "type": "jenkins"
+    }
+  ],
+  "triggers": []
+}

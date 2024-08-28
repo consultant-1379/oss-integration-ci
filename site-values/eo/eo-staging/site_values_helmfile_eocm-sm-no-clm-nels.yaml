@@ -1,0 +1,248 @@
+global:
+  serviceMesh:
+    enabled: true
+  nodeSelector:
+    kubernetes.io/os: linux
+  createClusterRoles: true
+  hosts:
+    cm: 'eo-cm.EO_CM_HOST_REPLACE'
+    gas: 'gas-eocm.EO_CM_HOST_REPLACE'
+    gr: ''
+    iam: 'iam-eocm.EO_CM_HOST_REPLACE'
+    pf: ''
+    so: ''
+    uds: ''
+    vnfm: ''
+  ingressClass: eo_iccr
+  registry:
+    password: "PASSWORD_REPLACE"
+    url: "armdocker.rnd.ericsson.se"
+    username: "USERNAME_REPLACE"
+  support:
+    ipv6:
+      enabled: false
+  timezone: UTC
+  ericsson:
+    licensing:
+      nelsConfiguration:
+        primary:
+          hostname: "10.156.145.221"
+      licenseDomains:
+        - productType: Ericsson_Orchestrator
+          swltId: STB-EVNFM-1
+          customerId: 800141
+  networkPolicy:
+    enabled: false
+  #  pullSecret: ''
+  externalIPv4:
+    loadBalancerIP: 'EO_CM_ESA_IP_REPLACE'
+  externalIPv6:
+    loadBalancerIP: ''
+  clusterName: eo-cm-eda
+  domainName: "EO_CM_HOST_REPLACE"
+tags:
+  eoCm: true
+  eoEvnfm: false
+  eoPf: false
+  eoSo: false
+  eoUds: false
+  eoVmvnfm: false
+eric-cloud-native-base:
+  eric-data-object-storage-mn:
+    persistentVolumeClaim:
+      size: 10Gi
+    imageCredentials:
+      pullSecret: k8s-registry-secret-legacy
+  eric-ctrl-bro:
+    persistence:
+      persistentVolumeClaim:
+        size: 20Gi
+    sftp:
+      password: "admin"
+      username: "admin"
+  eric-data-search-engine:
+    service:
+      network:
+        protocol:
+          IPv6: false
+  eric-sec-access-mgmt:
+    accountManager:
+      enabled: false
+      inactivityThreshold: 9999
+    replicaCount: 2
+  eric-tm-ingress-controller-cr:
+    service:
+      loadBalancerIP: 'EO_CM_IP_REPLACE'
+      annotations:
+        cloudProviderLB: {}
+      externalTrafficPolicy: 'Cluster'
+  eric-lm-combined-server:
+    licenseServerClient:
+      licenseServer:
+        thrift:
+          host: "10.156.145.221"
+  eric-log-transformer:
+    egress:
+      syslog:
+        enabled: false
+        tls:
+          enabled: true
+        remoteHosts: []
+    # WA GSSUPP-10455
+    global:
+      security:
+        tls:
+          enabled: true
+    security:
+      tls:
+        logshipper:
+          enabled: false
+  eric-fh-snmp-alarm-provider:
+    imageCredentials:
+      pullSecret: k8s-registry-secret-legacy
+    sendAlarm: false
+    resources:
+      alarmprovider:
+        requests:
+          cpu: "100m"
+        limits:
+          cpu: "500m"
+  eric-fh-alarm-handler:
+    imageCredentials:
+      pullSecret: k8s-registry-secret-legacy
+  eric-data-key-value-database-rd:
+    imageCredentials:
+      pullSecret: k8s-registry-secret-legacy
+  eric-cloud-native-kvdb-rd-operand:
+    imageCredentials:
+      pullSecret: k8s-registry-secret-legacy
+geo-redundancy:
+  enabled: false
+eric-oss-common-base:
+  networkPolicy:
+    enabled: false
+  service-mesh-ingress-gateway:
+    service:
+      loadBalancerIP: 'EO_CM_IP_REPLACE'
+  sessionTokens:
+    maxSessionDurationSecs: 36000
+    maxIdleTimeSecs: 1800
+  system-user:
+    credentials:
+      username: "system-user"
+      password: "DefaultP12345!"
+  gas:
+    defaultUser:
+      username: "gas-user"
+      password: "Ericsson123!"
+  eric-eo-usermgmt:
+    replicaCount: 2
+  eric-eo-usermgmt-ui:
+    replicaCount: 2
+  eric-eo-evnfm-nbi:
+    eric-evnfm-rbac:
+      defaultUser:
+        username: ''
+        password: ''
+  eric-gr-bur-orchestrator:
+    credentials:
+      username: ''
+      password: ''
+    gr:
+      bro:
+        autoDelete:
+          backupsLimit: 10
+      sftp:
+        url: ''
+        username: ''
+        password: ''
+      cluster:
+        role: ''
+        secondary_hostnames:
+          - ''
+      registry:
+        secondarySiteContainerRegistryHostname: ''
+  eric-cnom-server:
+    imageCredentials:
+      pullSecret: k8s-registry-secret-legacy
+eric-eo-cm:
+  defaultUser:
+    username: ecmadmin
+    password: CloudAdmin_123 
+  eric_eo_cm_broker_credentials:
+    password: ecmNotif!23
+  eric-eo-cm-db:
+    password: Edb_12St
+    superpwd: Edb_12St
+  eric-eo-cm-ns-lcm:
+    eric-eo-cm-ns-lcm-db:
+      password: feq9Re*5jnRLDw
+      superpwd: feq9Re*5jnRLDw
+  eric-eo-cm-cust-wf:
+    enabled: true
+    eric-eo-cm-cust-wf-db:
+      password: feq9Re*5jnRLDw
+      superpwd: feq9Re*5jnRLDw
+  eric-eo-cm-order-mgmt-ca:
+    eric-eo-cm-order-mgmt-ca-db:
+      password: MnrE%=XDg6085H
+      superpwd: Mnr%$EXDg6SHCH
+  eric-eo-cm-idam:
+    domain: ".athtem.eei.ericsson.se"
+    logging:
+      enabled: true
+      level:
+        root: debug
+  eric-eo-cm-core:
+    edaConfigJob:
+      onboardPassword: Admin2021$eo
+      eoadminPassword: eoAdmin2021_
+      ecmadminPassword: F5_#dm!N20_CM$
+      ecmActPassword: emaEcm!23
+    logging:
+      enabled: true
+      level:
+        rest:
+          root: info
+          eo_cm: debug
+        cmdb:
+          root: info
+          eo_cm: debug
+        notification:
+          root: info
+          eo_cm: debug
+  eric-eo-cm-onboarding:
+    enabled: true
+    docker:
+      registry:
+        credentials:
+          user: "vnfm"
+          password: "Ericsson123!"
+        url:
+          host: "VNFM_REGISTRY_HOST_REPLACE"
+    helm:
+      repo:
+        credentials:
+          user: "evnfm"
+          password: "evnfm"
+        url:
+          host: "HELM_CHART_HOST_REPLACE"
+eric-oss-function-orchestration-common:
+  eric-am-onboarding-service:
+    userSecret: container-credentials
+    container:
+      registry:
+        enabled: true
+    enabled: true
+eric-eo-evnfm:
+  eric-lcm-container-registry:
+    highAvailability: false
+    ingress:
+      hostname: "VNFM_REGISTRY_HOST_REPLACE"
+  eric-lcm-helm-chart-registry:
+    ingress:
+      hostname: "HELM_CHART_HOST_REPLACE"
+    env:
+      secret:
+        BASIC_AUTH_USER: "evnfm"
+        BASIC_AUTH_PASS: "evnfm"

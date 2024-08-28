@@ -1,0 +1,113 @@
+#!/usr/bin/env groovy
+
+def bob = "bob/bob -r \${WORKSPACE}/ci/jenkins/rulesets/ruleset2.0.yaml"
+
+pipeline {
+    agent {
+        label 'evo_docker_engine'
+    }
+    parameters {
+        string(name: 'RELEASE_TYPE',
+            defaultValue: 'Sprint',
+            description: 'The Release Type associated to this CSAR Release options "DROP_BACK" or "Sprint"')
+        string(name: 'SPRINT_NUMBER',
+            defaultValue: 'None',
+            description: 'The Release associated to this build i.e. 20.1')
+        string(name: 'PRODUCT_NAME',
+            defaultValue: 'EO',
+            description: 'The product name i.e. EO')
+        string(name: 'PRODUCT_HELMFILE_REPO',
+            defaultValue: 'https://arm.seli.gic.ericsson.se/artifactory/proj-eo-drop-helm/eric-eo-helmfile/eric-eo-helmfile',
+            description: 'The helmfile drop repo')
+        string(name: 'PRODUCT_VERSION',
+            defaultValue: 'None',
+            description: 'The version of the product')
+        string(name: 'DISTRIBUTION_EMAIL',
+            defaultValue:'PDLAPPSTAG@pdl.internal.ericsson.com',
+            description: 'Address for email to be sent')
+        string(name: 'JIRA',
+            defaultValue: 'None',
+            description: 'List of JIRA associated with the build')
+        string(name: 'DM_VERSION',
+            defaultValue: 'None',
+            description: 'Version DM to release')
+        string(name: 'CSARs',
+            defaultValue: 'None',
+            description: 'CSARs comma seperated')
+        string(name: 'CUSTWF_VERSION',
+            defaultValue: 'None',
+            description: 'Version of EO CM Custom Workflow SDK component')
+        string(name: 'CUSTWF_LINK',
+            defaultValue: 'None',
+            description: 'EO CM Custom Workflow SDK atrifact link')
+        string(name: 'SUBMODULE_SYNC_TIMEOUT',
+            defaultValue: '60',
+            description: 'Number of seconds before the submodule sync command times out')
+        string(name: 'SUBMODULE_UPDATE_TIMEOUT',
+            defaultValue: '300',
+            description: 'Number of seconds before the submodule update command times out')
+    }
+    environment {
+        RELEASE_TYPE_STRING = setReleaseTypeString(env.RELEASE_TYPE)
+    }
+
+    stages {
+        stage('Prepare') {
+            steps {
+                script {
+                    currentBuild.displayName = "${BUILD_NUMBER}: ${PRODUCT_NAME} ${PRODUCT_VERSION} ${SPRINT_NUMBER}"
+                }
+                sh 'git clean -xdff'
+                command_timeout("${params.SUBMODULE_SYNC_TIMEOUT}", 'git submodule sync')
+                command_timeout("${params.SUBMODULE_UPDATE_TIMEOUT}", 'git submodule update --init --recursive --remote --depth=1 --jobs=5 bob')
+            }
+        }
+        stage('Collect Application Versions From requirements.yaml') {
+            steps {
+                sh "${bob} build-mail"
+            }
+        }
+        stage('Send Email') {
+            steps {
+                script {
+                    emailext subject: "${env.SPRINT_NUMBER} (${RELEASE_TYPE_STRING} Candidate) ${env.PRODUCT_NAME} CSARs Version ${env.PRODUCT_VERSION}",
+                        from: 'PDLAPPSTAG@pdl.internal.ericsson.com',
+                        to: env.DISTRIBUTION_EMAIL,
+                        mimeType: 'text/html',
+                        body: '${FILE,path="emailBody.txt"}'
+                }
+            }
+        }
+    }
+}
+
+def setReleaseTypeString(releaseType) {
+    if ( releaseType == 'DROP_BACK' ) {
+        return 'Drop Back'
+    }
+    else if ( releaseType == 'NIGHTLY_RELEASE' ) {
+        return 'Nightly Build'
+    }
+    else {
+        return 'Sprint'
+    }
+}
+
+def command_timeout(time_and_unit, command) {
+    /**
+    Method to add a timeout to a command
+
+    Input:
+    time_and_unit: A string in the format <amount_of_time><unit_of_time> e.g. 5m for five minutes
+    command: The shell command to run e.g. git submodule sync
+    */
+
+    def timeout_command = "timeout " + time_and_unit + " " + command
+    def exit_status_of_command = sh(script: timeout_command, returnStatus: true)
+
+    if (exit_status_of_command == 124) {
+        echo 'The following command timed-out: ' + command
+        // Fail the build
+        sh(script: 'exit 124')
+    }
+}

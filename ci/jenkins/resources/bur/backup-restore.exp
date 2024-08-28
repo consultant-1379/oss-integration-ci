@@ -1,0 +1,16 @@
+#!/usr/bin/expect
+set timeout 120
+set command [lindex $argv 0]
+set scope [lindex $argv 1]
+spawn ci/jenkins/resources/bur/bur.sh -c $command -s $scope
+expect {
+        "User Username: " {send "$env(USER_USERNAME)\r"; exp_continue}
+        "User Password: " {send "$env(USER_PASSWORD)\r"; exp_continue}
+        "SFTP Username: " {send "$env(SFTP_USERNAME)\r"; exp_continue}
+        "SFTP Password: " {send "$env(SFTP_PASSWORD)\r"; exp_continue}
+        timeout { exit 1 }
+        -re . { exp_continue }
+}
+
+lassign [wait] pid spawn_id os_error subprocess_exit_code
+exit $subprocess_exit_code

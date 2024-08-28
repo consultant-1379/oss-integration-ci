@@ -1,0 +1,44 @@
+# This override delta file was prepared for usage with main file:
+# site-values/idun/ci/template/site-values-latest.yaml
+
+eric-oss-common-base:
+  service-mesh-ingress-gateway:
+    enabled: true
+
+  eric-log-transformer:
+    egress:
+      syslog:
+        enabled: false
+        remoteHosts: []
+
+eric-eo-so:
+  tlsDev:
+    enabled: true
+  so-enterprise:
+    enabled: true
+  so-slicing:
+    enabled: true
+  stubs:
+    enabled: true
+  ingress:
+    enabled: true
+  eric-eo-auth-test:
+    ingress:
+      hostname: auth.staging.server2.hart904.rnd.gic.ericsson.se
+      tls:
+        enabled: true
+      mtls:
+        hostname: mtls.staging.server2.hart904.rnd.gic.ericsson.se
+        enabled: true
+
+# Required for EAS functional testing
+eric-oss-ericsson-adaptation:
+  eric-eo-enm-stub:
+    enabled: true
+  eric-oss-enm-notification-simulator:
+    enabled: true
+
+optionality:
+  eric-oss-common-base:
+    service-mesh-ingress-gateway:
+      enabled: true

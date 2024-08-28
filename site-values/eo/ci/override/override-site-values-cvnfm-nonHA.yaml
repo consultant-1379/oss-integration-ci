@@ -1,0 +1,153 @@
+# This override delta file was prepared for usage with main file:
+# site-values/eo/ci/template/site-values-latest.yaml
+
+global:
+  hosts:
+    gr: 'GR_HOST_REPLACE'
+
+tags:
+  eoCm: false
+  eoEvnfm: true
+  eoVmvnfm: false
+eric-cloud-native-base:
+  eric-lm-combined-server-db-pg:
+    highAvailability:
+      replicaCount: 1
+  eric-lm-combined-server:
+    replicaCount:
+      licenseConsumerHandler: 1
+    licenseServerClient:
+        replicaCount: 1
+        licenseServer:
+          thrift:
+            host: nelsaas-vnf2-thrift.sero.gic.ericsson.se
+  eric-fh-alarm-handler-db-pg:
+    highAvailability:
+      replicaCount: 1
+  eric-fh-alarm-handler:
+    replicaCount: 1
+  eric-cm-mediator:
+    replicaCount: 1
+  eric-cm-mediator-db-pg:
+    highAvailability:
+      replicaCount: 1
+  eric-data-distributed-coordinator-ed:
+    pods:
+      dced:
+        replicaCount: 1
+  eric-sec-sip-tls:
+    replicaCount: 1
+  eric-sec-access-mgmt-db-pg:
+    highAvailability:
+      replicaCount: 1
+  eric-ctrl-bro:
+    persistence:
+      persistentVolumeClaim:
+        size: 20Gi
+  eric-data-search-engine:
+    service:
+      network:
+        protocol:
+          IPv6: false
+    replicaCount:
+      ingest: 1
+      master: 1
+      data: 1
+  eric-sec-access-mgmt:
+    accountManager:
+      enabled: false
+      inactivityThreshold: 9999
+    replicaCount: 1
+  eric-log-transformer:
+    egress:
+      syslog:
+        enabled: false
+        tls:
+          enabled: true
+        remoteHosts: []
+  eric-data-object-storage-mn:
+    replicas: 1
+    persistentVolumeClaim:
+      size: 10Gi
+  eric-fh-snmp-alarm-provider:
+    sendAlarm: false
+  eric-cloud-native-kvdb-rd-operand:
+    replicationFactor: 0
+
+geo-redundancy:
+  enabled: false
+eric-oss-common-base:
+  eric-adp-gui-aggregator-service:
+    replicaCount: 1
+  eric-oss-common-postgres:
+    highAvailability:
+      replicaCount: 1
+  eric-gr-bur-orchestrator:
+    credentials:
+      username: dummy
+      password: dummy
+    gr:
+      bro:
+        autoDelete:
+          backupsLimit: 10
+      sftp:
+        url: dummy:22/path/
+        username: dummy
+        password: dummy
+      cluster:
+        role: PRIMARY
+        secondary_hostnames:
+          - dummy
+      registry:
+        secondarySiteContainerRegistryHostname: fakehostname.com
+  system-user:
+    credentials:
+      username: system-user
+      password: Ericsson123!
+  gas:
+    defaultUser:
+      username: gas-user
+      password: Ericsson123!
+  eric-eo-usermgmt:
+    replicaCount: 1
+  eric-eo-usermgmt-ui:
+    replicaCount: 1
+eric-oss-function-orchestration-common:
+  eric-eo-evnfm-nbi:
+    eric-evnfm-rbac:
+      defaultUser:
+        username: vnfm
+        password: Ericsson123!
+  eric-am-onboarding-service:
+    replicaCount: 1
+    container:
+      registry:
+        enabled: true
+eric-eo-evnfm:
+  services:
+    onboarding:
+      enabled: true
+  application-manager-postgres:
+    highAvailability:
+      replicaCount: 1
+  eric-am-common-wfs-ui:
+    replicaCount: 1
+  eric-global-lcm-container-registry:
+    hostname: ''
+    username: ''
+    password: ''
+  eric-lcm-helm-chart-registry:
+    replicaCount: 1
+    ingress:
+      enabled: HELM_REGISTRY_DEPLOY_REPLACE
+      hostname: 'HELM_CHART_HOST_REPLACE'
+    env:
+      secret:
+        BASIC_AUTH_USER: evnfm
+        BASIC_AUTH_PASS: evnfm
+  eric-vnfm-orchestrator-service:
+    oss:
+      topology:
+        secretName:
+    smallstack:
+      application: true

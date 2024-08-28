@@ -1,0 +1,7 @@
+apiVersion: v2
+description: Helmfile for CI Test Flow
+maintainers:
+- email: PDLTICKETM@pdl.internal.ericsson.com
+  name: Team Ticketmaster
+name: eric-ci-inca-helmfile
+version: 0.4.0

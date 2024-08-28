@@ -1,0 +1,106 @@
+global:
+  createClusterRoles: true
+  hosts:
+    gas: gas.dummy
+    gr: gr.dummy
+    iam: iam.dummy
+    pf: pf.dummy
+    so: so.dummy
+    uds: uds.dummy
+    vnfm: vnfm.dummy
+    cm: cm.dummy
+    th: th.dummy
+  ingressClass: eo_iccr
+  registry:
+    password: dummy_password
+    url: armdocker.rnd.ericsson.se
+    username: dummy_username
+  support:
+    ipv6:
+      enabled: true
+  serviceMesh:
+    enabled: true
+  meshConfig:
+    enableTracing: true
+  networkPolicy:
+    enabled: true
+  externalIPv4:
+    loadBalancerIP: 1.1.1.1
+  clusterName: dummy_cluster_name
+  domainName: dummy_domain_name
+  nodeSelector:
+    nodetype: eo
+tags:
+  eoCm: false
+  eoEvnfm: true
+  eoPf: true
+  eoSo: true
+  eoUds: true
+  eoVmvnfm: true
+eric-cloud-native-base:
+  eric-ctrl-bro:
+    sftp:
+      password: dummy_password
+      username: dummy_username
+  eric-data-search-engine:
+    service:
+      network:
+        protocol:
+          IPv6: true
+  eric-tm-ingress-controller-cr:
+    service:
+      loadBalancerIP: 1.1.1.1
+      annotations:
+        cloudProviderLB: {}
+  eric-log-transformer:
+    egress:
+      syslog:
+        enabled: true
+        remoteHosts:
+          - host: 10.10.10.10
+            port: 514
+            protocol: TCP
+  eric-fh-snmp-alarm-provider:
+    sendAlarm: true
+    loadBalancerIP: '::1'
+geo-redundancy:
+  enabled: true
+eric-oss-common-base:
+  service-mesh-ingress-gateway:
+    service:
+      loadBalancerIP: 1.1.1.1
+  eric-gr-bur-orchestrator:
+    gr:
+      sftp:
+        url: 10.210.220.192:22/folder
+        username: dummy_username
+        password: dummy_password
+      cluster:
+        role: PRIMARY
+        secondary_hostnames:
+          - "gr.dummy.se"
+      registry:
+        secondarySiteContainerRegistryHostname: "registry.dummy.se"
+eric-eo-evnfm-vm:
+  eric-vnflcm-service:
+    service:
+      enabled: true
+      loadBalancerIP: 1.1.1.1
+      externalTrafficPolicy: Local
+  eric-vm-vnfm-migration:
+    migration:
+      enabled: true
+eric-eo-evnfm:
+  eric-lcm-container-registry:
+    ingress:
+      hostname: dummyvalue
+  eric-global-lcm-container-registry:
+    hostname: dummyvalue
+    username: dummyvalue
+    password: dummyvalue
+  eric-lcm-helm-chart-registry:
+    ingress:
+      enabled: true
+      hostname: dummyvalue
+notification-service:
+  enabled: true

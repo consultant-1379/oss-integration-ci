@@ -1,0 +1,745 @@
+{
+  "appConfig": {},
+  "disabled": false,
+  "keepWaitingPipelines": false,
+  "lastModifiedBy": "emanjoh",
+  "limitConcurrent": true,
+  "parameterConfig": [
+    {
+      "default": "eric-oss-common-base",
+      "description": "Name of the integration chart that holds the new microservice",
+      "hasOptions": false,
+      "label": "INT_CHART_NAME",
+      "name": "INT_CHART_NAME",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "0.0.0",
+      "description": "Version of the Integration Chart that holds the new microservice",
+      "hasOptions": false,
+      "label": "INT_CHART_VERSION",
+      "name": "INT_CHART_VERSION",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "https://arm.seli.gic.ericsson.se/artifactory/proj-eric-oss-drop-helm",
+      "description": "Repo of the Integration Chart that holds the new microservice",
+      "hasOptions": false,
+      "label": "INT_CHART_REPO",
+      "name": "INT_CHART_REPO",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "",
+      "description": "Name of the microservice chart within the integration chart",
+      "hasOptions": false,
+      "label": "CHART_NAME",
+      "name": "CHART_NAME",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "",
+      "description": "Version of the microservice chart within the integration chart",
+      "hasOptions": false,
+      "label": "CHART_VERSION",
+      "name": "CHART_VERSION",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "",
+      "description": "Repo of the microservice chart within the integration chart",
+      "hasOptions": false,
+      "label": "CHART_REPO",
+      "name": "CHART_REPO",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "eric-eiae-helmfile",
+      "description": "Name of the integration chart which will be used for the Initial install",
+      "hasOptions": false,
+      "label": "II_INT_CHART_NAME",
+      "name": "II_INT_CHART_NAME",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "0.0.0-3",
+      "description": "Version of the Integration Chart which will be used for the Initial Install",
+      "hasOptions": false,
+      "label": "II_INT_CHART_VERSION",
+      "name": "II_INT_CHART_VERSION",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "https://arm.seli.gic.ericsson.se/artifactory/proj-eric-oss-drop-helm-local",
+      "description": "Repo of the Integration Chart which will be used for the Initial Install",
+      "hasOptions": false,
+      "label": "II_INT_CHART_REPO",
+      "name": "II_INT_CHART_REPO",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "true",
+      "description": "Option to Deploy SO set either \"true\" or \"false\"",
+      "hasOptions": false,
+      "label": "SO_DEPLOY",
+      "name": "SO_DEPLOY",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": true
+    },
+    {
+      "default": "true",
+      "description": "Option to Deploy UDS set either \"true\" or \"false\"",
+      "hasOptions": false,
+      "label": "UDS_DEPLOY",
+      "name": "UDS_DEPLOY",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": true
+    },
+    {
+      "default": "true",
+      "description": "Option to Deploy PF set either \"true\" or \"false\"",
+      "hasOptions": false,
+      "label": "PF_DEPLOY",
+      "name": "PF_DEPLOY",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": true
+    },
+    {
+      "default": "true",
+      "description": "Option to Deploy Platform set either \"true\" or \"false\"",
+      "hasOptions": false,
+      "label": "PLATFORM_DEPLOY",
+      "name": "PLATFORM_DEPLOY",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": true
+    },
+    {
+      "default": "false",
+      "description": "Force the environment to be re-installed whether it is good or bad, options true or false.",
+      "hasOptions": false,
+      "label": "FORCE_REDEPLOY",
+      "name": "FORCE_REDEPLOY",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "helmfile/templates/manual/site-values.yaml",
+      "description": "The Path where all the necessary site values are located for the install/upgrade",
+      "hasOptions": false,
+      "label": "PATH_TO_SITE_VALUES_FILE",
+      "name": "PATH_TO_SITE_VALUES_FILE",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": true
+    },
+    {
+      "default": "false",
+      "description": "Set this parameter to true if you wish for the environment to be quarantined if the deployment flow false",
+      "hasOptions": false,
+      "label": "QUARANTINE_ENV",
+      "name": "QUARANTINE_ENV",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "eo-integration-ci/honeypots/pooling/environments",
+      "description": "This is the directory within the Repo specified within the Gather-Env-Details Jenkins job where to find the pooling environment details",
+      "hasOptions": false,
+      "label": "ENV_DETAILS_DIR",
+      "name": "ENV_DETAILS_DIR",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "honeypots",
+      "description": "This is the label to search for that is attached to the environments in the Lockable Resource Plugin on Jenkins",
+      "hasOptions": false,
+      "label": "",
+      "name": "ENV_LABEL",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "Base Platform Staging",
+      "description": "Flow URL Tag is used when locking the environment to add a tag to describe what has locked the environment for easier tracking",
+      "hasOptions": false,
+      "label": "FLOW_URL_TAG",
+      "name": "FLOW_URL_TAG",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "120",
+      "description": "This is the time to wait for an Environment to become available. After the time expires the job will fail out",
+      "hasOptions": false,
+      "label": "WAIT_TIME",
+      "name": "WAIT_TIME",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "evo_docker_engine",
+      "description": "Label to choose which Jenkins slave to execute Jenkinsfiles against",
+      "hasOptions": false,
+      "label": "SLAVE_LABEL",
+      "name": "SLAVE_LABEL",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "ciloopman-user-creds",
+      "description": "Functional user for logging into armdocker",
+      "hasOptions": false,
+      "label": "FUNCTIONAL_USER_SECRET",
+      "name": "FUNCTIONAL_USER_SECRET",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "3600",
+      "description": "Timeout for helmfile deploy",
+      "hasOptions": false,
+      "label": "HELM_TIMEOUT",
+      "name": "HELM_TIMEOUT",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    }
+  ],
+  "spelEvaluator": "v4",
+  "stages": [
+    {
+      "application": "base-platform-e2e-cicd",
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "dummy",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Redeploy Namespace",
+      "parameters": {},
+      "pipeline": "75e724eb-562e-4829-8286-d2abb941d0fa",
+      "pipelineParameters": {
+        "ARMDOCKER_USER_SECRET": "ciloopman-docker-auth-config",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "GAS_HOSTNAME": "${#stage(\"Reserve Namespace\")[\"context\"][\"EO_GAS_HOSTNAME\"]}",
+        "IAM_HOSTNAME": "${#stage(\"Reserve Namespace\")[\"context\"][\"IAM_HOSTNAME\"]}",
+        "KUBE_CONFIG": "${#stage(\"Reserve Namespace\")[\"context\"][\"KUBE_CONFIG\"]}",
+        "NAMESPACE": "${#stage(\"Reserve Namespace\")[\"context\"][\"NAMESPACE\"]}",
+        "PATH_TO_CERTIFICATES_FILES": "eo-integration-ci/${#stage(\"Reserve Namespace\")[\"context\"][\"PATH_TO_CERTIFICATES_FILES\"]}",
+        "PF_HOSTNAME": "${#stage(\"Reserve Namespace\")[\"context\"][\"EO_PF_HOSTNAME\"]}",
+        "RESOURCE_NAME": "${#stage(\"Reserve Namespace\")[\"context\"][\"RESOURCE_NAME\"]}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SO_HOSTNAME": "${#stage(\"Reserve Namespace\")[\"context\"][\"EO_SO_HOSTNAME\"]}",
+        "UDS_HOSTNAME": "${#stage(\"Reserve Namespace\")[\"context\"][\"EO_UDS_HOSTNAME\"]}"
+      },
+      "refId": "23",
+      "requisiteStageRefIds": [
+        "59"
+      ],
+      "stageEnabled": {
+        "expression": "\"${#stage('Fetch, Update And Upload Release')['status']}\" == \"SKIPPED\"",
+        "type": "expression"
+      },
+      "type": "pipeline",
+      "waitForCompletion": false
+    },
+    {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "Quarantine-Environment",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Quarantine Namespace",
+      "parameters": {
+        "ENV_NAME": "${#stage(\"Reserve And Gather Env Details\")[\"context\"][\"RESOURCE_NAME\"]}"
+      },
+      "refId": "34",
+      "requisiteStageRefIds": [
+        "66"
+      ],
+      "stageEnabled": {
+        "expression": "${trigger['parameters']['QUARANTINE_ENV'].contains('true')} and \"${#stage('Post Testing')['status']}\" != \"SUCCEEDED\"",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+    {
+      "name": "Flow Completed",
+      "preconditions": [
+        {
+          "context": {
+            "expression": "\"${#stage('Fetch, Update And Upload Release')['status']}\" == \"SUCCEEDED\"  or \"${#stage('Fetch, Update And Upload Release')['status']}\" == \"SKIPPED\""
+          },
+          "failPipeline": true,
+          "type": "expression"
+        },
+        {
+          "context": {
+            "expression": "\"${#stage('Post Testing')['status']}\" == \"SUCCEEDED\" or \"${#stage('Post Testing')['status']}\" == \"SKIPPED\""
+          },
+          "failPipeline": true,
+          "type": "expression"
+        },
+        {
+          "context": {
+            "expression": "\"${#stage('Redeploy Namespace')['status']}\" == \"SUCCEEDED\" or \"${#stage('Redeploy Namespace')['status']}\" == \"SKIPPED\""
+          },
+          "failPipeline": false,
+          "type": "expression"
+        },
+        {
+          "context": {
+            "expression": "\"${#stage('Quarantine Namespace')['status']}\" == \"SUCCEEDED\" or \"${#stage('Quarantine Namespace')['status']}\" == \"SKIPPED\""
+          },
+          "failPipeline": false,
+          "type": "expression"
+        },
+        {
+          "context": {
+            "expression": "\"${#stage('Unreserve Namespace')['status']}\" == \"SUCCEEDED\" or \"${#stage('Unreserve Namespace')['status']}\" == \"SKIPPED\""
+          },
+          "failPipeline": true,
+          "type": "expression"
+        }
+      ],
+      "refId": "35",
+      "requisiteStageRefIds": [
+        "23",
+        "34",
+        "57"
+      ],
+      "type": "checkPreconditions"
+    },
+    {
+      "continuePipeline": false,
+      "failPipeline": true,
+      "job": "Get-Latest-ChartOrHelmfile",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Get Latest Helmfile Version",
+      "parameters": {
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "INT_CHART_NAME": "${trigger['parameters']['II_INT_CHART_NAME']}",
+        "INT_CHART_REPO": "${trigger['parameters']['II_INT_CHART_REPO']}",
+        "INT_CHART_VERSION": "${trigger['parameters']['II_INT_CHART_VERSION']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "51",
+      "requisiteStageRefIds": [],
+      "type": "jenkins"
+    },
+    {
+      "continuePipeline": false,
+      "failPipeline": true,
+      "job": "Unreserve-Environment",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Unreserve Namespace",
+      "parameters": {
+        "ENV_NAME": "${#stage(\"Reserve Namespace\")[\"context\"][\"RESOURCE_NAME\"]}"
+      },
+      "refId": "57",
+      "requisiteStageRefIds": [
+        "34",
+        "59"
+      ],
+      "stageEnabled": {
+        "expression": "\"${#stage('Fetch, Update And Upload Release')['status']}\" == \"SUCCEEDED\" and \"${#stage('Quarantine Namespace')['status']}\" == \"SKIPPED\"",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+    {
+      "application": "base-platform-e2e-cicd",
+      "failPipeline": true,
+      "name": "Fetch, Update And Upload Snapshot",
+      "pipeline": "3295b97d-6725-4349-a4bc-6eb41c102024",
+      "pipelineParameters": {
+        "CHART_NAME": "${trigger['parameters']['CHART_NAME']}",
+        "CHART_REPO": "${trigger['parameters']['CHART_REPO']}",
+        "CHART_VERSION": "${trigger['parameters']['CHART_VERSION']}",
+        "INT_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "INT_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "INT_CHART_VERSION": "${trigger['parameters']['INT_CHART_VERSION']}"
+      },
+      "refId": "58",
+      "requisiteStageRefIds": [
+        "51"
+      ],
+      "stageEnabled": {
+        "expression": "\"${#stage('Get Latest Helmfile Version')['status']}\" == \"SUCCEEDED\"",
+        "type": "expression"
+      },
+      "type": "pipeline",
+      "waitForCompletion": true
+    },
+    {
+      "application": "base-platform-e2e-cicd",
+      "failPipeline": true,
+      "name": "Fetch, Update And Upload Release",
+      "pipeline": "3295b97d-6725-4349-a4bc-6eb41c102024",
+      "pipelineParameters": {
+        "CHART_NAME": "${trigger['parameters']['CHART_NAME']}",
+        "CHART_REPO": "${trigger['parameters']['CHART_REPO']}",
+        "CHART_VERSION": "${trigger['parameters']['CHART_VERSION']}",
+        "GERRIT_PREPARE_OR_PUBLISH": "publish",
+        "HELMFILE_UPLOAD": "false",
+        "INT_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "INT_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "INT_CHART_VERSION": "${trigger['parameters']['INT_CHART_VERSION']}"
+      },
+      "refId": "59",
+      "requisiteStageRefIds": [
+        "66"
+      ],
+      "stageEnabled": {
+        "expression": "\"${#stage('Post Testing')['status']}\" == \"SUCCEEDED\"",
+        "type": "expression"
+      },
+      "type": "pipeline",
+      "waitForCompletion": true
+    },
+    {
+      "continuePipeline": false,
+      "failPipeline": true,
+      "job": "platformTriggerProductStaging",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Generate Released Artifact Details",
+      "parameters": {
+        "CHART_NAME": "${#stage(\"Fetch, Update And Upload Release\")[\"context\"][\"CHART_NAME\"]}",
+        "CHART_REPO": "${#stage(\"Fetch, Update And Upload Release\")[\"context\"][\"CHART_REPO\"]}",
+        "CHART_VERSION": "${#stage(\"Fetch, Update And Upload Release\")[\"context\"][\"CHART_VERSION\"]}",
+        "INT_CHART_NAME": "${#stage(\"Fetch, Update And Upload Release\")[\"context\"][\"INT_CHART_NAME\"]}",
+        "INT_CHART_REPO": "${#stage(\"Fetch, Update And Upload Release\")[\"context\"][\"INT_CHART_REPO\"]}",
+        "INT_CHART_VERSION": "${#stage(\"Fetch, Update And Upload Release\")[\"context\"][\"INT_CHART_VERSION\"]}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "61",
+      "requisiteStageRefIds": [
+        "59"
+      ],
+      "stageEnabled": {
+        "expression": "\"${#stage('Fetch, Update And Upload Release')['status']}\" == \"SUCCEEDED\" or \"${#stage('Fetch, Update And Upload Release')['status']}\" == \"SKIPPED\"",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+    {
+      "application": "base-platform-e2e-cicd",
+      "continuePipeline": false,
+      "failPipeline": true,
+      "job": "dummy",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Reserve Namespace",
+      "parameters": {},
+      "pipeline": "d8e37281-5709-4a5e-95a3-eed63450d3d5",
+      "pipelineParameters": {
+        "ENV_DETAILS_DIR": "${trigger['parameters']['ENV_DETAILS_DIR']}",
+        "ENV_LABEL": "${trigger['parameters']['ENV_LABEL']}",
+        "FLOW_URL_TAG": "${trigger['parameters']['FLOW_URL_TAG']}",
+        "SPINNAKER_FLOW_ID": "${execution['id']}",
+        "WAIT_TIME": "${trigger['parameters']['WAIT_TIME']}"
+      },
+      "refId": "63",
+      "requisiteStageRefIds": [
+        "58"
+      ],
+      "stageEnabled": {
+        "expression": "\"${#stage('Fetch, Update And Upload Snapshot')['status']}\" == \"SUCCEEDED\"",
+        "type": "expression"
+      },
+      "type": "pipeline",
+      "waitForCompletion": true
+    },
+    {
+      "application": "base-platform-e2e-cicd",
+      "failPipeline": true,
+      "name": "Install using Helmfile",
+      "pipeline": "08535c6d-871c-4b85-81bb-6f4f5c568969",
+      "pipelineParameters": {
+        "ENV_DETAILS_DIR": "${trigger['parameters']['ENV_DETAILS_DIR']}",
+        "ENV_LABEL": "${trigger['parameters']['ENV_LABEL']}",
+        "FLOW_URL_TAG": "${trigger['parameters']['FLOW_URL_TAG']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "GAS_HOSTNAME": "${#stage(\"Reserve Namespace\")[\"context\"][\"EO_GAS_HOSTNAME\"]}",
+        "HELM_TIMEOUT": "${trigger['parameters']['HELM_TIMEOUT']}",
+        "IAM_HOSTNAME": "${#stage(\"Reserve Namespace\")[\"context\"][\"IAM_HOSTNAME\"]}",
+        "INT_CHART_NAME": "${trigger['parameters']['II_INT_CHART_NAME']}",
+        "INT_CHART_REPO": "${trigger['parameters']['II_INT_CHART_REPO']}",
+        "INT_CHART_VERSION": "${#stage(\"Get Latest Helmfile Version\")[\"context\"][\"INT_CHART_VERSION\"]}",
+        "KUBE_CONFIG": "${#stage(\"Reserve Namespace\")[\"context\"][\"KUBE_CONFIG\"]}",
+        "NAMESPACE": "${#stage(\"Reserve Namespace\")[\"context\"][\"NAMESPACE\"]}",
+        "PATH_TO_CERTIFICATES_FILES": "eo-integration-ci/${#stage(\"Reserve Namespace\")[\"context\"][\"PATH_TO_CERTIFICATES_FILES\"]}",
+        "PATH_TO_SITE_VALUES_FILE": "${trigger['parameters']['PATH_TO_SITE_VALUES_FILE']}",
+        "PF_DEPLOY": "${trigger['parameters']['PF_DEPLOY']}",
+        "PF_HOSTNAME": "${#stage(\"Reserve Namespace\")[\"context\"][\"EO_PF_HOSTNAME\"]}",
+        "PLATFORM_DEPLOY": "${trigger['parameters']['PLATFORM_DEPLOY']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SO_DEPLOY": "${trigger['parameters']['SO_DEPLOY']}",
+        "SO_HOSTNAME": "${#stage(\"Reserve Namespace\")[\"context\"][\"EO_SO_HOSTNAME\"]}",
+        "SPINNAKER_FLOW_ID": "${execution['id']}",
+        "UDS_DEPLOY": "${trigger['parameters']['UDS_DEPLOY']}",
+        "UDS_HOSTNAME": "${#stage(\"Reserve Namespace\")[\"context\"][\"EO_UDS_HOSTNAME\"]}",
+        "WAIT_TIME": "${trigger['parameters']['WAIT_TIME']}"
+      },
+      "refId": "64",
+      "requisiteStageRefIds": [
+        "65"
+      ],
+      "stageEnabled": {
+        "expression": "\"${#stage('Check Deployment Status')['status']}\" == \"SUCCEEDED\"",
+        "type": "expression"
+      },
+      "type": "pipeline",
+      "waitForCompletion": true
+    },
+    {
+      "application": "eoapp",
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "Check-Helmfile-Deployment-Status",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Check Deployment Status",
+      "parameters": {
+        "KUBECONFIG_FILE": "${#stage(\"Reserve Namespace\")[\"context\"][\"KUBE_CONFIG\"]}",
+        "NAMESPACE": "${#stage(\"Reserve Namespace\")[\"context\"][\"NAMESPACE\"]}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}"
+      },
+      "pipeline": "bb20d8c5-8fb2-4576-8d57-063a3098f235",
+      "pipelineParameters": {},
+      "propertyFile": "artifact.properties",
+      "refId": "65",
+      "requisiteStageRefIds": [
+        "63"
+      ],
+      "stageEnabled": {
+        "expression": "\"${#stage('Reserve Namespace')['status']}\" == \"SUCCEEDED\"",
+        "type": "expression"
+      },
+      "type": "jenkins",
+      "waitForCompletion": true
+    },
+    {
+      "application": "base-platform-e2e-cicd",
+      "failPipeline": true,
+      "name": "Post Testing",
+      "pipeline": "8dcfea56-e2e7-43d4-b5ec-5554b3d87127",
+      "pipelineParameters": {
+        "EXECUTION_ID": "${execution['id']}",
+        "KUBE_CONFIG": "${#stage(\"Reserve Namespace\")[\"context\"][\"KUBE_CONFIG\"]}",
+        "NAMESPACE": "${#stage(\"Reserve Namespace\")[\"context\"][\"NAMESPACE\"]}",
+        "PF_DEPLOYED": "${trigger['parameters']['PF_DEPLOY']}",
+        "PF_HOSTNAME": "${#stage(\"Reserve Namespace\")[\"context\"][\"EO_PF_HOSTNAME\"]}",
+        "SO_DEPLOYED": "${trigger['parameters']['SO_DEPLOY']}",
+        "SO_HOSTNAME": "${#stage(\"Reserve Namespace\")[\"context\"][\"EO_SO_HOSTNAME\"]}",
+        "UDS_DEPLOYED": "${trigger['parameters']['UDS_DEPLOY']}",
+        "UDS_HOSTNAME": "${#stage(\"Reserve Namespace\")[\"context\"][\"EO_UDS_HOSTNAME\"]}"
+      },
+      "refId": "66",
+      "requisiteStageRefIds": [
+        "68"
+      ],
+      "stageEnabled": {
+        "expression": "\"${#stage('Upgrade using Helmfile')['status']}\" == \"SUCCEEDED\"",
+        "type": "expression"
+      },
+      "type": "pipeline",
+      "waitForCompletion": true
+    },
+    {
+      "application": "base-platform-e2e-cicd",
+      "failPipeline": true,
+      "name": "Pre Testing",
+      "pipeline": "48a6930d-5c8f-40e8-9f4a-b99092c9c706",
+      "pipelineParameters": {
+        "EXECUTION_ID": "${execution['id']}",
+        "KUBE_CONFIG": "${#stage(\"Reserve Namespace\")[\"context\"][\"KUBE_CONFIG\"]}",
+        "NAMESPACE": "${#stage(\"Reserve Namespace\")[\"context\"][\"NAMESPACE\"]}",
+        "PF_DEPLOYED": "${trigger['parameters']['PF_DEPLOY']}",
+        "PF_HOSTNAME": "${#stage(\"Reserve Namespace\")[\"context\"][\"EO_PF_HOSTNAME\"]}",
+        "SO_DEPLOYED": "${trigger['parameters']['SO_DEPLOY']}",
+        "SO_HOSTNAME": "${#stage(\"Reserve Namespace\")[\"context\"][\"EO_SO_HOSTNAME\"]}",
+        "UDS_DEPLOYED": "${trigger['parameters']['UDS_DEPLOY']}",
+        "UDS_HOSTNAME": "${#stage(\"Reserve Namespace\")[\"context\"][\"EO_UDS_HOSTNAME\"]}"
+      },
+      "refId": "67",
+      "requisiteStageRefIds": [
+        "64"
+      ],
+      "stageEnabled": {
+        "expression": "\"${#stage('Install using Helmfile')['status']}\" == \"SUCCEEDED\"",
+        "type": "expression"
+      },
+      "type": "pipeline",
+      "waitForCompletion": true
+    },
+    {
+      "application": "base-platform-e2e-cicd",
+      "failPipeline": true,
+      "name": "Upgrade using Helmfile",
+      "pipeline": "08535c6d-871c-4b85-81bb-6f4f5c568969",
+      "pipelineParameters": {
+        "DEPLOYMENT_TYPE": "upgrade",
+        "ENV_DETAILS_DIR": "${trigger['parameters']['ENV_DETAILS_DIR']}",
+        "ENV_LABEL": "${trigger['parameters']['ENV_LABEL']}",
+        "FLOW_URL_TAG": "${trigger['parameters']['FLOW_URL_TAG']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "GAS_HOSTNAME": "${#stage(\"Reserve Namespace\")[\"context\"][\"EO_GAS_HOSTNAME\"]}",
+        "HELM_TIMEOUT": "${trigger['parameters']['HELM_TIMEOUT']}",
+        "IAM_HOSTNAME": "${#stage(\"Reserve Namespace\")[\"context\"][\"IAM_HOSTNAME\"]}",
+        "INT_CHART_NAME": "${#stage(\"Fetch, Update And Upload Snapshot\")[\"context\"][\"INT_CHART_NAME\"]}",
+        "INT_CHART_REPO": "${#stage(\"Fetch, Update And Upload Snapshot\")[\"context\"][\"INT_CHART_REPO\"]}",
+        "INT_CHART_VERSION": "${#stage(\"Fetch, Update And Upload Snapshot\")[\"context\"][\"INT_CHART_VERSION\"]}",
+        "KUBE_CONFIG": "${#stage(\"Reserve Namespace\")[\"context\"][\"KUBE_CONFIG\"]}",
+        "NAMESPACE": "${#stage(\"Reserve Namespace\")[\"context\"][\"NAMESPACE\"]}",
+        "PATH_TO_CERTIFICATES_FILES": "eo-integration-ci/${#stage(\"Reserve Namespace\")[\"context\"][\"PATH_TO_CERTIFICATES_FILES\"]}",
+        "PATH_TO_SITE_VALUES_FILE": "${trigger['parameters']['PATH_TO_SITE_VALUES_FILE']}",
+        "PF_DEPLOY": "${trigger['parameters']['PF_DEPLOY']}",
+        "PF_HOSTNAME": "${#stage(\"Reserve Namespace\")[\"context\"][\"EO_PF_HOSTNAME\"]}",
+        "PLATFORM_DEPLOY": "${trigger['parameters']['PLATFORM_DEPLOY']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SO_DEPLOY": "${trigger['parameters']['SO_DEPLOY']}",
+        "SO_HOSTNAME": "${#stage(\"Reserve Namespace\")[\"context\"][\"EO_SO_HOSTNAME\"]}",
+        "SPINNAKER_FLOW_ID": "${execution['id']}",
+        "UDS_DEPLOY": "${trigger['parameters']['UDS_DEPLOY']}",
+        "UDS_HOSTNAME": "${#stage(\"Reserve Namespace\")[\"context\"][\"EO_UDS_HOSTNAME\"]}",
+        "WAIT_TIME": "${trigger['parameters']['WAIT_TIME']}"
+      },
+      "refId": "68",
+      "requisiteStageRefIds": [
+        "67"
+      ],
+      "stageEnabled": {
+        "expression": "\"${#stage('Pre Testing')['status']}\" == \"SUCCEEDED\"",
+        "type": "expression"
+      },
+      "type": "pipeline",
+      "waitForCompletion": true
+    }
+  ],
+  "triggers": [],
+  "updateTs": "1628864713905"
+}

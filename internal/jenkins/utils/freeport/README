@@ -1,0 +1,19 @@
+To build the image:
+docker build -t freeport .
+
+To run the freeport server:
+docker run -it --network=host -e SERVER_PORT=<PORT> freeport
+
+Publish official image:
+docker tag freeport armdocker.rnd.ericsson.se/proj-cenx/freeport:latest
+docker push armdocker.rnd.ericsson.se/proj-cenx/freeport:latest
+
+On target node:
+docker pull armdocker.rnd.ericsson.se/proj-cenx/freeport:latest
+docker run -d --name freeport --restart=always --network=host -e SERVER_PORT=<PORT> armdocker.rnd.ericsson.se/proj-cenx/freeport:latest
+
+Example (background exec):
+docker run -d --name freeport --restart=always --network=host -e SERVER_PORT=8081 armdocker.rnd.ericsson.se/proj-cenx/freeport:latest
+
+Example (foreground exec):
+docker run -it --rm --network=host -e SERVER_PORT=8081 armdocker.rnd.ericsson.se/proj-cenx/freeport:latest

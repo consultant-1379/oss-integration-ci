@@ -1,0 +1,32 @@
+FROM armdocker.rnd.ericsson.se/proj-ldc/common_base_os/sles:3.45.0-15
+RUN zypper ar -C -G -f https://arm.sero.gic.ericsson.se/artifactory/proj-ldc-repo-rpm-local/common_base_os/sles/3.45.0-15 LDC-CBO-SLES \
+ && zypper ref -f -r LDC-CBO-SLES \
+ && zypper install -y python39 \
+ && zypper clean --all \
+ && find /usr -type d -name  "__pycache__" -exec rm -r {} +
+
+RUN zypper install -y python39-pip curl unzip apache2-utils
+
+ARG LINT_DIR=/utils
+
+WORKDIR /utils
+
+# Copy code and tests into the image
+COPY cluster_mgr/requirements.txt ./requirements-cluster-mgr.txt
+COPY freeport/requirements.txt ./requirements-freeport.txt
+COPY requirements-test.txt .
+RUN pip3.9 install -r requirements-test.txt -r requirements-cluster-mgr.txt -r requirements-freeport.txt
+COPY *.py /utils
+COPY cluster_mgr/src/*.py /utils/cluster_mgr/
+COPY freeport/src/*.py /utils/freeport/
+
+# Copy rules for the various linters
+COPY pylintrc pylintrc
+COPY .flake8 .flake8
+
+# Run the various linters from within the context of the ci-scripts directory
+# Fail immediately with linters fail.
+RUN pylint ${LINT_DIR}
+RUN flake8 ${LINT_DIR}
+RUN pep257 ${LINT_DIR}
+

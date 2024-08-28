@@ -1,0 +1,36 @@
+{
+  "test_to_ensure_all_containers_with_securitycontext_has_runAsNonRoot_set": {
+    "skips": [
+      [["eric-oss-app-lcm"], ["Deployment"], "Not required, exempt", "skip"],
+      [["eric-oss-app-onboarding"], ["StatefulSet"], "Not required, exempt", "skip"],
+      [["eric-data-search-engine-ingest"], ["Deployment"], "Not required, exempt", "skip"],
+      [["eric-data-search-engine-master"], ["Deployment"], "Not required, exempt", "skip"],
+      [["eric-data-search-engine-master"], ["StatefulSet"], "Not required, exempt", "skip"],
+      [["eric-lcm-container-registry-registry"], ["Deployment"], "Not required, exempt", "skip"],
+      [["eric-lcm-helm-chart-registry"], ["Deployment"], "Not required, exempt", "skip"],
+      [["eric-ctrl-bro"], ["StatefulSet"], "Not required, exempt", "skip"],
+      [["eric-data-coordinator-zk"], ["StatefulSet"], "Not required, exempt", "skip"],
+      [["eric-data-search-engine-data"], ["StatefulSet"], "Not required, exempt", "skip"],
+      [["-pg"], ["StatefulSet"], "Not required, exempt", "skip"],
+      [["-postgres"], ["StatefulSet"], "Not required, exempt", "skip"],
+      [["eric-data-message-bus-kf"], ["StatefulSet"], "Not required, exempt", "skip"],
+      [["eric-pm-server"], ["StatefulSet"], "Not required, exempt", "skip"],
+      [["eric-vnflcm-db"], ["StatefulSet"], "Not required, exempt", "skip"],
+      [["-hook-cleanup"], ["Job"], "Not required, exempt", "skip"],
+      [["eric-eo-cm-eoc-"], ["Deployment"], "Not required, exempt", "skip"],
+      [["eric-eo-cm-eoc"], ["Job"], "Not required, exempt", "skip"],
+      [["eric-gr-bur-orchestrator-post-hook"], ["Job"], "Remove via SM-78549 when openshift support is added.", "skip"],
+      [["eric-eo-cm-licencing"], ["Deployment"], "Not required, exempt", "skip"],
+      [["eric-data-distributed-coordinator-"], ["StatefulSet"], "Not required, exempt", "skip"],
+      [["eric-data-search-engine-postupgrade"], ["Job"], "Not required, exempt", "skip"],
+      [["eric-data-search-engine-preupgrade"], ["Job"], "Not required, exempt", "skip"],
+      [["eric-oss-4g-pm-event-parser-data-catalog-delete"], ["Job"], "Ticket required on ADC", "skip"],
+      [["eric-oss-4g-pm-event-parser-data-catalog-register"], ["Job"], "Ticket required on ADC", "skip"]
+    ],
+    "runTests": true
+  },
+  "test_validate_minimum_replica_count": {
+    "skips": [],
+    "runTests": true
+  }
+}

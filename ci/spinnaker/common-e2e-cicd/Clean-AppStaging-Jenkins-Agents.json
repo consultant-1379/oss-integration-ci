@@ -1,0 +1,159 @@
+{
+  "application": "common-e2e-cicd",
+  "description": "This pipeline is triggered by Grafana - http://seliius29510.seli.gic.ericsson.se:3000/d/3LjzgozVk/jenkins-alerts-dashboard",
+  "id": "0780fe93-aac5-437b-900b-25c3e84d5670",
+  "index": 0,
+  "keepWaitingPipelines": false,
+  "lastModifiedBy": "zkozole",
+  "limitConcurrent": true,
+  "name": "Clean-AppStaging-Jenkins-Agents",
+  "parameterConfig":   [
+        {
+      "default": "all",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "AGENTS",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "fem5 fem8",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "FEM",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "false",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "DEEP_CLEANUP",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": false
+    }
+  ],
+  "schema": "1",
+  "spelEvaluator": "v4",
+  "stages":   [
+        {
+      "completeOtherBranchesThenFail": true,
+      "continuePipeline": false,
+      "failPipeline": false,
+      "job": "Jenkins_Agents_CleanUp",
+      "master": "oss-aispinn-fem2s11-eiffel052",
+      "name": "FEM2 cleanup",
+      "notifications": [      {
+        "address": "PDLAPPSTAG@pdl.internal.ericsson.com",
+        "level": "stage",
+        "type": "email",
+        "when": ["stage.failed"]
+      }],
+      "parameters":       {
+        "DEEP_CLEANUP": "${(trigger.payload != null)? 'true' : parameters['DEEP_CLEANUP']}",
+        "NODE_NAMES": "${#stage(\"Evaluate Variables\")[\"context\"][\"AGENTS\"]}",
+        "SLAVE_LABEL": "wano_slave"
+      },
+      "refId": "1",
+      "requisiteStageRefIds": ["4"],
+      "sendNotifications": true,
+      "stageEnabled":       {
+        "expression": "${FEM.contains(\"fem2\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": true,
+      "continuePipeline": false,
+      "failPipeline": false,
+      "job": "Jenkins_Agents_CleanUp",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "FEM5 cleanup",
+      "notifications": [      {
+        "address": "PDLAPPSTAG@pdl.internal.ericsson.com",
+        "level": "stage",
+        "type": "email",
+        "when": ["stage.failed"]
+      }],
+      "parameters":       {
+        "DEEP_CLEANUP": "${(trigger.payload != null)? 'true' : parameters['DEEP_CLEANUP']}",
+        "NODE_NAMES": "${#stage(\"Evaluate Variables\")[\"context\"][\"AGENTS\"]}",
+        "SLAVE_LABEL": "evo_docker_engine",
+        "WS_CLEANUP": true
+      },
+      "refId": "2",
+      "requisiteStageRefIds": ["4"],
+      "sendNotifications": true,
+      "stageEnabled":       {
+        "expression": "${FEM.contains(\"fem5\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": true,
+      "continuePipeline": false,
+      "failPipeline": false,
+      "job": "Jenkins_Agents_CleanUp",
+      "master": "oss-fem8s11-eiffel052",
+      "name": "FEM8 cleanup",
+      "notifications": [      {
+        "address": "PDLAPPSTAG@pdl.internal.ericsson.com",
+        "level": "stage",
+        "type": "email",
+        "when": ["stage.failed"]
+      }],
+      "parameters":       {
+        "DEEP_CLEANUP": "${(trigger.payload != null)? 'true' : parameters['DEEP_CLEANUP']}",
+        "NODE_NAMES": "${#stage(\"Evaluate Variables\")[\"context\"][\"AGENTS\"]}",
+        "SLAVE_LABEL": "evo_docker_engine"
+      },
+      "refId": "3",
+      "requisiteStageRefIds": ["4"],
+      "sendNotifications": true,
+      "stageEnabled":       {
+        "expression": "${FEM.contains(\"fem8\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "failOnFailedExpressions": true,
+      "name": "Evaluate Variables",
+      "refId": "4",
+      "requisiteStageRefIds": [],
+      "type": "evaluateVariables",
+      "variables":       [
+                {
+          "key": "AGENTS",
+          "value": "${(trigger.payload != null)? trigger.payload.alerts.![labels.instance].toString().replaceAll(\"[,|\\[\\]]\", \"\") : parameters['AGENTS']}"
+        },
+                {
+          "key": "FEM",
+          "value": "${(trigger.payload != null)? trigger.payload.commonLabels.JENKINS_SERVER : parameters['FEM']}"
+        }
+      ]
+    }
+  ],
+  "triggers":   [
+        {
+      "cronExpression": "0 12 4 ? * SUN,WED *",
+      "enabled": true,
+      "id": "4c3eadb6-f9ce-4040-ad43-2198cda36904",
+      "type": "cron"
+    },
+        {
+      "enabled": true,
+      "source": "clean-appstaging-jenkins-agents",
+      "type": "webhook"
+    }
+  ],
+  "updateTs": "1699524908761"
+}

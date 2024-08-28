@@ -1,0 +1,457 @@
+{
+  "appConfig": {},
+  "application": "common-e2e-cicd",
+  "description": "This file is used to execute pre deployment steps to check secrets creation",
+  "id": "5a7df4f9-e323-4e0b-8eae-15fe78958b51",
+  "index": 5,
+  "keepWaitingPipelines": false,
+  "lastModifiedBy": "tbspinauth",
+  "limitConcurrent": false,
+  "locked":   {
+    "allowUnlockUi": true,
+    "description": "This pipeline is maintained by Spinnaker as a code, any changes made through the UI will be overwritten. Please see https://gerrit-gamma.gic.ericsson.se/plugins/gitiles/OSS/com.ericsson.oss.aeonic/oss-integration-ci/+/HEAD/docs/flows/IDUN-Pre-Deployment.md for details",
+    "ui": true
+  },
+  "name": "OSS-Common-Pre-Deployment",
+  "parameterConfig":   [
+        {
+      "default": "oss-deploy",
+      "description": "Namespace to be used to execute deployment against on the kubernetes system",
+      "hasOptions": false,
+      "label": "Namespace",
+      "name": "NAMESPACE",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "Ericsson123!",
+      "description": "IAM Password to use when creating the secret",
+      "hasOptions": false,
+      "label": "ADP_IAM_AA_CLIENT_PASSWORD",
+      "name": "ADP_IAM_AA_CLIENT_PASSWORD",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "crd-namespace",
+      "description": "CRD Namespace to be used to execute the CRD deployment against on the kubernetes system",
+      "hasOptions": false,
+      "label": "CRD Namespace",
+      "name": "CRD_NAMESPACE",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "",
+      "description": "Kubeconfig file id stored in the Jenkins secret area",
+      "hasOptions": false,
+      "label": "Kubernetes Config File ID",
+      "name": "KUBECONFIG_FILE",
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "None",
+      "description": "Name of the Environment file OST bucket that stores the kube config file for the environment. ONLY USED if environment data store in OST.",
+      "hasOptions": false,
+      "label": "ENV_FILES_BUCKET_NAME",
+      "name": "ENV_FILES_BUCKET_NAME",
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "",
+      "description": "Jenkins secret ID for a Functional user that has access to the data within DIT. ONLY USED if environment data store in OST.",
+      "hasOptions": false,
+      "label": "FUNCTIONAL_USER_SECRET",
+      "name": "FUNCTIONAL_USER_SECRET",
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "admin",
+      "description": "Key Cloak Admin User (--from-literal=kcadminid=<KC_ADMIN_ID>)",
+      "hasOptions": false,
+      "label": "Key Cloak Admin User ",
+      "name": "KC_ADMIN_ID",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "test",
+      "description": "Key Cloak Admin Password (--from-literal=kcpasswd=<KC_PASSWORD>)",
+      "hasOptions": false,
+      "label": "Key Cloak Admin Password",
+      "name": "KC_PASSWORD",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "admin",
+      "description": "Key Cloak Postgres Admin User (--from-literal=pguserid=<PG_USER_ID>)",
+      "hasOptions": false,
+      "label": "Key Cloak Postgres Admin User",
+      "name": "PG_USER_ID",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "test-pw",
+      "description": "Key Cloak Postgres Admin Password (--from-literal=pgpasswd=<PG_PASSWORD>) ",
+      "hasOptions": false,
+      "label": "Key Cloak Postgres Admin Password",
+      "name": "PG_PASSWORD",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "eouser",
+      "description": "Postgres Custom user used in the creation of the generic secret (--from-literal=custom-user=<CUSTOM_USER_ID>)",
+      "hasOptions": false,
+      "label": "Postgres Custom User",
+      "name": "CUSTOM_USER_ID",
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "postgres",
+      "description": "Postgres Custom Password  used in the creation of the generic secret (--from-literal=custom-pwd=<CUSTOM_PASSWORD>)",
+      "hasOptions": false,
+      "label": "Postgres Custom Password",
+      "name": "CUSTOM_PASSWORD",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "exporter",
+      "description": "Postgres Metric User used in the creation of the generic secret (--from-literal=metrics-user=<METRICS_USER_ID>)",
+      "hasOptions": false,
+      "label": "Postgres Metrics User",
+      "name": "METRICS_USER_ID",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "postgres",
+      "description": "Postgres Metric Password  used in the creation of the generic secret (--from-literal=metrics-pwd=<METRICS_PASSWORD>)",
+      "hasOptions": false,
+      "label": "Postgres Metrics Password",
+      "name": "METRICS_PASSWORD",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "replica",
+      "description": "Postgres Replica User used in the creation of the generic secret (--from-literal=replica-user=<REPLICA_USER_ID>)",
+      "hasOptions": false,
+      "label": "Postgres Replica User ID",
+      "name": "REPLICA_USER_ID",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "postgres",
+      "description": "Postgres Replica Password used in the creation of the generic secret (--from-literal=replica-pwd=<REPLICA_PASSWORD>)",
+      "hasOptions": false,
+      "label": "Postgres Replica Password",
+      "name": "REPLICA_PASSWORD",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "postgres",
+      "description": "Postgres Super User used in the creation of the generic secret (--from-literal=super-user=<SUPER_USER_ID>)",
+      "hasOptions": false,
+      "label": "Postgres Super User ID",
+      "name": "SUPER_USER_ID",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "postgres",
+      "description": "Postgres Super User Password used in the creation of the generic secret (--from-literal=super-pwd=<SUPER_PASSWORD>)",
+      "hasOptions": false,
+      "label": "Postgres Super User Password",
+      "name": "SUPER_PASSWORD",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "false",
+      "description": "Used to Create a custom cluster role, should be used in conjunction with the site values when the  \"global.createClusterRoles=false\" is set.",
+      "hasOptions": false,
+      "label": "Create Custom Cluster Role",
+      "name": "CUSTOM_CLUSTER_ROLE",
+      "options": [],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "eric-eo",
+      "description": "This is the release or project name i.e. eric-eo or  eric-oss-common-base. It is used to set the releas within the custom cluster role if the option is turned on ( metadata:   name: <CLUSTER_ROLE_RELEASE_NAME>-<NAMESPACE_NAME>-allowed-use-privileged-policy",
+      "hasOptions": false,
+      "label": "ClUSTER_ROLE_RELEASE NAME",
+      "name": "CLUSTER_ROLE_RELEASE_NAME",
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "refs/heads/master",
+      "description": "Gerrit RefSpec to be able to test the flow against a review before merge. Use with caution",
+      "hasOptions": false,
+      "label": "Gerrit Ref Spec",
+      "name": "GERRIT_REFSPEC",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "evo_docker_engine",
+      "description": "Jenkins Slave where this flow should be executed from",
+      "hasOptions": false,
+      "label": "SLAVE LABEL",
+      "name": "SLAVE_LABEL",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "armdocker.rnd.ericsson.se/proj-eric-oss-drop/eric-oss-ci-scripts:default",
+      "description": "CI Docker image to use. Mainly used in CI Testing flows",
+      "hasOptions": false,
+      "label": "CI_DOCKER_IMAGE",
+      "name": "CI_DOCKER_IMAGE",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "eric-odca-diagnostic-data-collector-sftp-credentials",
+      "description": "SFTP Server Secret name to be created",
+      "hasOptions": false,
+      "label": "SFTP_SECRET_NAME",
+      "name": "SFTP_SECRET_NAME",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "eric-sec-access-mgmt-aapxy-creds",
+      "description": "Authentication Proxy Secret name to be created",
+      "hasOptions": false,
+      "label": "AAPXY_SECRET_NAME",
+      "name": "AAPXY_SECRET_NAME",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "eric-sec-access-mgmt-creds",
+      "description": "Postgres secret name to be created",
+      "hasOptions": false,
+      "label": "MGMT_CREDS_SECRET_NAME",
+      "name": "MGMT_CREDS_SECRET_NAME",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "eric-eo-database-pg-secret",
+      "description": "Postgres secret name to be created",
+      "hasOptions": false,
+      "label": "DATABASE_PG_SECRET_NAME",
+      "name": "DATABASE_PG_SECRET_NAME",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "odca-ddc-sftp-credentials",
+      "description": "Jenkins credentials object consisting of a username and password for use when creating the SFTP Server secret",
+      "hasOptions": false,
+      "label": "SFTP_CREDENTIALS",
+      "name": "SFTP_CREDENTIALS",
+      "pinned": false,
+      "required": true
+    }
+  ],
+  "schema": "1",
+  "stages":   [
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-Integration-predeploy-sec-access-mgmt",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Secret : eric-sec-access-mgmt-creds",
+      "parameters":       {
+        "CI_DOCKER_IMAGE": "${trigger['parameters']['CI_DOCKER_IMAGE']}",
+        "ENV_FILES_BUCKET_NAME": "${trigger['parameters']['ENV_FILES_BUCKET_NAME']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['GERRIT_REFSPEC']}",
+        "KC_ADMIN_ID": "${trigger['parameters']['KC_ADMIN_ID']}",
+        "KC_PASSWORD": "${trigger['parameters']['KC_PASSWORD']}",
+        "KUBECONFIG_FILE": "${trigger['parameters']['KUBECONFIG_FILE']}",
+        "NAMESPACE": "${trigger['parameters']['NAMESPACE']}",
+        "PG_PASSWORD": "${trigger['parameters']['PG_PASSWORD']}",
+        "PG_USER_ID": "${trigger['parameters']['PG_USER_ID']}",
+        "SECRET_NAME": "${trigger['parameters']['MGMT_CREDS_SECRET_NAME']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}"
+      },
+      "refId": "Secret : eric-sec-access-mgmt-creds",
+      "requisiteStageRefIds": [],
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-Integration-predeploy-database-pg-secret",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Secret : eric-eo-database-pg-secret",
+      "parameters":       {
+        "CI_DOCKER_IMAGE": "${trigger['parameters']['CI_DOCKER_IMAGE']}",
+        "CUSTOM_PASSWORD": "${trigger['parameters']['CUSTOM_PASSWORD']}",
+        "CUSTOM_USER_ID": "${trigger['parameters']['CUSTOM_USER_ID']}",
+        "ENV_FILES_BUCKET_NAME": "${trigger['parameters']['ENV_FILES_BUCKET_NAME']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['GERRIT_REFSPEC']}",
+        "KUBECONFIG_FILE": "${trigger['parameters']['KUBECONFIG_FILE']}",
+        "METRICS_PASSWORD": "${trigger['parameters']['CUSTOM_PASSWORD']}",
+        "METRICS_USER_ID": "${trigger['parameters']['METRICS_USER_ID']}",
+        "NAMESPACE": "${trigger['parameters']['NAMESPACE']}",
+        "REPLICA_PASSWORD": "${trigger['parameters']['REPLICA_PASSWORD']}",
+        "REPLICA_USER_ID": "${trigger['parameters']['REPLICA_USER_ID']}",
+        "SECRET_NAME": "${trigger['parameters']['DATABASE_PG_SECRET_NAME']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SUPER_PASSWORD": "${trigger['parameters']['SUPER_PASSWORD']}",
+        "SUPER_USER_ID": "${trigger['parameters']['SUPER_USER_ID']}"
+      },
+      "refId": "Secret : eric-eo-database-pg-secret",
+      "requisiteStageRefIds": [],
+      "stageEnabled":       {
+        "expression": "",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": false,
+      "failPipeline": false,
+      "job": "OSS-Integration-predeploy-custom-cluster-role",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Custom Cluster Role : PriviliegedPolicyClusterRole",
+      "parameters":       {
+        "CI_DOCKER_IMAGE": "${trigger['parameters']['CI_DOCKER_IMAGE']}",
+        "ENV_FILES_BUCKET_NAME": "${trigger['parameters']['ENV_FILES_BUCKET_NAME']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['GERRIT_REFSPEC']}",
+        "KUBECONFIG_FILE": "${trigger['parameters']['KUBECONFIG_FILE']}",
+        "NAMESPACE": "${trigger['parameters']['NAMESPACE']}",
+        "RELEASE_NAME": "${trigger['parameters']['CLUSTER_ROLE_RELEASE_NAME']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}"
+      },
+      "refId": "Custom Cluster Role : PriviliegedPolicyClusterRole",
+      "requisiteStageRefIds": [],
+      "stageEnabled":       {
+        "expression": "'${trigger['parameters']['CUSTOM_CLUSTER_ROLE']}' == 'true'",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "name": "Check Secret & Cluster Role Creation",
+      "preconditions":       [
+                {
+          "context":           {
+            "stageName": "Secret : eric-sec-access-mgmt-creds",
+            "stageStatus": "SUCCEEDED"
+          },
+          "failPipeline": true,
+          "type": "stageStatus"
+        },
+                {
+          "context":           {
+            "stageName": "Secret : eric-eo-database-pg-secret",
+            "stageStatus": "SUCCEEDED"
+          },
+          "failPipeline": true,
+          "type": "stageStatus"
+        },
+                {
+          "context":           {
+            "expression": "\"${#stage('Custom Cluster Role : PriviliegedPolicyClusterRole')['status']}\" == \"SUCCEEDED\" or \"${#stage('Custom Cluster Role : PriviliegedPolicyClusterRole')['status']}\" == \"SKIPPED\"",
+            "failureMessage": ""
+          },
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context":           {
+            "stageName": "Secret : eric-sec-access-mgmt-aapxy-creds",
+            "stageStatus": "SUCCEEDED"
+          },
+          "failPipeline": true,
+          "type": "stageStatus"
+        },
+                {
+          "context":           {
+            "stageName": "Secret : eric-odca-diagnostic-data-collector-sftp-credentials",
+            "stageStatus": "SUCCEEDED"
+          },
+          "failPipeline": true,
+          "type": "stageStatus"
+        }
+      ],
+      "refId": "Check Secret & Cluster Role Creation",
+      "requisiteStageRefIds":       [
+        "Secret : eric-sec-access-mgmt-creds",
+        "Secret : eric-eo-database-pg-secret",
+        "Custom Cluster Role : PriviliegedPolicyClusterRole",
+        "Secret : eric-sec-access-mgmt-aapxy-creds",
+        "Secret : eric-odca-diagnostic-data-collector-sftp-credentials"
+      ],
+      "type": "checkPreconditions"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-Integration-predeploy-sec-access-mgmt-aapxy",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Secret : eric-sec-access-mgmt-aapxy-creds",
+      "parameters":       {
+        "ADP_IAM_AA_CLIENT_PASSWORD": "${trigger['parameters']['ADP_IAM_AA_CLIENT_PASSWORD']}",
+        "CI_DOCKER_IMAGE": "${trigger['parameters']['CI_DOCKER_IMAGE']}",
+        "ENV_FILES_BUCKET_NAME": "${trigger['parameters']['ENV_FILES_BUCKET_NAME']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['GERRIT_REFSPEC']}",
+        "KUBECONFIG_FILE": "${trigger['parameters']['KUBECONFIG_FILE']}",
+        "NAMESPACE": "${trigger['parameters']['NAMESPACE']}",
+        "SECRET_NAME": "${trigger['parameters']['AAPXY_SECRET_NAME']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}"
+      },
+      "refId": "Secret : eric-sec-access-mgmt-aapxy-creds",
+      "requisiteStageRefIds": [],
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-Integration-Predeploy-eric-odca-ddc-sftp-server-secret",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Secret : eric-odca-diagnostic-data-collector-sftp-credentials",
+      "parameters":       {
+        "CI_DOCKER_IMAGE": "${trigger['parameters']['CI_DOCKER_IMAGE']}",
+        "ENV_FILES_BUCKET_NAME": "${trigger['parameters']['ENV_FILES_BUCKET_NAME']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['GERRIT_REFSPEC']}",
+        "KUBECONFIG_FILE": "${trigger['parameters']['KUBECONFIG_FILE']}",
+        "NAMESPACE": "${trigger['parameters']['NAMESPACE']}",
+        "SECRET_NAME": "${trigger['parameters']['SFTP_SECRET_NAME']}",
+        "SFTP_CREDENTIALS": "${trigger['parameters']['SFTP_CREDENTIALS']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}"
+      },
+      "refId": "Secret : eric-odca-diagnostic-data-collector-sftp-credentials",
+      "requisiteStageRefIds": [],
+      "type": "jenkins"
+    }
+  ],
+  "triggers": [],
+  "updateTs": "1717059809828"
+}

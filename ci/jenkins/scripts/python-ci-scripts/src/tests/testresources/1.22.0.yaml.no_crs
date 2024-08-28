@@ -1,0 +1,4710 @@
+---
+# Source: eric-mesh-controller-crd/templates/crd-config-adapters.yaml
+kind: CustomResourceDefinition
+apiVersion: apiextensions.k8s.io/v1
+metadata:
+  name: adapters.config.istio.io
+  labels:
+    app: "mixer"
+    app.kubernetes.io/instance: "eric-mesh-controller-crd"
+    app.kubernetes.io/name: "eric-mesh-controller-crd"
+    app.kubernetes.io/version: "9.2.0_1"
+    chart: "istio"
+    heritage: "Tiller"
+    istio: "mixer-adapter"
+    package: "adapter"
+    release: "istio"
+  annotations:
+    ericsson.com/product-name: "ServiceMesh Controller CRD"
+    ericsson.com/product-number: "CXD 101 0259"
+    ericsson.com/product-revision: "9.2.0"
+    helm.sh/resource-policy: "keep"
+spec:
+  group: config.istio.io
+  names:
+    kind: adapter
+    plural: adapters
+    singular: adapter
+    categories:
+    - istio-io
+    - policy-istio-io
+  scope: Namespaced
+  versions:
+    - name: v1alpha2
+      schema:
+        openAPIV3Schema:
+          properties:
+            spec:
+              x-kubernetes-preserve-unknown-fields: true
+              type: object
+            status:
+              x-kubernetes-preserve-unknown-fields: true
+              type: object
+          type: object
+      served: true
+      storage: true
+      subresources:
+        status: {}
+---
+# Source: eric-mesh-controller-crd/templates/crd-config-attributemanifests.yaml
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    ericsson.com/product-name: "ServiceMesh Controller CRD"
+    ericsson.com/product-number: "CXD 101 0259"
+    ericsson.com/product-revision: "9.2.0"
+    helm.sh/resource-policy: "keep"
+  labels:
+    app: "mixer"
+    app.kubernetes.io/instance: "eric-mesh-controller-crd"
+    app.kubernetes.io/name: "eric-mesh-controller-crd"
+    app.kubernetes.io/version: "9.2.0_1"
+    chart: "istio"
+    heritage: "Tiller"
+    istio: "core"
+    package: "istio.io.mixer"
+    release: "istio"
+  name: attributemanifests.config.istio.io
+spec:
+  group: config.istio.io
+  names:
+    categories:
+    - istio-io
+    - policy-istio-io
+    kind: attributemanifest
+    listKind: attributemanifestList
+    plural: attributemanifests
+    singular: attributemanifest
+  scope: Namespaced
+  versions:
+  - name: v1alpha2
+    schema:
+      openAPIV3Schema:
+        properties:
+          spec:
+            description: 'Describes the rules used to configure Mixer''s policy and
+              telemetry features. See more details at: istio.io/docs/reference/config/policy-and-telemetry/istio.policy.v1beta1.html'
+            properties:
+              attributes:
+                additionalProperties:
+                  properties:
+                    description:
+                      description: A human-readable description of the attribute's purpose.
+                      type: string
+                    valueType:
+                      description: The type of data carried by this attribute.
+                      enum:
+                      - VALUE_TYPE_UNSPECIFIED
+                      - STRING
+                      - INT64
+                      - DOUBLE
+                      - BOOL
+                      - TIMESTAMP
+                      - IP_ADDRESS
+                      - EMAIL_ADDRESS
+                      - URI
+                      - DNS_NAME
+                      - DURATION
+                      - STRING_MAP
+                      type: string
+                  type: object
+                description: The set of attributes this Istio component will be responsible
+                  for producing at runtime.
+                type: object
+              name:
+                description: Name of the component producing these attributes.
+                type: string
+              revision:
+                description: The revision of this document.
+                type: string
+            type: object
+          status:
+            type: object
+            x-kubernetes-preserve-unknown-fields: true
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+---
+# Source: eric-oss-adc/templates/file-notification-enm-stub-limit-internal-traffic.yaml
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: eric-oss-adc-file-notification-enm-stub-limit-internal-traffic
+  labels:    
+
+    app.kubernetes.io/name: "eric-oss-adc"
+    app.kubernetes.io/version: "0.0.2-726"
+    app.kubernetes.io/instance: "eric-oss-adc"
+  annotations:
+    
+    ericsson.com/product-name: "OSS ADC"
+    ericsson.com/product-number: "CXC 101 0000"
+    ericsson.com/product-revision: "0.0.2"
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: eric-oss-file-notification-enm-stub
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - {}
+  egress:
+  - {}
+---
+# Source: eric-oss-adc/templates/moc-ctr-file-transfer-allow-internal.yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: eric-oss-adc-moc-ctr-file-transfer-allow-internal-traffic
+  labels:    
+
+    app.kubernetes.io/name: "eric-oss-adc"
+    app.kubernetes.io/version: "0.0.2-726"
+    app.kubernetes.io/instance: "eric-oss-adc"
+  annotations:
+    
+    ericsson.com/product-name: "OSS ADC"
+    ericsson.com/product-number: "CXC 101 0000"
+    ericsson.com/product-revision: "0.0.2"
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: moc-ctr-file-transfer
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - {}
+  egress:
+  - {}
+---
+# Source: eric-oss-adc/templates/networkPolicy/deny-all-policy.yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: eric-oss-adc-default-deny-ingress
+  labels:
+    
+    app.kubernetes.io/name: eric-oss-adc
+    app.kubernetes.io/version: 0.0.2-726
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app: eric-oss-adc
+    chart: eric-oss-adc-0.0.2-726
+    release: "eric-oss-adc"
+    heritage: "Helm"
+  annotations:
+    
+    ericsson.com/product-name: "OSS ADC"
+    ericsson.com/product-number: "CXC 101 0000"
+    ericsson.com/product-revision: "0.0.2"
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+---
+# Source: eric-oss-adc/charts/eric-oss-3gpp-pm-xml-core-parser/templates/podDisruptionBudget.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: eric-oss-3gpp-pm-xml-core-parser
+  labels:
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-3gpp-pm-xml-core-parser"
+    app.kubernetes.io/version: "1.0"
+    helm.sh/chart: "eric-oss-3gpp-pm-xml-core-parser-1.3.0-1"
+  annotations:
+    ericsson.com/product-name: "eric-oss-3gpp-pm-xml-core-parser HELM"
+    ericsson.com/product-number: "CXC 201 0000"
+    ericsson.com/product-revision: "1.3.0"
+spec:
+  minAvailable: "40%"
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: eric-oss-3gpp-pm-xml-core-parser
+---
+# Source: eric-oss-adc/charts/eric-oss-3gpp-pm-xml-ran-parser/templates/podDisruptionBudget.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: eric-oss-3gpp-pm-xml-ran-parser
+  labels:
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-3gpp-pm-xml-ran-parser"
+    app.kubernetes.io/version: "1.0"
+    helm.sh/chart: "eric-oss-3gpp-pm-xml-ran-parser-1.48.0-2"
+  annotations:
+    ericsson.com/product-name: "eric-oss-3gpp-pm-xml-ran-parser HELM"
+    ericsson.com/product-number: "CXC 201 0000"
+    ericsson.com/product-revision: "1.48.0"
+spec:
+  minAvailable: "40%"
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: eric-oss-3gpp-pm-xml-ran-parser
+---
+# Source: eric-oss-adc/charts/eric-oss-5gpmevt-filetx-proc/templates/podDisruptionBudget.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: eric-oss-5gpmevt-filetx-proc
+  labels:
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-5gpmevt-filetx-proc"
+    app.kubernetes.io/version: "1.0"
+    helm.sh/chart: "eric-oss-5gpmevt-filetx-proc-1.30.0-1"
+  annotations:
+    ericsson.com/product-name: "eric-oss-5gpmevt-filetx-proc"
+    ericsson.com/product-number: "CXD101304"
+    ericsson.com/product-revision: "1.30.0"
+spec:
+  minAvailable: "40%"
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: eric-oss-5gpmevt-filetx-proc
+---
+# Source: eric-oss-adc/charts/eric-oss-enm-fns/templates/podDisruptionBudget.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: eric-oss-enm-fns
+  labels:
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-enm-fns"
+    app.kubernetes.io/version: "1.0.139-1"
+    chart: "eric-oss-enm-fns-1.0.139-1"
+    helm.sh/chart: "eric-oss-enm-fns-1.0.139-1"
+  annotations:
+    ericsson.com/product-name: "eric-oss-enm-fns HELM"
+    ericsson.com/product-number: "CXD 101 394"
+    ericsson.com/product-revision: "1.0.139"
+spec:
+  minAvailable: "40%"
+  selector:
+    matchLabels:
+      app: eric-oss-enm-fns
+---
+# Source: eric-oss-adc/charts/eric-oss-sftp-filetrans/templates/podDisruptionBudget.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: eric-oss-sftp-filetrans
+  labels:
+    app: "eric-oss-sftp-filetrans"
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-sftp-filetrans"
+    app.kubernetes.io/version: "1.0"
+    helm.sh/chart: "eric-oss-sftp-filetrans-1.27.0-1"
+  annotations:
+    ericsson.com/product-name: "eric-oss-sftp-filetrans HELM"
+    ericsson.com/product-number: "CXD 101 395"
+    ericsson.com/product-revision: "1.27.0"
+spec:
+  minAvailable: "40%"
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: eric-oss-sftp-filetrans
+---
+# Source: eric-oss-adc/charts/eric-csm-p-ctr/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: eric-csm-p-ctr-sa
+  labels:
+    app: "eric-csm-p-ctr"
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-csm-p-ctr"
+    app.kubernetes.io/version: "1.3.81-7"
+    chart: "eric-csm-p-ctr-1.3.81-7"
+    helm.sh/chart: "eric-csm-p-ctr-1.3.81-7"
+  annotations:
+    ericsson.com/product-name: "eric-csm-p-ctr"
+    ericsson.com/product-number: "CXD 101 0353"
+    ericsson.com/product-revision: "1.3.81"
+automountServiceAccountToken: false
+---
+# Source: eric-oss-adc/charts/eric-oss-3gpp-pm-xml-core-parser/templates/serviceaccount.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: eric-oss-3gpp-pm-xml-core-parser
+  labels:
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-3gpp-pm-xml-core-parser"
+    app.kubernetes.io/version: "1.0"
+    helm.sh/chart: "eric-oss-3gpp-pm-xml-core-parser-1.3.0-1"
+  annotations:
+    ericsson.com/product-name: "eric-oss-3gpp-pm-xml-core-parser HELM"
+    ericsson.com/product-number: "CXC 201 0000"
+    ericsson.com/product-revision: "1.3.0"
+---
+# Source: eric-oss-adc/charts/eric-oss-3gpp-pm-xml-ran-parser/templates/serviceaccount.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: eric-oss-3gpp-pm-xml-ran-parser
+  labels:
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-3gpp-pm-xml-ran-parser"
+    app.kubernetes.io/version: "1.0"
+    helm.sh/chart: "eric-oss-3gpp-pm-xml-ran-parser-1.48.0-2"
+  annotations:
+    ericsson.com/product-name: "eric-oss-3gpp-pm-xml-ran-parser HELM"
+    ericsson.com/product-number: "CXC 201 0000"
+    ericsson.com/product-revision: "1.48.0"
+---
+# Source: eric-oss-adc/charts/eric-oss-5gpmevt-filetx-proc/templates/serviceaccount.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: eric-oss-5gpmevt-filetx-proc
+  labels:
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-5gpmevt-filetx-proc"
+    app.kubernetes.io/version: "1.0"
+    helm.sh/chart: "eric-oss-5gpmevt-filetx-proc-1.30.0-1"
+  annotations:
+    ericsson.com/product-name: "eric-oss-5gpmevt-filetx-proc"
+    ericsson.com/product-number: "CXD101304"
+    ericsson.com/product-revision: "1.30.0"
+---
+# Source: eric-oss-adc/charts/eric-oss-enm-fns/templates/serviceaccount.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: eric-oss-enm-fns
+  labels:
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-enm-fns"
+    app.kubernetes.io/version: "1.0.139-1"
+    chart: "eric-oss-enm-fns-1.0.139-1"
+    helm.sh/chart: "eric-oss-enm-fns-1.0.139-1"
+  annotations:
+    ericsson.com/product-name: "eric-oss-enm-fns HELM"
+    ericsson.com/product-number: "CXD 101 394"
+    ericsson.com/product-revision: "1.0.139"
+---
+# Source: eric-oss-adc/charts/eric-oss-sftp-filetrans/templates/serviceaccount.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: eric-oss-sftp-filetrans
+  labels:
+    app: "eric-oss-sftp-filetrans"
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-sftp-filetrans"
+    app.kubernetes.io/version: "1.0"
+    helm.sh/chart: "eric-oss-sftp-filetrans-1.27.0-1"
+  annotations:
+    ericsson.com/product-name: "eric-oss-sftp-filetrans HELM"
+    ericsson.com/product-number: "CXD 101 395"
+    ericsson.com/product-revision: "1.27.0"
+---
+# Source: eric-oss-adc/charts/eric-oss-ves-collector/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: eric-oss-ves-collector-sa
+  labels:
+    app: "eric-oss-ves-collector"
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-ves-collector"
+    app.kubernetes.io/version: "0.0.2-2"
+    chart: "eric-oss-ves-collector-0.0.2-2"
+    helm.sh/chart: "eric-oss-ves-collector-0.0.2-2"
+  annotations:
+    ericsson.com/product-name: "VES Collector"
+    ericsson.com/product-number: "CXD 101 324"
+    ericsson.com/product-revision: "0.0.2"
+automountServiceAccountToken: false
+---
+# Source: eric-oss-adc/charts/eric-csm-p-ctr/templates/csm-imsi-secret.yaml
+apiVersion: v1
+data:
+  list-key: ""
+kind: Secret
+metadata:
+  name: eric-csm-p-ctr-imsi-key
+  labels:
+    app: "eric-csm-p-ctr"
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-csm-p-ctr"
+    app.kubernetes.io/version: "1.3.81-7"
+    chart: "eric-csm-p-ctr-1.3.81-7"
+    helm.sh/chart: "eric-csm-p-ctr-1.3.81-7"
+  annotations:
+    ericsson.com/product-name: "eric-csm-p-ctr"
+    ericsson.com/product-number: "CXD 101 0353"
+    ericsson.com/product-revision: "1.3.81"
+---
+# Source: eric-oss-adc/charts/eric-csm-p-ctr/templates/csm-imsi-secret.yaml
+apiVersion: v1
+data:
+  list-data: ""
+kind: Secret
+metadata:
+  name: eric-csm-p-ctr-imsi-data
+  labels:
+    app: "eric-csm-p-ctr"
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-csm-p-ctr"
+    app.kubernetes.io/version: "1.3.81-7"
+    chart: "eric-csm-p-ctr-1.3.81-7"
+    helm.sh/chart: "eric-csm-p-ctr-1.3.81-7"
+  annotations:
+    ericsson.com/product-name: "eric-csm-p-ctr"
+    ericsson.com/product-number: "CXD 101 0353"
+    ericsson.com/product-revision: "1.3.81"
+---
+# Source: eric-oss-adc/charts/eric-csm-p-ctr/templates/configmap-filter.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-csm-p-ctr-filter-conf
+  labels:
+    app: "eric-csm-p-ctr"
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-csm-p-ctr"
+    app.kubernetes.io/version: "1.3.81-7"
+    chart: "eric-csm-p-ctr-1.3.81-7"
+    helm.sh/chart: "eric-csm-p-ctr-1.3.81-7"
+  annotations:
+    ericsson.com/product-name: "eric-csm-p-ctr"
+    ericsson.com/product-number: "CXD 101 0353"
+    ericsson.com/product-revision: "1.3.81"
+data:
+  filtering.conf: |
+    {
+      "filtering": [
+        {
+            "uniqueName": "eeaFiltering",
+            "whitelistedEvents": [],
+            "blacklistedEvents": []
+        }
+      ]
+    }
+---
+# Source: eric-oss-adc/charts/eric-csm-p-ctr/templates/configmap-process.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-csm-p-ctr-proc-conf
+  labels:
+    app: "eric-csm-p-ctr"
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-csm-p-ctr"
+    app.kubernetes.io/version: "1.3.81-7"
+    chart: "eric-csm-p-ctr-1.3.81-7"
+    helm.sh/chart: "eric-csm-p-ctr-1.3.81-7"
+  annotations:
+    ericsson.com/product-name: "eric-csm-p-ctr"
+    ericsson.com/product-number: "CXD 101 0353"
+    ericsson.com/product-revision: "1.3.81"
+data:
+  process.conf: |
+    {
+      "tlsEnabled": false,
+      "nrProcessors": 1,
+      "tsDropLimitSeconds": -1,
+      "ignoreStreamHeaderTimestamp": true,
+      "timezoneOffsetOverride": false,
+      "timezoneOffset": -1,
+      "encryptionKey": "",
+      "imsi-secret": {
+        "secretData": {
+          "secret-data-path": "/run/csm-imsi-data/imsi",
+          "secret-key-path": "/run/csm-imsi-key/imsi"
+        }
+      },
+      "southBoundInterfaces": [
+        {
+            "tlsEnforced": false,
+            "uniqueName": "kafkaInput",
+            "format": "raw",
+            "formatOptions": [],
+            "carrier": "kafka",
+            "carrierOptions": {
+                "brokers": "eric-oss-dmm-data-message-bus-kf-client:9092",
+                "topicManagement": "manual",
+                "topic": "ctr-raw"
+            },
+            "kafkaConfig":
+            {},
+            "filters": [
+                "eeaFiltering"
+            ]
+        }
+      ],
+      "northBoundInterfaces": [
+          {
+              "tlsEnforced": false,
+              "uniqueName": "kafkaOutput",
+              "format": "enrichedRaw",
+              "formatOptions": { },
+              "carrier": "kafka",
+              "carrierOptions": {
+                  "brokers": "eric-oss-dmm-data-message-bus-kf-client:9092",
+                  "topicManagement": "manual",
+                  "topic": "ctr-processed",
+                  "numberOfPartitions":50,
+                  "replicationFactor": 3
+              },
+              "kafkaConfig":
+              {
+                "linger.ms": "500"
+              },
+              "kafkaTopicConfig":
+              {
+                "retention.ms": "10800000"
+              },
+              "filters": [
+                  "eeaFiltering"
+              ]
+          }
+      ],
+      "additionalInterfaces": [
+          {
+              "tlsEnforced": false,
+              "type": "pm",
+              "interface": "http",
+              "interfaceOptions": {
+                  "port": 2555
+              }
+          },
+          {
+              "type": "sr",
+              "interface": "http",
+              "tlsEnforced": false,
+              "interfaceOptions": {
+                "address" : "http://eric-schema-registry-sr:8081"
+              }
+          }
+      ]
+    }
+---
+# Source: eric-oss-adc/charts/eric-csm-p-ctr/templates/configmap-rsyslog.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-csm-p-ctr-rsyslog
+  labels:
+    app: "eric-csm-p-ctr"
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-csm-p-ctr"
+    app.kubernetes.io/version: "1.3.81-7"
+    chart: "eric-csm-p-ctr-1.3.81-7"
+    helm.sh/chart: "eric-csm-p-ctr-1.3.81-7"
+  annotations:
+    ericsson.com/product-name: "eric-csm-p-ctr"
+    ericsson.com/product-number: "CXD 101 0353"
+    ericsson.com/product-revision: "1.3.81"
+data:
+  rsyslog.conf: |
+    #### MODULES ####
+    module(load="imuxsock" SysSock.Use="off")
+    module(load="mmpstrucdata")
+
+    #### GLOBAL DIRECTIVES ####
+    global(preserveFQDN="off"
+           )
+
+    #### RULES ####
+    input(type="imuxsock" Socket="/run/eea/log" Ruleset="sendToRemote"
+          UseSpecialParser="off" IgnoreTimestamp="off" CreatePath="on")
+
+    template(name="file_name" type="string" string="/data/eea_log/%procid%_%$!rfc5424-sd!extra_data@193!inst%.log")
+
+    template(name="msg_template" type="list") {
+        property(name="timereported" dateFormat="year")
+        constant(value="-")
+        property(name="timereported" dateFormat="month")
+        constant(value="-")
+        property(name="timereported" dateFormat="day")
+        constant(value=" ")
+
+        property(name="timereported" dateFormat="hour")
+        constant(value=":")
+        property(name="timereported" dateFormat="minute")
+        constant(value=":")
+        property(name="timereported" dateFormat="second")
+        constant(value=".")
+        property(name="timereported" fixedwidth="on" position.to="6" dateFormat="subseconds")
+        constant(value=" ")
+
+        constant(value="@")
+        property(name="$!rfc5424-sd!extra_data@193!tid")
+        constant(value=" ")
+
+        constant(value="(")
+        property(name="syslogseverity-text" caseConversion="upper")
+        constant(value=") ")
+
+        property(name="msg" droplastlf="on" )
+        constant(value="\n")
+    }
+
+    ruleset(name="sendToRemote" parser="rsyslog.rfc5424") {
+        action(type="mmpstrucdata")
+        action(type="omfile" dirCreateMode="0700" FileCreateMode="0644" dynaFile="file_name" template="msg_template")
+        action(type="omfile" File="/proc/1/fd/2" template="msg_template")
+        action(type="omfwd" target="eric-log-transformer" port="5014" protocol="tcp"
+               template="RSYSLOG_SyslogProtocol23Format")
+    }
+---
+# Source: eric-oss-adc/charts/eric-oss-3gpp-pm-xml-core-parser/templates/configmap.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-oss-3gpp-pm-xml-core-parser-configmap
+  labels:
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-3gpp-pm-xml-core-parser"
+    app.kubernetes.io/version: "1.0"
+    helm.sh/chart: "eric-oss-3gpp-pm-xml-core-parser-1.3.0-1"
+  annotations:
+    prometheus.io/path: "/actuator/prometheus"
+    prometheus.io/port: "8080"
+    prometheus.io/scrape: "true"
+    ericsson.com/product-name: "eric-oss-3gpp-pm-xml-core-parser HELM"
+    ericsson.com/product-number: "CXC 201 0000"
+    ericsson.com/product-revision: "1.3.0"
+data:
+  application.properties: |
+    management.endpoint.metrics.enabled=true
+    management.endpoints.web.exposure.include=*
+    management.endpoint.prometheus.enabled=true
+    management.metrics.export.prometheus.enabled=true
+    management.metrics.web.server.auto-time-requests=true
+---
+# Source: eric-oss-adc/charts/eric-oss-3gpp-pm-xml-ran-parser/templates/configmap.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+  labels:
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-3gpp-pm-xml-ran-parser"
+    app.kubernetes.io/version: "1.0"
+    helm.sh/chart: "eric-oss-3gpp-pm-xml-ran-parser-1.48.0-2"
+  annotations:
+    prometheus.io/path: "/actuator/prometheus"
+    prometheus.io/port: "8080"
+    prometheus.io/scrape: "true"
+    ericsson.com/product-name: "eric-oss-3gpp-pm-xml-ran-parser HELM"
+    ericsson.com/product-number: "CXC 201 0000"
+    ericsson.com/product-revision: "1.48.0"
+data:
+  bdr_enabled: "false"
+  bdr_secret_name: "eric-data-object-storage-mn-secret"
+  bdr_accesskey: "accesskey"
+  bdr_secretkey: "secretkey"
+  bdr_number_of_connection_attempts: "3"
+  bdr_retry_interval_ms: "30000"
+  bdr_availability_retry_interval: "1000"
+  bdr_availability_retry_attempts: "2147483647"
+  connected_systems_enabled: "false"
+  connected_systems_uri: "/subsystem-manager/v1/subsystems/"
+  connected_systems_availability_retry_interval: "1000"
+  connected_systems_availability_retry_attempts: "2147483647"
+  subsystem_name: "enm1"
+  dmm_enabled: "false"
+  dmm_data_catalog_enabled: "true"
+  dmm_data_catalog_base_url: "http://eric-oss-data-catalog:"
+  dmm_data_catalog_base_port: "9590"
+  dmm_data_catalog_bulk_data_repository_uri: "/catalog/v1/bulk-data-repository"
+  dmm_data_catalog_message_schema_uri: "/catalog/v1/message-schema"
+  dmm_data_catalog_data_service_uri: "/catalog/v1/data-service"
+  dmm_data_catalog_message_data_topic_uri: "/catalog/v1/message-data-topic"
+  dmm_data_catalog_data_provider_type_uri: "/catalog/v2/data-provider-type"
+  dmm_data_catalog_notification_topic_uri: "/catalog/v1/notification-topic"
+  dmm_data_catalog_availability_retry_interval: "1000"
+  dmm_data_catalog_availability_retry_attempts: "2147483647"
+  queryConfig_enmName: "ieatenm5426-9.athtem.eei.ericsson.se"
+  queryConfig_enmPort: "443"
+  queryConfig_enmProtocol: "https"
+  queryConfig_enmUri: "getcENMPMfile"
+  queryConfig_dataType: "PM_STATISTICAL"
+  queryConfig_enmUsername: "Administrator"
+  queryConfig_enmPassword: "TestPassw0rd"
+  queryConfig_latestFlsId: "0"
+  spring_kafka_topics_input_name: "sftp-filetrans--"
+  spring_kafka_topics_output_name: "eric-oss-3gpp-pm-xml-ran-parser-"
+  spring_kafka_topics_output_partitions: "3"
+  spring_kafka_topics_output_replicas: "1"
+  spring_kafka_topics_output_compression: "lz4"
+  spring_kafka_topics_output_retention: "600000"
+  spring_kafka_topics_lte: "lte"
+  spring_kafka_topics_nr: "nr"
+  spring_kafka_topics_logbook: "logbook"
+  spring_kafka_topics_enm_id: "enm1"
+  spring_kafka_topics_consumer_group_id: "sftp-filetrans-consumer-group"
+  spring_kafka_topics_consumer_auto_offset_reset: "earliest"
+  spring_kafka_topics_consumer_partition_assignment_strategy: "org.apache.kafka.clients.consumer.RangeAssignor"
+  spring_kafka_topics_consumer_concurrency: "1"
+  spring_kafka_topics_consumer_max_poll_records: "500"
+  spring_kafka_topics_consumer_session_timeout_ms: "45000"
+  spring_kafka_topics_consumer_max_poll_reconnect_timeout_ms: "600000"
+  spring_kafka_topics_consumer_max_poll_interval_ms: "300000"   
+  spring_kafka_topics_consumer_batch_error_handler_retry_interval_ms: "10000"
+  spring_kafka_topics_consumer_heartbeat_interval_ms: "3000"
+  spring_kafka_topics_producer_retry_backoff_ms: "100"
+  spring_kafka_topics_producer_reconnect_backoff_ms: "50"
+  spring_kafka_topics_producer_reconnect_backoff_max_ms: "30000"
+  spring_kafka_topics_producer_request_timeout_ms: "30000"
+  spring_kafka_bootstrap_servers: "http://eric-oss-dmm-data-message-bus-kf-client:9092"
+  spring_kafka_auto_start: "false"
+  spring_kafka_jmx_enabled: "true"
+  topic_number_of_connection_attempts: "2147483647"
+  topic_retry_interval_ms: "10000"
+  
+  
+  application.properties: |
+    management.endpoint.metrics.enabled=true
+    management.endpoints.web.exposure.include=*
+    management.endpoint.prometheus.enabled=true
+    management.metrics.export.prometheus.enabled=true
+    management.metrics.web.server.auto-time-requests=true
+---
+# Source: eric-oss-adc/charts/eric-oss-5gpmevt-filetx-proc/templates/configmap.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: v1
+data:
+  connected_systems_base_url: "http://eric-eo-subsystem-management/"
+  connected_systems_uri: "subsystem-manager/v1/subsystems/"
+  number_of_sftp_connect_retries: "3"
+  number_of_event_file_download_retries: "3"
+  sftp_session_timeout_ms: "15000"
+  sftp_connect_backoff_ms: "1000"
+  spring_kafka_admin_retry: "2147483647"
+  spring_kafka_admin_retry_backoff_ms: "100"
+  spring_kafka_admin_reconnect_backoff_ms: "50"
+  spring_kafka_admin_reconnect_backoff_max_ms: "30000"
+  spring_kafka_admin_request_timeout_ms: "30000"
+  spring_kafka_producer_retry_backoff_ms: "100"
+  spring_kafka_producer_reconnect_backoff_ms: "50"
+  spring_kafka_producer_reconnect_backoff_max_ms: "30000"
+  spring_kafka_producer_request_timeout_ms: "30000"
+  spring_kafka_consumer_auto_offset_reset: "earliest"
+  spring_kafka_consumer_retry_backoff_ms: "100"
+  spring_kafka_consumer_reconnect_backoff_ms: "50"
+  spring_kafka_consumer_reconnect_backoff_max_ms: "30000"
+  spring_kafka_consumer_request_timeout_ms: "30000"
+  spring_kafka_topics_output_prefix: "5g-pm-event-file-transfer-and-processing--"
+  spring_kafka_topics_output_partitions: "3"
+  spring_kafka_topics_output_acks: "all"
+  spring_kafka_topics_output_replicas: "3"
+  spring_kafka_topics_output_compression_type: "lz4"
+  spring_kafka_topics_output_batch_size: "1000000"
+  spring_kafka_topics_output_buffer_memory: "32000000"
+  spring_kafka_topics_output_max_request_size: "50000000"
+  spring_kafka_topics_output_linger: "15"
+  spring_kafka_topics_output_retention_period_ms: "7200000"
+  spring_kafka_topics_input_name: "file-notification-service--5g-event--enm1"
+  spring_kafka_topics_input_prefix: "file-notification-service--5g-event--"
+  spring_kafka_topics_input_session_timeout_ms: "60000"
+  spring_kafka_topics_input_partition_assignment_strategy: "org.apache.kafka.clients.consumer.CooperativeStickyAssignor"
+  spring_kafka_topics_input_concurrency: "3"
+  spring_kafka_topics_input_max_poll_records: "5"
+  spring_kafka_topics_input_max_poll_interval_ms: "600000"
+  dmm_data_catalog_base_url: "http://eric-oss-data-catalog:"
+  dmm_data_catalog_base_port: "9590"
+  dmm_data_catalog_notification_topic_uri: "/catalog/v1/notification-topic"
+  dmm_data_catalog_file_format_uri: "/catalog/v1/file-format"
+  dmm_data_catalog_bulk_data_repository_uri: "/catalog/v1/bulk-data-repository"
+  dmm_data_catalog_message_bus_uri: "/catalog/v1/message-bus"
+  dmm_data_catalog_data_provider_type_uri: "/catalog/v1/data-provider-type"
+  dmm_data_catalog_data_collector_uri: "/catalog/v1/data-collector"
+  dmm_data_catalog_message_schema_uri: "/catalog/v1/message-schema"
+  dmm_data_catalog_data_space_uri: "/catalog/v1/data-space"
+  dmm_data_catalog_message_data_topic_uri : "/catalog/v1/message-data-topic"
+  dmm_data_catalog_message_status_topic_uri : "/catalog/v1/message-status-topic"
+  dmm_data_catalog_message_bus_name: "mb2"
+  dmm_data_catalog_message_bus_namespace: "nameSpace"
+  dmm_data_catalog_data_provider_type_id: "V1"
+  dmm_data_catalog_data_provider_type_version: "v5"
+  dmm_data_catalog_data_collector_name: "enm1"
+  dmm_data_catalog_data_space: "5G"
+  dmm_data_catalog_data_category: "PM_EVENTS"
+  dmm_data_catalog_specification_reference: "specRef"
+  dmm_schema_registry_url: "http://eric-schema-registry-sr:8081"
+  server_port: "33631"
+  application.properties: |
+    management.endpoint.metrics.enabled=true
+    management.endpoints.web.exposure.include=*
+    management.endpoint.prometheus.enabled=true
+    management.metrics.export.prometheus.enabled=true
+    management.metrics.web.server.auto-time-requests=true
+  http_connection_timeout_in_seconds: "60"
+kind: ConfigMap
+metadata:
+  name: eric-oss-5gpmevt-filetx-proc-configmap
+  labels:
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-5gpmevt-filetx-proc"
+    app.kubernetes.io/version: "1.0"
+    helm.sh/chart: "eric-oss-5gpmevt-filetx-proc-1.30.0-1"
+  annotations:
+    prometheus.io/path: "/actuator/prometheus"
+    prometheus.io/port: "33631"
+    prometheus.io/scrape: "true"
+    ericsson.com/product-name: "eric-oss-5gpmevt-filetx-proc"
+    ericsson.com/product-number: "CXD101304"
+    ericsson.com/product-revision: "1.30.0"
+---
+# Source: eric-oss-adc/charts/eric-oss-enm-fns/templates/configmap.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-oss-enm-fns-configmap
+  labels:
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-enm-fns"
+    app.kubernetes.io/version: "1.0.139-1"
+    chart: "eric-oss-enm-fns-1.0.139-1"
+    helm.sh/chart: "eric-oss-enm-fns-1.0.139-1"
+  annotations:
+    ericsson.com/product-name: "eric-oss-enm-fns HELM"
+    ericsson.com/product-number: "CXD 101 394"
+    ericsson.com/product-revision: "1.0.139"
+    prometheus.io/path: "/actuator/prometheus"
+    prometheus.io/port: "8080"
+    prometheus.io/scrape: "true"
+data:
+  log_level: "INFO"
+  configured_queries: "enms:\n  - name: enm1\n    periodSeconds: 60\n    queries:\n      - name: query1\n        topic: sftp-filetrans\n        dataType: PM_STATISTICAL\n        nodeType: \"\"\n        fileType: \"\"\n        id: -1\n      - name: query2\n        topic: 5g-event\n        dataType: \"PM_CELLTRACE_*\"\n        nodeType: \"\"\n        fileType: \"\"\n        id: -1"
+  kafka_required: "true"
+  kafka_bootstrap_server: "eric-oss-dmm-data-message-bus-kf:9092"
+  kafka_topics_output_partitions: "10"
+  kafka_topics_output_replication_factor: "1"
+  kafka_topics_output_retention: "86400000"
+  kafka_topics_output_base_name: "file-notification-service"
+  kafka_topics_output_compression_type: "none"
+  kafka_topics_output_linger: "200"
+  kafka_topics_output_batch_size: "163840"
+  kafka_topics_output_buffer_memory: "32000000"
+  connected_systems_required: "true"
+  connected_systems_base_url: "http://eric-eo-subsystem-management"
+  connected_systems_uri: "/subsystem-manager/v1/subsystems"
+  connected_systems_enm_not_found_retry_attempts: "2147483647"
+  connected_systems_enm_not_found_retry_interval: "10000"
+  dmm_data_catalog_required: "true"
+  dmm_data_catalog_base_url: "http://eric-oss-data-catalog"
+  dmm_data_catalog_base_port: "9590"
+  dmm_data_catalog_availability_retry_attempts: "2147483647"
+  dmm_data_catalog_availability_retry_interval: "10000"
+  dmm_data_catalog_notification_topic_uri: "/catalog/v1/notification-topic"
+  dmm_data_catalog_file_format_uri: "/catalog/v1/file-format"
+  dmm_data_catalog_message_bus_uri: "/catalog/v1/message-bus"
+  dmm_data_catalog_data_provider_type_uri: "/catalog/v1/data-provider-type"
+  dmm_data_catalog_data_collector_uri: "/catalog/v1/data-collector"
+  dmm_data_catalog_data_space_uri: "/catalog/v1/data-space"
+  dmm_data_catalog_message_bus_name: "messagebus1"
+  dmm_data_catalog_message_bus_namespace: "adc-deploy"
+  dmm_data_catalog_specification_reference: "specRef"
+  dmm_data_catalog_file_format_data_encoding: "XML"
+  secure_connection_no_hostname_validation: "example.com, dev.so.ecsader.hahn191.rnd.gic.ericsson.se\n"
+  application.properties: |
+    management.endpoint.metrics.enabled=true
+    management.endpoints.web.exposure.include=*
+    management.endpoint.prometheus.enabled=true
+    management.metrics.export.prometheus.enabled=true
+    management.metrics.web.server.auto-time-requests=true
+---
+# Source: eric-oss-adc/charts/eric-oss-sftp-filetrans/templates/configmap.yaml
+#
+# COPYRIGHT Ericsson 2022
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: v1
+data:
+  connected_systems_uri: "/subsystem-manager/v1/subsystems/"
+  connected_systems_availability_retry_interval: "1000"
+  connected_systems_availability_retry_attempts: "2147483647"
+  subsystem_name: "enm1"
+  dmm_data_catalog_base_url: "http://eric-oss-data-catalog:"
+  dmm_data_catalog_base_port: "9590"
+  dmm_data_catalog_notification_topic_uri: "/catalog/v1/notification-topic/"
+  dmm_data_catalog_data_space_uri: "/catalog/v1/data-space/"
+  dmm_data_catalog_data_provider_type_uri: "/catalog/v1/data-provider-type/"
+  dmm_data_catalog_data_collector_uri: "/catalog/v1/data-collector"
+  dmm_data_catalog_file_format_uri: "/catalog/v1/file-format/"
+  dmm_data_catalog_message_bus_uri: "/catalog/v1/message-bus/"
+  dmm_data_catalog_bulk_data_repository_uri: "/catalog/v1/bulk-data-repository/"
+  dmm_data_catalog_data_provider_type: "enm"
+  dmm_data_catalog_data_provider_type_version_id: "enm1"
+  dmm_data_catalog_message_bus_name: "messagebus1"
+  dmm_data_catalog_message_bus_namespace: "adc-deploy"
+  dmm_data_catalog_data_space_4g: "4G"
+  dmm_data_catalog_data_space_5g: "5G"
+  dmm_data_catalog_data_category: "PM_COUNTERS"
+  dmm_data_catalog_data_collector_name: "pm-counter-sftp-filetrans-enm1"
+  dmm_data_catalog_notification_topic_name: "sftp-filetrans--"
+  dmm_data_catalog_file_format_data_encoding: "XML"
+  dmm_data_catalog_specification_reference: ""
+  dmm_data_catalog_availability_retry_interval: "1000"
+  dmm_data_catalog_availability_retry_attempts: "2147483647"
+  bdr_secret_name: "eric-data-object-storage-mn-secret"
+  bdr_accesskey: "accesskey"
+  bdr_secretkey: "secretkey"
+  bdr_number_of_connection_attempts: "3"
+  bdr_retry_interval_ms: "1000"
+  bdr_availability_retry_interval: "1000"
+  bdr_availability_retry_attempts: "2147483647"
+  spring_kafka_transaction_retry_interval_ms: "1000"
+  spring_kafka_transaction_max_retry_attempts: "-1"
+  spring_kafka_topics_input_name: "file-notification-service--sftp-filetrans--"
+  spring_kafka_topics_enm_id: ""
+  spring_kafka_topics_output_name: "sftp-filetrans--"
+  spring_kafka_topics_output_partitions: "3"
+  spring_kafka_topics_output_replicas: "3"
+  spring_kafka_topics_output_compression: "lz4"
+  spring_kafka_topics_output_retention: "86400000"
+  spring_kafka_topics_consumer_group_id: "sftp-filetrans-consumer-group"
+  spring_kafka_topics_consumer_auto_offset_reset: "earliest"
+  spring_kafka_topics_consumer_partition_assignment_strategy: "org.apache.kafka.clients.consumer.RangeAssignor"
+  spring_kafka_topics_consumer_concurrency: "1"
+  spring_kafka_topics_consumer_max_poll_records: "1"
+  spring_kafka_topics_consumer_session_timeout_ms: "30000"
+  spring_kafka_topics_consumer_max_poll_reconnect_timeout_ms: "30000"
+  spring_kafka_topics_consumer_max_poll_interval_ms: "300000"
+  spring_kafka_topics_consumer_retry_backoff_ms: "100"
+  spring_kafka_topics_consumer_reconnect_backoff_ms: "50"
+  spring_kafka_topics_consumer_reconnect_backoff_max_ms: "30000"
+  spring_kafka_topics_consumer_request_timeout_ms: "30000"
+  spring_kafka_topics_producer_retry_backoff_ms: "100"
+  spring_kafka_topics_producer_reconnect_backoff_ms: "50"
+  spring_kafka_topics_producer_reconnect_backoff_max_ms: "30000"
+  spring_kafka_topics_producer_request_timeout_ms: "30000"
+  spring_kafka_listener_auto_start: "false"
+  spring_profile_active: "production"
+  spring_kafka_availability_retry_interval: "10000"
+  spring_kafka_availability_retry_attempts: "2147483647"
+  spring_kafka_bootstrap_servers: http://eric-oss-dmm-data-message-bus-kf-client:9092
+  sftp_retries: "3"
+  sftp_file_download_retries: "3"
+  sftp_file_download_interval_millis: "1000"
+  sftp_session_timeout_in_millis: "15000"
+  sftp_backoff_period_millis: "1000"
+  sftp_availability_retry_count_max: "2147483647"
+  sftp_availability_backoff_time_in_ms: "1000"  
+  retryhandler_back_off_period_ms: "5000"
+  retryhandler_max_num_of_retries: "2147483647"
+  server_port: "8080"
+
+  application.properties: |
+    management.endpoint.metrics.enabled=true
+    management.endpoints.web.exposure.include=*
+    management.endpoint.prometheus.enabled=true
+    management.metrics.export.prometheus.enabled=true
+    management.metrics.web.server.auto-time-requests=true
+kind: ConfigMap
+metadata:
+  name: eric-oss-sftp-filetrans-configmap
+  labels:
+    app: "eric-oss-sftp-filetrans"
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-sftp-filetrans"
+    app.kubernetes.io/version: "1.0"
+    helm.sh/chart: "eric-oss-sftp-filetrans-1.27.0-1"
+  annotations:
+    prometheus.io/path: "/actuator/prometheus"
+    prometheus.io/port: "8080"
+    prometheus.io/scrape: "true"
+    ericsson.com/product-name: "eric-oss-sftp-filetrans HELM"
+    ericsson.com/product-number: "CXD 101 395"
+    ericsson.com/product-revision: "1.27.0"
+---
+# Source: eric-oss-adc/charts/eric-oss-ves-collector/templates/configmap-process.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-oss-ves-collector-proc-conf
+  labels:
+    app: "eric-oss-ves-collector"
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-ves-collector"
+    app.kubernetes.io/version: "0.0.2-2"
+    chart: "eric-oss-ves-collector-0.0.2-2"
+    helm.sh/chart: "eric-oss-ves-collector-0.0.2-2"
+  annotations:
+    ericsson.com/product-name: "VES Collector"
+    ericsson.com/product-number: "CXD 101 324"
+    ericsson.com/product-revision: "0.0.2"
+data:
+  process.conf: |
+    {
+      "tlsEnabled": false,
+      "southBoundInterfaces": [
+        {
+          "tlsEnforced": false,
+          "carrier": "tcp",
+          "carrierOptions": {
+            "port": 31000
+          }
+        }
+      ],
+      "northBoundInterfaces": [
+        {
+          "carrier": "kafka",
+          "tlsEnforced": false,
+          "saslEnabled": false,
+          "carrierOptions": {
+              "brokers": "eric-oss-dmm-data-message-bus-kf-client:9092",
+              "topicManagement": "single",
+              "topic": "eric-ran-cu-up-ppf-canary-upgrade",
+              "numberOfPartitions": 50,
+              "numberOfPartitionsAlarm": 5,
+              "partitioner": "default",
+              "replicationFactor": 3
+          },
+          "kafkaConfig":
+          {
+            "linger.ms": "500"
+          },
+          "kafkaTopicConfig":
+          {
+            "retention.ms": "300000"
+          },
+          "filters": [
+              "eeaFiltering"
+          ]
+        }
+      ],
+      "additionalInterfaces": [
+        {
+            "tlsEnforced": false,
+            "type": "pm",
+            "interface": "http",
+            "interfaceOptions": {
+                "port": 2555
+            }
+        },
+        {
+            "type": "fm",
+            "tlsEnforced": false,
+            "interface": "kafka",
+            "interfaceOptions": {
+                "brokers": "eric-data-message-bus-kf:9092",
+                "topic": "AdpFaultIndication",
+                "replicationFactor": 3,
+                "numberOfPartitions": 5
+            }
+        }
+      ]
+    }
+---
+# Source: eric-oss-adc/charts/eric-oss-ves-collector/templates/configmap-rsyslog.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-oss-ves-collector-rsyslog
+  labels:
+    app: "eric-oss-ves-collector"
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-ves-collector"
+    app.kubernetes.io/version: "0.0.2-2"
+    chart: "eric-oss-ves-collector-0.0.2-2"
+    helm.sh/chart: "eric-oss-ves-collector-0.0.2-2"
+  annotations:
+    ericsson.com/product-name: "VES Collector"
+    ericsson.com/product-number: "CXD 101 324"
+    ericsson.com/product-revision: "0.0.2"
+data:
+  rsyslog.conf: |
+    #### MODULES ####
+    module(load="imuxsock" SysSock.Use="off")
+    module(load="mmpstrucdata")
+
+    #### GLOBAL DIRECTIVES ####
+    global(preserveFQDN="off"
+           )
+
+    #### RULES ####
+    input(type="imuxsock" Socket="/run/eea/log" Ruleset="sendToRemote"
+          UseSpecialParser="off" IgnoreTimestamp="off" CreatePath="on")
+
+    template(name="file_name" type="string" string="/data/eea_log/%procid%_%$!rfc5424-sd!extra_data@193!inst%.log")
+
+    template(name="msg_template" type="list") {
+        property(name="timereported" dateFormat="year")
+        constant(value="-")
+        property(name="timereported" dateFormat="month")
+        constant(value="-")
+        property(name="timereported" dateFormat="day")
+        constant(value=" ")
+
+        property(name="timereported" dateFormat="hour")
+        constant(value=":")
+        property(name="timereported" dateFormat="minute")
+        constant(value=":")
+        property(name="timereported" dateFormat="second")
+        constant(value=".")
+        property(name="timereported" fixedwidth="on" position.to="6" dateFormat="subseconds")
+        constant(value=" ")
+
+        constant(value="@")
+        property(name="$!rfc5424-sd!extra_data@193!tid")
+        constant(value=" ")
+
+        constant(value="(")
+        property(name="syslogseverity-text" caseConversion="upper")
+        constant(value=") ")
+
+        property(name="msg" droplastlf="on" )
+        constant(value="\n")
+    }
+
+    ruleset(name="sendToRemote" parser="rsyslog.rfc5424") {
+        action(type="mmpstrucdata")
+        action(type="omfile" dirCreateMode="0700" FileCreateMode="0644" dynaFile="file_name" template="msg_template")
+        action(type="omfile" File="/proc/1/fd/2" template="msg_template")
+        action(type="omfwd" target="eric-log-transformer" port="5014" protocol="tcp"
+               template="RSYSLOG_SyslogProtocol23Format")
+    }
+---
+# Source: eric-oss-adc/charts/eric-oss-ves-collector/templates/configmap-ves.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-oss-ves-collector-ves-conf
+  labels:
+    app: "eric-oss-ves-collector"
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-ves-collector"
+    app.kubernetes.io/version: "0.0.2-2"
+    chart: "eric-oss-ves-collector-0.0.2-2"
+    helm.sh/chart: "eric-oss-ves-collector-0.0.2-2"
+  annotations:
+    ericsson.com/product-name: "VES Collector"
+    ericsson.com/product-number: "CXD 101 324"
+    ericsson.com/product-revision: "0.0.2"
+data:
+  ves.conf: |
+    {
+      "apiVersion": {
+        "eventListener": [
+          "4.7.2",
+          "5.3.1",
+          "5.4.1",
+          "7.0.1",
+          "7.1.1",
+          "7.2.1"
+        ],
+        "eventListener_eventBatch": [
+          "4.7.2",
+          "5.3.1",
+          "5.4.1",
+          "7.0.1",
+          "7.1.1",
+          "7.2.1"
+        ]
+      },
+      "vesSchemaVersions": {
+        "v4.7.2": "/opt/ericsson/eea/sconf/ves/schemas/CommonEventFormat_27.2.json",
+        "v5.3.1": "/opt/ericsson/eea/sconf/ves/schemas/CommonEventFormat_28.3.json",
+        "v5.4.1": "/opt/ericsson/eea/sconf/ves/schemas/CommonEventFormat_28.4.1.json",
+        "v7.0.1": "/opt/ericsson/eea/sconf/ves/schemas/CommonEventFormat_30.0.1.json",
+        "v7.1.1": "/opt/ericsson/eea/sconf/ves/schemas/CommonEventFormat_30.1.1.json",
+        "v7.2.1": "/opt/ericsson/eea/sconf/ves/schemas/CommonEventFormat_30.2.1.json"
+      }
+    }
+---
+# Source: eric-oss-adc/charts/eric-csm-p-ctr/templates/role-binding_openshift.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: eric-csm-p-ctr-psp-binding
+  labels:
+    app: "eric-csm-p-ctr"
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-csm-p-ctr"
+    app.kubernetes.io/version: "1.3.81-7"
+    chart: "eric-csm-p-ctr-1.3.81-7"
+    helm.sh/chart: "eric-csm-p-ctr-1.3.81-7"
+  annotations:
+    ericsson.com/product-name: "eric-csm-p-ctr"
+    ericsson.com/product-number: "CXD 101 0353"
+    ericsson.com/product-revision: "1.3.81"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: eric-app-ns-allowed-use-privileged-policy
+subjects:
+- kind: ServiceAccount
+  name: eric-csm-p-ctr-sa
+---
+# Source: eric-oss-adc/charts/eric-oss-3gpp-pm-xml-core-parser/templates/rolebinding_openshift.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: eric-oss-3gpp-pm-xml-core-parser-psp-binding
+  labels:
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-3gpp-pm-xml-core-parser"
+    app.kubernetes.io/version: "1.0"
+    helm.sh/chart: "eric-oss-3gpp-pm-xml-core-parser-1.3.0-1"
+  annotations:
+    ericsson.com/product-name: "eric-oss-3gpp-pm-xml-core-parser HELM"
+    ericsson.com/product-number: "CXC 201 0000"
+    ericsson.com/product-revision: "1.3.0"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: eric-app-ns-allowed-use-privileged-policy
+subjects:
+  - kind: ServiceAccount
+    name: eric-oss-3gpp-pm-xml-core-parser
+---
+# Source: eric-oss-adc/charts/eric-oss-3gpp-pm-xml-ran-parser/templates/rolebinding_openshift.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: eric-oss-3gpp-pm-xml-ran-parser-psp-binding
+  labels:
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-3gpp-pm-xml-ran-parser"
+    app.kubernetes.io/version: "1.0"
+    helm.sh/chart: "eric-oss-3gpp-pm-xml-ran-parser-1.48.0-2"
+  annotations:
+    ericsson.com/product-name: "eric-oss-3gpp-pm-xml-ran-parser HELM"
+    ericsson.com/product-number: "CXC 201 0000"
+    ericsson.com/product-revision: "1.48.0"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: eric-app-ns-allowed-use-privileged-policy
+subjects:
+  - kind: ServiceAccount
+    name: eric-oss-3gpp-pm-xml-ran-parser
+---
+# Source: eric-oss-adc/charts/eric-oss-5gpmevt-filetx-proc/templates/rolebinding_openshift.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: eric-oss-5gpmevt-filetx-proc-psp-binding
+  labels:
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-5gpmevt-filetx-proc"
+    app.kubernetes.io/version: "1.0"
+    helm.sh/chart: "eric-oss-5gpmevt-filetx-proc-1.30.0-1"
+  annotations:
+    ericsson.com/product-name: "eric-oss-5gpmevt-filetx-proc"
+    ericsson.com/product-number: "CXD101304"
+    ericsson.com/product-revision: "1.30.0"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: eric-app-ns-allowed-use-privileged-policy
+subjects:
+  - kind: ServiceAccount
+    name: eric-oss-5gpmevt-filetx-proc
+---
+# Source: eric-oss-adc/charts/eric-oss-enm-fns/templates/rolebinding_openshift.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: eric-oss-enm-fns-psp-binding
+  labels:
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-enm-fns"
+    app.kubernetes.io/version: "1.0.139-1"
+    chart: "eric-oss-enm-fns-1.0.139-1"
+    helm.sh/chart: "eric-oss-enm-fns-1.0.139-1"
+  annotations:
+    ericsson.com/product-name: "eric-oss-enm-fns HELM"
+    ericsson.com/product-number: "CXD 101 394"
+    ericsson.com/product-revision: "1.0.139"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: eric-app-ns-allowed-use-privileged-policy
+subjects:
+  - kind: ServiceAccount
+    name: eric-oss-enm-fns
+---
+# Source: eric-oss-adc/charts/eric-oss-sftp-filetrans/templates/rolebinding_openshift.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: eric-oss-sftp-filetrans-psp-binding
+  labels:
+    app: "eric-oss-sftp-filetrans"
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-sftp-filetrans"
+    app.kubernetes.io/version: "1.0"
+    helm.sh/chart: "eric-oss-sftp-filetrans-1.27.0-1"
+  annotations:
+    ericsson.com/product-name: "eric-oss-sftp-filetrans HELM"
+    ericsson.com/product-number: "CXD 101 395"
+    ericsson.com/product-revision: "1.27.0"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: eric-app-ns-allowed-use-privileged-policy
+subjects:
+  - kind: ServiceAccount
+    name: eric-oss-sftp-filetrans
+---
+# Source: eric-oss-adc/charts/eric-oss-ves-collector/templates/role-binding-openshift.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: eric-oss-ves-collector-psp-binding
+  labels:
+    app: "eric-oss-ves-collector"
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-ves-collector"
+    app.kubernetes.io/version: "0.0.2-2"
+    chart: "eric-oss-ves-collector-0.0.2-2"
+    helm.sh/chart: "eric-oss-ves-collector-0.0.2-2"
+  annotations:
+    ericsson.com/product-name: "VES Collector"
+    ericsson.com/product-number: "CXD 101 324"
+    ericsson.com/product-revision: "0.0.2"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: eric-app-ns-allowed-use-privileged-policy
+subjects:
+- kind: ServiceAccount
+  name: eric-oss-ves-collector-sa
+---
+# Source: eric-oss-adc/charts/eric-csm-p-ctr/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: eric-csm-p-ctr
+  labels:
+    app: "eric-csm-p-ctr"
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-csm-p-ctr"
+    app.kubernetes.io/version: "1.3.81-7"
+    chart: "eric-csm-p-ctr-1.3.81-7"
+    helm.sh/chart: "eric-csm-p-ctr-1.3.81-7"
+  annotations:
+    ericsson.com/product-name: "eric-csm-p-ctr"
+    ericsson.com/product-number: "CXD 101 0353"
+    ericsson.com/product-revision: "1.3.81"
+spec:
+  type: ClusterIP
+  selector:
+    app: eric-csm-p-ctr
+  clusterIP: None
+---
+# Source: eric-oss-adc/charts/eric-oss-3gpp-pm-xml-core-parser/templates/service.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: eric-oss-3gpp-pm-xml-core-parser
+  labels:
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-3gpp-pm-xml-core-parser"
+    app.kubernetes.io/version: "1.0"
+    helm.sh/chart: "eric-oss-3gpp-pm-xml-core-parser-1.3.0-1"
+  annotations:
+    prometheus.io/path: "/actuator/prometheus"
+    prometheus.io/port: "8080"
+    prometheus.io/scrape: "true"
+    ericsson.com/product-name: "eric-oss-3gpp-pm-xml-core-parser HELM"
+    ericsson.com/product-number: "CXC 201 0000"
+    ericsson.com/product-revision: "1.3.0"
+spec:
+  type: "ClusterIP"
+  ports:
+    - port: 8080
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: eric-oss-3gpp-pm-xml-core-parser
+    app.kubernetes.io/instance: eric-oss-adc
+---
+# Source: eric-oss-adc/charts/eric-oss-3gpp-pm-xml-ran-parser/templates/service.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: eric-oss-3gpp-pm-xml-ran-parser
+  labels:
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-3gpp-pm-xml-ran-parser"
+    app.kubernetes.io/version: "1.0"
+    helm.sh/chart: "eric-oss-3gpp-pm-xml-ran-parser-1.48.0-2"
+  annotations:
+    prometheus.io/path: "/actuator/prometheus"
+    prometheus.io/port: "8080"
+    prometheus.io/scrape: "true"
+    ericsson.com/product-name: "eric-oss-3gpp-pm-xml-ran-parser HELM"
+    ericsson.com/product-number: "CXC 201 0000"
+    ericsson.com/product-revision: "1.48.0"
+spec:
+  type: "ClusterIP"
+  ports:
+    - port: 8080
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: eric-oss-3gpp-pm-xml-ran-parser
+    app.kubernetes.io/instance: eric-oss-adc
+---
+# Source: eric-oss-adc/charts/eric-oss-5gpmevt-filetx-proc/templates/service.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: eric-oss-5gpmevt-filetx-proc
+  labels:
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-5gpmevt-filetx-proc"
+    app.kubernetes.io/version: "1.0"
+    helm.sh/chart: "eric-oss-5gpmevt-filetx-proc-1.30.0-1"
+  annotations:
+    prometheus.io/path: "/actuator/prometheus"
+    prometheus.io/port: "33631"
+    prometheus.io/scrape: "true"
+    ericsson.com/product-name: "eric-oss-5gpmevt-filetx-proc"
+    ericsson.com/product-number: "CXD101304"
+    ericsson.com/product-revision: "1.30.0"
+spec:
+  type: "ClusterIP"
+  ports:
+    - port: 33631
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: eric-oss-5gpmevt-filetx-proc
+    app.kubernetes.io/instance: eric-oss-adc
+---
+# Source: eric-oss-adc/charts/eric-oss-enm-fns/templates/service.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: eric-oss-enm-fns
+  labels:
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-enm-fns"
+    app.kubernetes.io/version: "1.0.139-1"
+    chart: "eric-oss-enm-fns-1.0.139-1"
+    helm.sh/chart: "eric-oss-enm-fns-1.0.139-1"
+  annotations:
+    prometheus.io/path: "/actuator/prometheus"
+    prometheus.io/port: "8080"
+    prometheus.io/scrape: "true"
+    ericsson.com/product-name: "eric-oss-enm-fns HELM"
+    ericsson.com/product-number: "CXD 101 394"
+    ericsson.com/product-revision: "1.0.139"
+spec:
+  type: "ClusterIP"
+  ports:
+    - port: 8080
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: eric-oss-enm-fns
+    app.kubernetes.io/instance: eric-oss-adc
+---
+# Source: eric-oss-adc/charts/eric-oss-sftp-filetrans/templates/service.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: eric-oss-sftp-filetrans
+  labels:
+    app: "eric-oss-sftp-filetrans"
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-sftp-filetrans"
+    app.kubernetes.io/version: "1.0"
+    helm.sh/chart: "eric-oss-sftp-filetrans-1.27.0-1"
+  annotations:
+    prometheus.io/path: "/actuator/prometheus"
+    prometheus.io/port: "8080"
+    prometheus.io/scrape: "true"
+    ericsson.com/product-name: "eric-oss-sftp-filetrans HELM"
+    ericsson.com/product-number: "CXD 101 395"
+    ericsson.com/product-revision: "1.27.0"
+spec:
+  type: "ClusterIP"
+  ports:
+    - port: 8080
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: eric-oss-sftp-filetrans
+    app.kubernetes.io/instance: eric-oss-adc
+---
+# Source: eric-oss-adc/charts/eric-oss-ves-collector/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: eric-oss-ves-collector
+  labels:
+    app: "eric-oss-ves-collector"
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-ves-collector"
+    app.kubernetes.io/version: "0.0.2-2"
+    chart: "eric-oss-ves-collector-0.0.2-2"
+    helm.sh/chart: "eric-oss-ves-collector-0.0.2-2"
+  annotations:
+    ericsson.com/product-name: "VES Collector"
+    ericsson.com/product-number: "CXD 101 324"
+    ericsson.com/product-revision: "0.0.2"
+spec:
+  type: ClusterIP
+  selector:
+    app: eric-oss-ves-collector
+  ports:
+  - port: 31000
+    targetPort: 31000
+    name: st-ports
+---
+# Source: eric-oss-adc/charts/eric-csm-p-ctr/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eric-csm-p-ctr
+  labels:
+    app: "eric-csm-p-ctr"
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-csm-p-ctr"
+    app.kubernetes.io/version: "1.3.81-7"
+    chart: "eric-csm-p-ctr-1.3.81-7"
+    helm.sh/chart: "eric-csm-p-ctr-1.3.81-7"
+  annotations:
+    ericsson.com/product-name: "eric-csm-p-ctr"
+    ericsson.com/product-number: "CXD 101 0353"
+    ericsson.com/product-revision: "1.3.81"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eric-csm-p-ctr
+  template:
+    metadata:
+      annotations:
+        checksum/configmap-cma: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+        checksum/configmap-filter: 75c4750b8b952017ce76403438f99f27818d983712b820d6848f05739932b0e3
+        checksum/configmap-process: 3468881ed39c54ea9463da06bc53a8e65e7dc48bde13528ad03347cc5281b8dd
+        checksum/configmap-rsyslog: 72b527d35b2f581143069a2298ee44a2581e9bf2a04832198bf0df7deda36685
+        ericsson.com/product-name: "eric-csm-p-ctr"
+        ericsson.com/product-number: "CXD 101 0353"
+        ericsson.com/product-revision: "1.3.81"
+        prometheus.io/scrape: "true"
+        prometheus.io/path: /metrics
+        prometheus.io/port: "2555"
+      labels:
+        app: "eric-csm-p-ctr"
+        app.kubernetes.io/instance: "eric-oss-adc"
+        app.kubernetes.io/managed-by: "Helm"
+        app.kubernetes.io/name: "eric-csm-p-ctr"
+        app.kubernetes.io/version: "1.3.81-7"
+        chart: "eric-csm-p-ctr-1.3.81-7"
+        helm.sh/chart: "eric-csm-p-ctr-1.3.81-7"
+    spec:
+      nodeSelector:
+        null
+      imagePullSecrets:
+        - name: k8s-registry-secret
+      volumes:
+      - name: run-dir
+        emptyDir: {}
+      - name: eea-log-dir
+        emptyDir: {}
+
+
+      - name: coredumps-dir
+        emptyDir: {}
+      - name: eventspec-ctr-dir
+        emptyDir: {}
+      - name: eventspec-epg-ebm-dir
+        emptyDir: {}
+      - name: causecodes-epg-ebm-dir
+        emptyDir: {}
+      - name: eventspec-pgw-u-ebm-dir
+        emptyDir: {}
+      - name: causecodes-pgw-u-ebm-dir
+        emptyDir: {}
+      - name: eventspec-sgsn-mme-ebm-dir
+        emptyDir: {}
+      - name: causecodes-sgsn-mme-ebm-dir
+        emptyDir: {}
+
+      - name: eea-csm-rsyslog-client-conf
+        configMap:
+          name: eric-csm-p-ctr-rsyslog
+      - name: eric-csm-filter-config
+        configMap:
+          name: eric-csm-p-ctr-filter-conf
+      - name: eric-csm-proc-config
+        configMap:
+          name: eric-csm-p-ctr-proc-conf
+      - name: run-eea-dir
+        emptyDir: {}
+      - name: key-imsi
+        secret:
+          secretName: eric-csm-p-ctr-imsi-key
+          items:
+          - key: list-key
+            path: imsi
+      - name: data-imsi
+        secret:
+          secretName: eric-csm-p-ctr-imsi-data
+          items:
+          - key: list-data
+            path: imsi
+      securityContext:
+        fsGroup: 10000
+      serviceAccountName: eric-csm-p-ctr-sa
+      serviceAccount: ""
+      containers:
+      - name: parser
+        imagePullPolicy: IfNotPresent
+        image: armdocker.rnd.ericsson.se/proj-eea-drop/eric-csm-p:1.3.81-7
+        resources:
+            limits:
+              cpu: "6"
+              ephemeral-storage: 2Gi
+              memory: 16Gi
+            requests:
+              cpu: "1"
+              ephemeral-storage: 2Gi
+              memory: 2Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 420
+          capabilities:
+            drop:
+              - all
+        ports:
+        - containerPort: 2555
+          protocol: TCP
+          name: pm-metrics
+        livenessProbe:
+
+          httpGet:
+            path: /metrics
+            port: 2555
+
+
+          initialDelaySeconds: 30
+          periodSeconds: 60
+        readinessProbe:
+
+          httpGet:
+            path: /metrics
+            port: 2555
+
+
+          initialDelaySeconds: 30
+          periodSeconds: 60
+        startupProbe:
+
+          httpGet:
+            path: /metrics
+            port: 2555
+
+
+          failureThreshold: 30
+          periodSeconds: 10
+        volumeMounts:
+        - name: run-dir
+          mountPath: /run
+        - name: eric-csm-filter-config
+          mountPath: /opt/ericsson/eea/conf/filtering.conf
+          subPath: filtering.conf
+        - name: eric-csm-proc-config
+          mountPath: /opt/ericsson/eea/conf/process.conf
+          subPath: process.conf
+        - name: eea-csm-rsyslog-client-conf
+          mountPath: /etc/rsyslog.conf
+          subPath: rsyslog.conf
+        - name: run-eea-dir
+          mountPath: /run/eea
+        - name: eea-log-dir
+          mountPath: /data/eea_log
+        - name: coredumps-dir
+          mountPath: /data/coredumps
+        - name: key-imsi
+          mountPath: /run/csm-imsi-key
+        - name: data-imsi
+          mountPath: /run/csm-imsi-data
+
+
+        env:
+        - name: DEBUG
+          value: "false"
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: RESOURCE_NAME
+          value: $(POD_NAMESPACE)-$(POD_NAME)
+        - name: CONTAINER_NAME
+          value: "parser"
+        - name: PRODUCT_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['ericsson.com/product-name']
+        - name: PRODUCT_VERSION
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['ericsson.com/product-revision']
+        - name: DEPLOYMENT_NAME
+          value: eric-csm-p-ctr
+        - name: ADAPTER_TYPE
+          value: ctr
+        - name: TZ
+          value: UTC
+        - name: EEA_LOGLEVEL
+          value: "5"
+        - name: MODULE_ID
+          value: eric-csm-p-ctr
+
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - eric-csm-p-ctr
+              topologyKey: "kubernetes.io/hostname"
+---
+# Source: eric-oss-adc/charts/eric-oss-3gpp-pm-xml-core-parser/templates/deployment.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eric-oss-3gpp-pm-xml-core-parser
+  labels:
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-3gpp-pm-xml-core-parser"
+    app.kubernetes.io/version: "1.0"
+    helm.sh/chart: "eric-oss-3gpp-pm-xml-core-parser-1.3.0-1"
+  annotations:
+    prometheus.io/path: "/actuator/prometheus"
+    prometheus.io/port: "8080"
+    prometheus.io/scrape: "true"
+    ericsson.com/product-name: "eric-oss-3gpp-pm-xml-core-parser HELM"
+    ericsson.com/product-number: "CXC 201 0000"
+    ericsson.com/product-revision: "1.3.0"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: eric-oss-3gpp-pm-xml-core-parser
+      app.kubernetes.io/instance: eric-oss-adc
+  strategy:
+    type: "RollingUpdate"
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: eric-oss-3gpp-pm-xml-core-parser
+        app.kubernetes.io/instance: eric-oss-adc
+        app.kubernetes.io/version: 1.3.0-1
+      annotations:
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8080"
+        prometheus.io/scrape: "true"        
+        ericsson.com/product-name: "eric-oss-3gpp-pm-xml-core-parser HELM"
+        ericsson.com/product-number: "CXC 201 0000"
+        ericsson.com/product-revision: "1.3.0"                
+    spec:
+      imagePullSecrets:
+        - name: "k8s-registry-secret"
+      serviceAccountName: eric-oss-3gpp-pm-xml-core-parser
+      securityContext:
+        fsGroup: 10000        
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+        - name: tmp-volume
+          emptyDir: {}
+        - name: config-volume
+          configMap:
+            defaultMode: 493
+            name: eric-oss-3gpp-pm-xml-core-parser-configmap
+      containers:
+        - name: eric-oss-3gpp-pm-xml-core-parser
+          image: armdocker.rnd.ericsson.se/proj-eric-oss-drop/eric-oss-3gpp-pm-xml-core-parser:1.3.0-1
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - all
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmp-volume
+            - name: config-volume
+              mountPath: /config
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            initialDelaySeconds: 60
+            failureThreshold: 3
+            periodSeconds: 10
+            timeoutSeconds: 10
+            httpGet:
+              path: /actuator/health
+              port: http
+          readinessProbe:
+            initialDelaySeconds: 60
+            failureThreshold: 3
+            periodSeconds: 10
+            timeoutSeconds: 10
+            httpGet:
+              path: /actuator/health
+              port: http
+          env:
+          - name: JAVA_OPTS
+            value: -XX:InitialRAMPercentage=50.000000 -XX:MaxRAMPercentage=50.000000
+          - name: TZ
+            value: "UTC"
+          resources:
+            requests:
+              cpu: "125m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "2Gi"
+      nodeSelector: 
+      
+      terminationGracePeriodSeconds:
+        30
+      tolerations:
+        - effect: NoExecute
+          key: node.kubernetes.io/not-ready
+          operator: Exists
+          tolerationSeconds: 0
+        - effect: NoExecute
+          key: node.kubernetes.io/unreachable
+          operator: Exists
+          tolerationSeconds: 0
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - eric-oss-3gpp-pm-xml-core-parser
+              topologyKey: "kubernetes.io/hostname"
+---
+# Source: eric-oss-adc/charts/eric-oss-3gpp-pm-xml-ran-parser/templates/deployment.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eric-oss-3gpp-pm-xml-ran-parser
+  labels:
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-3gpp-pm-xml-ran-parser"
+    app.kubernetes.io/version: "1.0"
+    helm.sh/chart: "eric-oss-3gpp-pm-xml-ran-parser-1.48.0-2"
+  annotations:
+    prometheus.io/path: "/actuator/prometheus"
+    prometheus.io/port: "8080"
+    prometheus.io/scrape: "true"
+    ericsson.com/product-name: "eric-oss-3gpp-pm-xml-ran-parser HELM"
+    ericsson.com/product-number: "CXC 201 0000"
+    ericsson.com/product-revision: "1.48.0"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: eric-oss-3gpp-pm-xml-ran-parser
+      app.kubernetes.io/instance: eric-oss-adc
+  strategy:
+    type: "RollingUpdate"
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: eric-oss-3gpp-pm-xml-ran-parser
+        app.kubernetes.io/instance: eric-oss-adc
+        app.kubernetes.io/version: 1.48.0-2
+      annotations:
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8080"
+        prometheus.io/scrape: "true"        
+        ericsson.com/product-name: "eric-oss-3gpp-pm-xml-ran-parser HELM"
+        ericsson.com/product-number: "CXC 201 0000"
+        ericsson.com/product-revision: "1.48.0"                
+    spec:
+      imagePullSecrets:
+        - name: "k8s-registry-secret"
+      serviceAccountName: eric-oss-3gpp-pm-xml-ran-parser
+      securityContext:
+        fsGroup: 10000        
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+        - name: tmp-volume
+          emptyDir: {}
+        - name: config-volume
+          configMap:
+            defaultMode: 493
+            name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+      containers:
+        - name: eric-oss-3gpp-pm-xml-ran-parser
+          image: armdocker.rnd.ericsson.se/proj-eric-oss-drop/eric-oss-3gpp-pm-xml-ran-parser:1.48.0-2
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - all
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmp-volume
+            - name: config-volume
+              mountPath: /config
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            initialDelaySeconds: 60
+            failureThreshold: 3
+            periodSeconds: 10
+            timeoutSeconds: 10
+            httpGet:
+              path: /actuator/health
+              port: http
+          readinessProbe:
+            initialDelaySeconds: 60
+            failureThreshold: 3
+            periodSeconds: 10
+            timeoutSeconds: 10
+            httpGet:
+              path: /actuator/health
+              port: http
+          env:
+          - name: JAVA_OPTS
+            value: -XX:InitialRAMPercentage=50.000000 -XX:MaxRAMPercentage=50.000000
+          - name: TZ
+            value: "UTC"
+          - name: BDR_ENABLED
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: bdr_enabled
+          - name: BDR_ACCESS_KEY
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: bdr_accesskey
+          - name: BDR_SECRET_KEY
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: bdr_secretkey
+          - name: BDR_NUMBER_OF_CONNECTION_ATTEMPTS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: bdr_number_of_connection_attempts
+          - name: BDR_RETRY_INTERVAL_MS
+            valueFrom:
+             configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: bdr_retry_interval_ms
+          - name: BDR_AVAILABILITY_RETRY_INTERVAL
+            valueFrom:
+             configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: bdr_availability_retry_interval
+          - name: CONNECTED_SYSTEMS_ENABLED
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: connected_systems_enabled
+          - name: CONNECTED_SYSTEMS_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: connected_systems_uri
+          - name: CONNECTED_SYSTEMS_AVAILABILITY_RETRY_INTERVAL
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: connected_systems_availability_retry_interval
+          - name: CONNECTED_SYSTEMS_AVAILABILITY_RETRY_ATTEMPTS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: connected_systems_availability_retry_attempts
+          - name: SUBSYSTEM_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: subsystem_name
+          - name: DMM_ENABLED
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: dmm_enabled
+          - name: DMM_DATA_CATALOG_ENABLED
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: dmm_data_catalog_enabled
+          - name: DMM_DATA_CATALOG_BASE_URL
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: dmm_data_catalog_base_url
+          - name: DMM_DATA_CATALOG_BASE_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: dmm_data_catalog_base_port
+          - name: DMM_DATA_CATALOG_BULK_DATA_REPOSITORY_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: dmm_data_catalog_bulk_data_repository_uri
+          - name: DMM_DATA_CATALOG_MESSAGE_SCHEMA_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: dmm_data_catalog_message_schema_uri
+          - name: DMM_DATA_CATALOG_DATA_SERVICE_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: dmm_data_catalog_data_service_uri
+          - name: DMM_DATA_CATALOG_MESSAGE_DATA_TOPIC_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: dmm_data_catalog_message_data_topic_uri
+          - name: DMM_DATA_CATALOG_DATA_PROVIDER_TYPE_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: dmm_data_catalog_data_provider_type_uri
+          - name: DMM_DATA_CATALOG_NOTIFICATION_TOPIC_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: dmm_data_catalog_notification_topic_uri
+          - name: DMM_DATA_CATALOG_AVAILABILITY_RETRY_INTERVAL
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: dmm_data_catalog_availability_retry_interval
+          - name: DMM_DATA_CATALOG_AVAILABILITY_RETRY_ATTEMPTS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: dmm_data_catalog_availability_retry_attempts
+          - name: QUERYCONFIG_ENMNAME
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: queryConfig_enmName
+          - name: QUERYCONFIG_DATATYPE
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: queryConfig_dataType
+          - name: QUERYCONFIG_ENMPORT
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: queryConfig_enmPort
+          - name: QUERYCONFIG_ENMPROTOCOL
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: queryConfig_enmProtocol
+          - name: QUERYCONFIG_ENMURI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: queryConfig_enmUri
+          - name: QUERYCONFIG_USERNAME
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: queryConfig_enmUsername
+          - name: QUERYCONFIG_ENMPASSWORD
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: queryConfig_enmPassword
+          - name: QUERYCONFIG_LATESTFLSID
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: queryConfig_latestFlsId
+          - name: KAFKA_TOPICS_INPUT_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: spring_kafka_topics_input_name
+          - name: KAFKA_TOPICS_OUTPUT_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: spring_kafka_topics_output_name
+          - name: KAFKA_TOPICS_OUTPUT_REPLICAS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: spring_kafka_topics_output_replicas
+          - name: KAFKA_TOPICS_OUTPUT_COMPRESSION
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: spring_kafka_topics_output_compression
+          - name: KAFKA_TOPICS_OUTPUT_RETENTION
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: spring_kafka_topics_output_retention
+          - name: KAFKA_TOPICS_ENM_ID
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: spring_kafka_topics_enm_id
+          - name: KAFKA_TOPICS_LTE
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: spring_kafka_topics_lte
+          - name: KAFKA_TOPICS_NR
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: spring_kafka_topics_nr
+          - name: KAFKA_TOPICS_LOGBOOK
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: spring_kafka_topics_logbook
+          - name: KAFKA_TOPICS_CONSUMER_GROUP_ID
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: spring_kafka_topics_consumer_group_id
+          - name: KAFKA_TOPICS_CONSUMER_AUTO_OFFSET_RESET
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: spring_kafka_topics_consumer_auto_offset_reset
+          - name: KAFKA_TOPICS_PARTITION_ASSIGNMENT_STRATEGY
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: spring_kafka_topics_consumer_partition_assignment_strategy
+          - name: KAFKA_TOPICS_CONSUMER_CONCURRENCY
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: spring_kafka_topics_consumer_concurrency
+          - name: KAFKA_TOPICS_CONSUMER_MAX_POLL_RECORDS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: spring_kafka_topics_consumer_max_poll_records
+          - name: KAFKA_TOPICS_CONSUMER_SESSION_TIME_OUT
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: spring_kafka_topics_consumer_session_timeout_ms
+          - name: KAFKA_TOPICS_CONSUMER_MAX_POLL_RECONNECT_TIMEOUT
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: spring_kafka_topics_consumer_max_poll_reconnect_timeout_ms
+          - name: KAFKA_TOPICS_CONSUMER_MAX_POLL_INTERVAL
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: spring_kafka_topics_consumer_max_poll_interval_ms
+          - name: KAFKA_TOPICS_CONSUMER_HEARTBEAT_INTERVAL_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: spring_kafka_topics_consumer_heartbeat_interval_ms
+          - name: KAFKA_TOPICS_CONSUMER_BATCH_ERROR_HANDLER_RETRY_INTERVAL_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: spring_kafka_topics_consumer_batch_error_handler_retry_interval_ms
+          - name: KAFKA_TOPICS_PRODUCER_RETRY_BACKOFF_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: spring_kafka_topics_producer_retry_backoff_ms
+          - name: KAFKA_TOPICS_PRODUCER_RECONNECT_BACKOFF_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: spring_kafka_topics_producer_reconnect_backoff_ms
+          - name: KAFKA_TOPICS_PRODUCER_RECONNECT_BACKOFF_MAX_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: spring_kafka_topics_producer_reconnect_backoff_max_ms
+          - name: KAFKA_TOPICS_PRODUCER_REQUEST_TIMEOUT_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: spring_kafka_topics_producer_request_timeout_ms
+          - name: KAFKA_AUTO_START
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: spring_kafka_auto_start
+          - name: KAFKA_TOPICS_OUTPUT_PARTITIONS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: spring_kafka_topics_output_partitions
+          - name: KAFKA_BOOTSTRAP_SERVERS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: spring_kafka_bootstrap_servers
+          - name: KAFKA_TOPICS_JMX_ENABLED
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: spring_kafka_jmx_enabled
+          - name: TOPIC_NUMBER_OF_CONNECTION_ATTEMPTS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: topic_number_of_connection_attempts
+          - name: TOPIC_RETRY_INTERVAL_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-3gpp-pm-xml-ran-parser-configmap
+                key: topic_retry_interval_ms
+          resources:
+            requests:
+              cpu: "125m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "2Gi"
+      nodeSelector: 
+      
+      terminationGracePeriodSeconds:
+        30
+      tolerations:
+        - effect: NoExecute
+          key: node.kubernetes.io/not-ready
+          operator: Exists
+          tolerationSeconds: 0
+        - effect: NoExecute
+          key: node.kubernetes.io/unreachable
+          operator: Exists
+          tolerationSeconds: 0
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - eric-oss-3gpp-pm-xml-ran-parser
+              topologyKey: "kubernetes.io/hostname"
+---
+# Source: eric-oss-adc/charts/eric-oss-5gpmevt-filetx-proc/templates/deployment.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eric-oss-5gpmevt-filetx-proc
+  labels:
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-5gpmevt-filetx-proc"
+    app.kubernetes.io/version: "1.0"
+    helm.sh/chart: "eric-oss-5gpmevt-filetx-proc-1.30.0-1"
+  annotations:
+    prometheus.io/path: "/actuator/prometheus"
+    prometheus.io/port: "33631"
+    prometheus.io/scrape: "true"
+    ericsson.com/product-name: "eric-oss-5gpmevt-filetx-proc"
+    ericsson.com/product-number: "CXD101304"
+    ericsson.com/product-revision: "1.30.0"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: eric-oss-5gpmevt-filetx-proc
+      app.kubernetes.io/instance: eric-oss-adc
+  strategy:
+    type: "RollingUpdate"
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: eric-oss-5gpmevt-filetx-proc
+        app.kubernetes.io/instance: eric-oss-adc
+        app.kubernetes.io/version: 1.30.0-1
+        app.kubernetes.io/egress-bandwidth: "200M"
+      annotations:
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "33631"
+        prometheus.io/scrape: "true"        
+        ericsson.com/product-name: "eric-oss-5gpmevt-filetx-proc"
+        ericsson.com/product-number: "CXD101304"
+        ericsson.com/product-revision: "1.30.0"                
+    spec:
+      imagePullSecrets:
+        - name: "k8s-registry-secret"
+      serviceAccountName: eric-oss-5gpmevt-filetx-proc
+      terminationGracePeriodSeconds:
+        30
+      securityContext:
+        fsGroup: 10000        
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+        - name: tmp-volume
+          emptyDir: { }
+        - name: config-volume
+          configMap:
+            defaultMode: 493
+            name: eric-oss-5gpmevt-filetx-proc-configmap
+      containers:
+        - name: eric-oss-5gpmevt-filetx-proc
+          image: armdocker.rnd.ericsson.se/proj-eric-oss-drop/eric-oss-5gpmevt-filetx-proc:1.30.0-1
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 40514
+            capabilities:
+              drop:
+                - all
+          volumeMounts:
+            - name: tmp-volume
+              mountPath: /tmp
+            - name: config-volume
+              mountPath: /config
+          ports:
+            - name: http
+              containerPort: 33631
+              protocol: TCP
+          livenessProbe:
+            initialDelaySeconds: 90
+            failureThreshold: 5
+            periodSeconds: 10
+            timeoutSeconds: 10
+            httpGet:
+              path: /actuator/health
+              port: 33631
+          readinessProbe:
+            initialDelaySeconds: 90
+            failureThreshold: 5
+            periodSeconds: 10
+            timeoutSeconds: 10
+            httpGet:
+              path: /actuator/health
+              port: 33631
+          env:
+          - name: JAVA_OPTS
+            value: -XX:InitialRAMPercentage=50.000000 -XX:MaxRAMPercentage=50.000000
+          - name: CONNECTED_SYSTEMS_BASE_URL
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: connected_systems_base_url
+          - name: CONNECTED_SYSTEMS_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: connected_systems_uri
+          - name: NUMBER_OF_SFTP_CONNECT_RETRIES
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: number_of_sftp_connect_retries
+          - name: NUMBER_OF_EVENT_FILE_DOWNLOAD_RETRIES
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: number_of_event_file_download_retries
+          - name: SFTP_SESSION_TIMOUT_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: sftp_session_timeout_ms
+          - name: SFTP_CONNECT_BACKOFF_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: sftp_connect_backoff_ms
+          - name: SPRING_KAFKA_ADMIN_RETRY
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: spring_kafka_admin_retry
+          - name: SPRING_KAFKA_ADMIN_RETRY_BACKOFF_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: spring_kafka_admin_retry_backoff_ms
+          - name: SPRING_KAFKA_ADMIN_RECONNECT_BACKOFF_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: spring_kafka_admin_reconnect_backoff_ms
+          - name: SPRING_KAFKA_ADMIN_RECONNECT_BACKOFF_MAX_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: spring_kafka_admin_reconnect_backoff_max_ms
+          - name: SPRING_KAFKA_ADMIN_REQUEST_TIMEOUT_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: spring_kafka_admin_request_timeout_ms
+          - name: SPRING_KAFKA_PRODUCER_RETRY_BACKOFF_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: spring_kafka_producer_retry_backoff_ms
+          - name: SPRING_KAFKA_PRODUCER_RECONNECT_BACKOFF_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: spring_kafka_producer_reconnect_backoff_ms
+          - name: SPRING_KAFKA_PRODUCER_RECONNECT_BACKOFF_MAX_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: spring_kafka_producer_reconnect_backoff_max_ms
+          - name: SPRING_KAFKA_PRODUCER_REQUEST_TIMEOUT_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: spring_kafka_producer_request_timeout_ms
+          - name: SPRING_KAFKA_CONSUMER_AUTO_OFFSET_RESET
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: spring_kafka_consumer_auto_offset_reset
+          - name: SPRING_KAFKA_CONSUMER_RETRY_BACKOFF_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: spring_kafka_consumer_retry_backoff_ms
+          - name: SPRING_KAFKA_CONSUMER_RECONNECT_BACKOFF_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: spring_kafka_consumer_reconnect_backoff_ms
+          - name: SPRING_KAFKA_CONSUMER_RECONNECT_BACKOFF_MAX_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: spring_kafka_consumer_reconnect_backoff_max_ms
+          - name: SPRING_KAFKA_CONSUMER_REQUEST_TIMEOUT_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: spring_kafka_consumer_request_timeout_ms
+          - name: SPRING_KAFKA_TOPICS_OUTPUT_PREFIX
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: spring_kafka_topics_output_prefix
+          - name: SPRING_KAFKA_TOPICS_OUTPUT_PARTITIONS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: spring_kafka_topics_output_partitions
+          - name: SPRING_KAFKA_TOPICS_OUTPUT_ACKS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: spring_kafka_topics_output_acks
+          - name: SPRING_KAFKA_TOPICS_OUTPUT_REPLICAS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: spring_kafka_topics_output_replicas
+          - name: SPRING_KAFKA_TOPICS_OUTPUT_COMPRESSION_TYPE
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: spring_kafka_topics_output_compression_type
+          - name: SPRING_KAFKA_TOPICS_OUTPUT_BATCH_SIZE
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: spring_kafka_topics_output_batch_size
+          - name: SPRING_KAFKA_TOPICS_OUTPUT_BUFFER_MEMORY
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: spring_kafka_topics_output_buffer_memory
+          - name: SPRING_KAFKA_TOPICS_OUTPUT_MAX_REQUEST_SIZE
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: spring_kafka_topics_output_max_request_size
+          - name: SPRING_KAFKA_TOPICS_OUTPUT_LINGER
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: spring_kafka_topics_output_linger
+          - name: SPRING_KAFKA_TOPICS_OUTPUT_RETENTION_PERIOD_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: spring_kafka_topics_output_retention_period_ms
+          - name: SPRING_KAFKA_TOPICS_INPUT_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: spring_kafka_topics_input_name
+          - name: SPRING_KAFKA_TOPICS_INPUT_PREFIX
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: spring_kafka_topics_input_prefix
+          - name: SPRING_KAFKA_TOPICS_INPUT_SESSION_TIMEOUT_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: spring_kafka_topics_input_session_timeout_ms
+          - name: SPRING_KAFKA_TOPICS_INPUT_PARTITION_ASSIGNMENT_STRATEGY
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: spring_kafka_topics_input_partition_assignment_strategy
+          - name: SPRING_KAFKA_TOPICS_INPUT_CONCURRENCY
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: spring_kafka_topics_input_concurrency
+          - name: SPRING_KAFKA_TOPICS_INPUT_MAX_POLL_RECORDS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: spring_kafka_topics_input_max_poll_records
+          - name: SPRING_KAFKA_TOPICS_INPUT_MAX_POLL_INTERVAL_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: spring_kafka_topics_input_max_poll_interval_ms
+          - name: DMM_DATA_CATALOG_BASE_URL
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: dmm_data_catalog_base_url
+          - name: DMM_DATA_CATALOG_BASE_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: dmm_data_catalog_base_port
+          - name: DMM_DATA_CATALOG_NOTIFICATION_TOPIC_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: dmm_data_catalog_notification_topic_uri
+          - name: DMM_DATA_CATALOG_FILE_FORMAT_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: dmm_data_catalog_file_format_uri
+          - name: DMM_DATA_CATALOG_DATA_SPACE_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: dmm_data_catalog_data_space_uri
+          - name: DMM_DATA_CATALOG_MESSAGE_BUS_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: dmm_data_catalog_message_bus_uri
+          - name: DMM_DATA_CATALOG_DATA_PROVIDER_TYPE_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: dmm_data_catalog_data_provider_type_uri
+          - name: DMM_DATA_CATALOG_DATA_COLLECTOR_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: dmm_data_catalog_data_collector_uri
+          - name: DMM_DATA_CATALOG_MESSAGE_SCHEMA_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: dmm_data_catalog_message_schema_uri
+          - name: DMM_DATA_CATALOG_MESSAGE_DATA_TOPIC_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: dmm_data_catalog_message_data_topic_uri
+          - name: DMM_DATA_CATALOG_MESSAGE_STATUS_TOPIC_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: dmm_data_catalog_message_status_topic_uri
+          - name: DMM_DATA_CATALOG_MESSAGE_BUS_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: dmm_data_catalog_message_bus_name
+          - name: DMM_DATA_CATALOG_MESSAGE_BUS_NAMESPACE
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: dmm_data_catalog_message_bus_namespace
+          - name: DMM_DATA_CATALOG_BULK_DATA_REPOSITORY_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: dmm_data_catalog_bulk_data_repository_uri
+          - name: DMM_DATA_CATALOG_SPECIFICATION_REFERENCE
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: dmm_data_catalog_specification_reference
+          - name: DMM_DATA_CATALOG_DATA_PROVIDER_TYPE_ID
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: dmm_data_catalog_data_provider_type_id
+          - name: DMM_DATA_CATALOG_DATA_PROVIDER_TYPE_VERSION
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: dmm_data_catalog_data_provider_type_version
+          - name: DMM_DATA_CATALOG_DATA_COLLECTOR_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: dmm_data_catalog_data_collector_name
+          - name: DMM_DATA_CATALOG_DATA_SPACE
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: dmm_data_catalog_data_space
+          - name: DMM_DATA_CATALOG_DATA_CATEGORY
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: dmm_data_catalog_data_category
+          - name: DMM_SCHEMA_REGISTRY_URL
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: dmm_schema_registry_url
+          - name: SERVER_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: server_port
+          - name: TZ
+            value: "UTC"
+          - name: HTTP_CONNECTION_TIMEOUT_IN_SECONDS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-5gpmevt-filetx-proc-configmap
+                key: http_connection_timeout_in_seconds
+          resources:
+            requests:
+              cpu: "125m"
+              memory: "256Mi"
+              ephemeral-storage: "5G"
+
+            limits:
+              cpu: "500m"
+              memory: "2Gi"
+              ephemeral-storage: "15G"
+      nodeSelector: 
+      
+      tolerations:
+        - effect: NoExecute
+          key: node.kubernetes.io/not-ready
+          operator: Exists
+          tolerationSeconds: 0
+        - effect: NoExecute
+          key: node.kubernetes.io/unreachable
+          operator: Exists
+          tolerationSeconds: 0
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - eric-oss-5gpmevt-filetx-proc
+              topologyKey: "kubernetes.io/hostname"
+---
+# Source: eric-oss-adc/charts/eric-oss-enm-fns/templates/deployment.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eric-oss-enm-fns
+  labels:
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-enm-fns"
+    app.kubernetes.io/version: "1.0.139-1"
+    chart: "eric-oss-enm-fns-1.0.139-1"
+    helm.sh/chart: "eric-oss-enm-fns-1.0.139-1"
+  annotations:
+    prometheus.io/path: "/actuator/prometheus"
+    prometheus.io/port: "8080"
+    prometheus.io/scrape: "true"
+    ericsson.com/product-name: "eric-oss-enm-fns HELM"
+    ericsson.com/product-number: "CXD 101 394"
+    ericsson.com/product-revision: "1.0.139"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: eric-oss-enm-fns
+      app.kubernetes.io/instance: eric-oss-adc
+  strategy:
+    type: "RollingUpdate"
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: "eric-oss-adc"
+        app.kubernetes.io/managed-by: "Helm"
+        app.kubernetes.io/name: "eric-oss-enm-fns"
+        app.kubernetes.io/version: "1.0.139-1"
+        chart: "eric-oss-enm-fns-1.0.139-1"
+        helm.sh/chart: "eric-oss-enm-fns-1.0.139-1"
+        
+        sidecar.istio.io/inject: "true"
+      annotations:
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8080"
+        prometheus.io/scrape: "true"
+        ericsson.com/product-name: "eric-oss-enm-fns HELM"
+        ericsson.com/product-number: "CXD 101 394"
+        ericsson.com/product-revision: "1.0.139"
+        
+        sidecar.istio.io/inject: "true"
+        serviceMesh: no-mesh
+    spec:
+      imagePullSecrets:
+        - name: "k8s-registry-secret"
+      serviceAccountName: eric-oss-enm-fns
+      securityContext:
+        fsGroup: 10000
+      volumes:
+        - name: tmp-volume
+          emptyDir: {}
+        - name: config-volume
+          configMap:
+            defaultMode: 493
+            name: eric-oss-enm-fns-configmap
+        
+          
+        - name: iam-cacert-secret
+          secret:
+            secretName: iam-cacert-secret
+            optional: true
+          
+        - name: test-enm-cert
+          secret:
+            secretName: test-enm-cert
+            optional: true
+          
+        - name: stub-cert
+          secret:
+            secretName: stub-cert
+            optional: true
+          
+        
+      containers:
+        - name: eric-oss-enm-fns
+          image: armdocker.rnd.ericsson.se/proj-eric-oss-drop/eric-oss-enm-fns:1.0.139-1
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - all
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmp-volume
+            - name: config-volume
+              mountPath: /config
+            
+            
+              
+            - name: iam-cacert-secret
+              mountPath: /certs/iam-cacert-secret
+              readOnly: true
+              
+            - name: test-enm-cert
+              mountPath: /certs/test-enm-cert
+              readOnly: true
+              
+            - name: stub-cert
+              mountPath: /certs/stub-cert
+              readOnly: true
+              
+            
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            initialDelaySeconds: 10
+            failureThreshold: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            httpGet:
+              path: /actuator/health/liveness
+              port: http
+          readinessProbe:
+            initialDelaySeconds: 10
+            failureThreshold: 3
+            periodSeconds: 10
+            timeoutSeconds: 5
+            httpGet:
+              path: /actuator/health/readiness
+              port: http
+          env:
+          - name: LOG_LEVEL
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: log_level
+          - name: CONFIGURED_QUERIES
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: configured_queries
+          - name: CONNECTED_SYSTEMS_REQUIRED
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: connected_systems_required
+          - name: CONNECTED_SYSTEMS_BASE_URL
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: connected_systems_base_url
+          - name: CONNECTED_SYSTEMS_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: connected_systems_uri
+          - name: CONNECTED_SYSTEMS_ENM_NOT_FOUND_RETRY_ATTEMPTS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: connected_systems_enm_not_found_retry_attempts
+          - name: CONNECTED_SYSTEMS_ENM_NOT_FOUND_RETRY_INTERVAL
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: connected_systems_enm_not_found_retry_interval
+          - name: KAFKA_REQUIRED
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: kafka_required
+          - name: KAFKA_BOOTSTRAP_SERVER
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: kafka_bootstrap_server
+          - name: KAFKA_TOPICS_OUTPUT_BASE_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: kafka_topics_output_base_name
+          - name: KAFKA_TOPICS_OUTPUT_PARTITIONS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: kafka_topics_output_partitions
+          - name: KAFKA_TOPICS_OUTPUT_REPLICAS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: kafka_topics_output_replication_factor
+          - name: KAFKA_TOPICS_OUTPUT_RETENTION
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: kafka_topics_output_retention
+          - name: KAFKA_TOPICS_OUTPUT_COMPRESSION_TYPE
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: kafka_topics_output_compression_type
+          - name: KAFKA_TOPICS_OUTPUT_LINGER
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: kafka_topics_output_linger
+          - name: KAFKA_TOPICS_OUTPUT_BATCH_SIZE
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: kafka_topics_output_batch_size
+          - name: KAFKA_TOPICS_OUTPUT_BUFFER_MEMORY
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: kafka_topics_output_buffer_memory
+          - name: DMM_DATA_CATALOG_REQUIRED
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: dmm_data_catalog_required
+          - name: DMM_DATA_CATALOG_BASE_URL
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: dmm_data_catalog_base_url
+          - name: DMM_DATA_CATALOG_BASE_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: dmm_data_catalog_base_port
+          - name: DMM_DATA_CATALOG_AVAILABILITY_RETRY_ATTEMPTS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: dmm_data_catalog_availability_retry_attempts
+          - name: DMM_DATA_CATALOG_AVAILABILITY_RETRY_INTERVAL
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: dmm_data_catalog_availability_retry_interval
+          - name: DMM_DATA_CATALOG_NOTIFICATION_TOPIC_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: dmm_data_catalog_notification_topic_uri
+          - name: DMM_DATA_CATALOG_FILE_FORMAT_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: dmm_data_catalog_file_format_uri
+          - name: DMM_DATA_CATALOG_DATA_SPACE_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: dmm_data_catalog_data_space_uri
+          - name: DMM_DATA_CATALOG_MESSAGE_BUS_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: dmm_data_catalog_message_bus_uri
+          - name: DMM_DATA_CATALOG_DATA_PROVIDER_TYPE_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: dmm_data_catalog_data_provider_type_uri
+          - name: DMM_DATA_CATALOG_DATA_COLLECTOR_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: dmm_data_catalog_data_collector_uri
+          - name: DMM_DATA_CATALOG_MESSAGE_BUS_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: dmm_data_catalog_message_bus_name
+          - name: DMM_DATA_CATALOG_MESSAGE_BUS_NAMESPACE
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: dmm_data_catalog_message_bus_namespace
+          - name: DMM_DATA_CATALOG_SPECIFICATION_REFERENCE
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: dmm_data_catalog_specification_reference
+          - name: DMM_DATA_CATALOG_FILE_FORMAT_DATA_ENCODING
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: dmm_data_catalog_file_format_data_encoding
+          - name: SECURE_CONNECTION_NO_HOSTNAME_VALIDATION
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-enm-fns-configmap
+                key: secure_connection_no_hostname_validation
+          - name: CERTIFICATE_FOLDER_PATH
+            value: /certs
+          - name: TZ
+            value: "UTC"
+          resources:
+            requests:
+              cpu: "256m"
+              memory: "256Mi"
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+      nodeSelector: 
+      
+      terminationGracePeriodSeconds:
+        30
+      tolerations:
+        - effect: NoExecute
+          key: node.kubernetes.io/not-ready
+          operator: Exists
+          tolerationSeconds: 0
+        - effect: NoExecute
+          key: node.kubernetes.io/unreachable
+          operator: Exists
+          tolerationSeconds: 0
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - eric-oss-enm-fns
+              topologyKey: "kubernetes.io/hostname"
+---
+# Source: eric-oss-adc/charts/eric-oss-sftp-filetrans/templates/deployment.yaml
+#
+# COPYRIGHT Ericsson 2022
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eric-oss-sftp-filetrans
+  labels:
+    app: "eric-oss-sftp-filetrans"
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-sftp-filetrans"
+    app.kubernetes.io/version: "1.0"
+    helm.sh/chart: "eric-oss-sftp-filetrans-1.27.0-1"
+  annotations:
+    prometheus.io/path: "/actuator/prometheus"
+    prometheus.io/port: "8080"
+    prometheus.io/scrape: "true"
+    ericsson.com/product-name: "eric-oss-sftp-filetrans HELM"
+    ericsson.com/product-number: "CXD 101 395"
+    ericsson.com/product-revision: "1.27.0"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: eric-oss-sftp-filetrans
+      app.kubernetes.io/instance: eric-oss-adc
+  strategy:
+    type: "RollingUpdate"
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:        
+        app: "eric-oss-sftp-filetrans"
+        app.kubernetes.io/name: "eric-oss-sftp-filetrans"
+        app.kubernetes.io/instance: "eric-oss-adc"
+        app.kubernetes.io/version: "1.27.0-1"
+        sidecar.istio.io/inject: "true"
+      annotations:
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8080"
+        prometheus.io/scrape: "true"
+        ericsson.com/product-name: "eric-oss-sftp-filetrans HELM"
+        ericsson.com/product-number: "CXD 101 395"
+        ericsson.com/product-revision: "1.27.0"
+        sidecar.istio.io/inject: "true"
+        serviceMesh: no-mesh
+        proxy.istio.io/config: '{ "holdApplicationUntilProxyStarts": true }'
+    spec:
+      imagePullSecrets:
+        - name: "k8s-registry-secret"
+      serviceAccountName: eric-oss-sftp-filetrans
+      securityContext:
+        fsGroup: 10000        
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+        - name: tmp-volume
+          emptyDir: { }
+        - name: config-volume
+          configMap:
+            defaultMode: 493
+            name: eric-oss-sftp-filetrans-configmap
+
+      containers:
+        - name: eric-oss-sftp-filetrans
+          image: armdocker.rnd.ericsson.se/proj-eric-oss-drop/eric-oss-sftp-filetrans:1.27.0-1
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - all
+          volumeMounts:
+            - name: tmp-volume
+              mountPath: /tmp
+            - name: config-volume
+              mountPath: /config
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            initialDelaySeconds: 180
+            failureThreshold: 10
+            periodSeconds: 10
+            timeoutSeconds: 10
+            httpGet:
+              path: /actuator/health
+              port: 8080
+          readinessProbe:
+            initialDelaySeconds: 180
+            failureThreshold: 10
+            periodSeconds: 10
+            timeoutSeconds: 10
+            httpGet:
+              path: /actuator/health
+              port: 8080
+          env:
+          - name: TZ
+            value: "UTC"
+          - name: BDR_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: "eric-data-object-storage-mn-secret"
+                key: accesskey
+                optional: true
+          - name: BDR_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: "eric-data-object-storage-mn-secret"
+                key: secretkey
+                optional: true
+          - name: BDR_NUMBER_OF_CONNECTION_ATTEMPTS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: bdr_number_of_connection_attempts
+          - name: BDR_RETRY_INTERVAL_MS
+            valueFrom:
+             configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: bdr_retry_interval_ms
+          - name: BDR_AVAILABILITY_RETRY_INTERVAL
+            valueFrom:
+             configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: bdr_availability_retry_interval
+          - name: BDR_AVAILABILITY_RETRY_ATTEMPTS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: bdr_availability_retry_attempts
+          - name: CONNECTED_SYSTEMS_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: connected_systems_uri
+          - name: CONNECTED_SYSTEMS_AVAILABILITY_RETRY_INTERVAL
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: connected_systems_availability_retry_interval
+          - name: CONNECTED_SYSTEMS_AVAILABILITY_RETRY_ATTEMPTS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: connected_systems_availability_retry_attempts
+          - name: SUBSYSTEM_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: subsystem_name
+          - name: DMM_DATA_CATALOG_BASE_URL
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: dmm_data_catalog_base_url
+          - name: DMM_DATA_CATALOG_BASE_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: dmm_data_catalog_base_port
+          - name: DMM_DATA_CATALOG_NOTIFICATION_TOPIC_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: dmm_data_catalog_notification_topic_uri
+          - name: DMM_DATA_CATALOG_DATA_SPACE_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: dmm_data_catalog_data_space_uri
+          - name: DMM_DATA_CATALOG_DATA_PROVIDER_TYPE_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: dmm_data_catalog_data_provider_type_uri
+          - name: DMM_DATA_CATALOG_DATA_COLLECTOR_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: dmm_data_catalog_data_collector_uri
+          - name: DMM_DATA_CATALOG_FILE_FORMAT_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: dmm_data_catalog_file_format_uri
+          - name: DMM_DATA_CATALOG_MESSAGE_BUS_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: dmm_data_catalog_message_bus_uri
+          - name: DMM_DATA_CATALOG_BULK_DATA_REPOSITORY_URI
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: dmm_data_catalog_bulk_data_repository_uri
+          - name: DMM_DATA_CATALOG_DATA_PROVIDER_TYPE
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: dmm_data_catalog_data_provider_type
+          - name: DMM_DATA_CATALOG_DATA_PROVIDER_TYPE_VERSION_ID
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: dmm_data_catalog_data_provider_type_version_id
+          - name: DMM_DATA_CATALOG_MESSAGE_BUS_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: dmm_data_catalog_message_bus_name
+          - name: DMM_DATA_CATALOG_MESSAGE_BUS_NAMESPACE
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: dmm_data_catalog_message_bus_namespace
+          - name: DMM_DATA_CATALOG_DATA_SPACE_4G
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: dmm_data_catalog_data_space_4g
+          - name: DMM_DATA_CATALOG_DATA_SPACE_5G
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: dmm_data_catalog_data_space_5g
+          - name: DMM_DATA_CATALOG_DATA_CATEGORY
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: dmm_data_catalog_data_category
+          - name: DMM_DATA_CATALOG_DATA_COLLECTOR_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: dmm_data_catalog_data_collector_name
+          - name: DMM_DATA_CATALOG_NOTIFICATION_TOPIC_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: dmm_data_catalog_notification_topic_name
+          - name: DMM_DATA_CATALOG_FILE_FORMAT_DATA_ENCODING
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: dmm_data_catalog_file_format_data_encoding
+          - name: DMM_DATA_CATALOG_SPECIFICATION_REFERENCE
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: dmm_data_catalog_specification_reference
+          - name: DMM_DATA_CATALOG_AVAILABILITY_RETRY_INTERVAL
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: dmm_data_catalog_availability_retry_interval
+          - name: DMM_DATA_CATALOG_AVAILABILITY_RETRY_ATTEMPTS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: dmm_data_catalog_availability_retry_attempts
+          - name: KAFKA_TOPICS_TRANSACTION_RETRY_INTERVAL_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: spring_kafka_transaction_retry_interval_ms
+          - name: KAFKA_TOPICS_TRANSACTION_MAX_RETRY_ATTEMPTS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: spring_kafka_transaction_max_retry_attempts
+          - name: KAFKA_TOPICS_INPUT_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: spring_kafka_topics_input_name
+          - name: KAFKA_TOPICS_OUTPUT_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: spring_kafka_topics_output_name
+          - name: KAFKA_TOPICS_OUTPUT_PARTITIONS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: spring_kafka_topics_output_partitions
+          - name: KAFKA_TOPICS_OUTPUT_REPLICAS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: spring_kafka_topics_output_replicas
+          - name: KAFKA_TOPICS_OUTPUT_COMPRESSION
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: spring_kafka_topics_output_compression
+          - name: KAFKA_TOPICS_OUTPUT_RETENTION
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: spring_kafka_topics_output_retention
+          - name: KAFKA_TOPICS_ENM_ID
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: spring_kafka_topics_enm_id
+          - name: KAFKA_TOPICS_CONSUMER_GROUP_ID
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: spring_kafka_topics_consumer_group_id
+          - name: KAFKA_TOPICS_CONSUMER_AUTO_OFFSET_RESET
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: spring_kafka_topics_consumer_auto_offset_reset
+          - name: KAFKA_TOPICS_PARTITION_ASSIGNMENT_STRATEGY
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: spring_kafka_topics_consumer_partition_assignment_strategy
+          - name: KAFKA_TOPICS_CONSUMER_CONCURRENCY
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: spring_kafka_topics_consumer_concurrency
+          - name: KAFKA_TOPICS_CONSUMER_MAX_POLL_RECORDS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: spring_kafka_topics_consumer_max_poll_records
+          - name: KAFKA_TOPICS_CONSUMER_SESSION_TIME_OUT
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: spring_kafka_topics_consumer_session_timeout_ms
+          - name: KAFKA_TOPICS_CONSUMER_MAX_POLL_RECONNECT_TIMEOUT
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: spring_kafka_topics_consumer_max_poll_reconnect_timeout_ms
+          - name: KAFKA_TOPICS_CONSUMER_MAX_POLL_INTERVAL
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: spring_kafka_topics_consumer_max_poll_interval_ms
+          - name: KAFKA_TOPICS_CONSUMER_RETRY_BACKOFF_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: spring_kafka_topics_consumer_retry_backoff_ms
+          - name: KAFKA_TOPICS_CONSUMER_RECONNECT_BACKOFF_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: spring_kafka_topics_consumer_reconnect_backoff_ms
+          - name: KAFKA_TOPICS_CONSUMER_RECONNECT_BACKOFF_MAX_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: spring_kafka_topics_consumer_reconnect_backoff_max_ms
+          - name: KAFKA_TOPICS_CONSUMER_REQUEST_TIMEOUT_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: spring_kafka_topics_consumer_request_timeout_ms
+          - name: KAFKA_TOPICS_PRODUCER_RETRY_BACKOFF_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: spring_kafka_topics_producer_retry_backoff_ms
+          - name: KAFKA_TOPICS_PRODUCER_RECONNECT_BACKOFF_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: spring_kafka_topics_producer_reconnect_backoff_ms
+          - name: KAFKA_TOPICS_PRODUCER_RECONNECT_BACKOFF_MAX_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: spring_kafka_topics_producer_reconnect_backoff_max_ms
+          - name: KAFKA_TOPICS_PRODUCER_REQUEST_TIMEOUT_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: spring_kafka_topics_producer_request_timeout_ms
+          - name: KAFKA_LISTENER_AUTO_START
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: spring_kafka_listener_auto_start
+          - name: SPRING_KAFKA_AVAILABILITY_RETRY_INTERVAL
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: spring_kafka_availability_retry_interval
+
+          - name: SPRING_KAFKA_AVAILABILITY_RETRY_ATTEMPTS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: spring_kafka_availability_retry_attempts
+          - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: spring_kafka_bootstrap_servers
+          - name: SPRING_PROFILE_ACTIVE
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: spring_profile_active
+          - name: SFTP_RETRIES
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: sftp_retries
+          - name: SFTP_FILE_DOWNLOAD_RETRIES
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: sftp_file_download_retries
+          - name: SFTP_FILE_DOWNLOAD_INTERVAL_MILLIS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: sftp_file_download_interval_millis
+          - name: SFTP_SESSION_TIMEOUT
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: sftp_session_timeout_in_millis
+          - name: SFTP_BACKOFF_PERIOD_MILLIS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: sftp_backoff_period_millis
+          - name: SFTP_AVAILBILITY_RETRY_COUNT_MAX
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: sftp_availability_retry_count_max
+          - name: SFTP_AVAILBILITY_BACKOFF_TIME_IN_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: sftp_availability_backoff_time_in_ms
+          - name: RETRYHANDLER_BACK_OFF_PERIOD_MS
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: retryhandler_back_off_period_ms
+          - name: RETRYHANDLER_MAX_NUM_OF_RETRIES
+            valueFrom:
+              configMapKeyRef:
+                name: eric-oss-sftp-filetrans-configmap
+                key: retryhandler_max_num_of_retries
+          resources:
+            requests:
+              cpu: "125m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "2Gi"
+      nodeSelector: 
+      
+      terminationGracePeriodSeconds:
+        30
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - eric-oss-sftp-filetrans
+              topologyKey: "kubernetes.io/hostname"
+---
+# Source: eric-oss-adc/charts/eric-oss-ves-collector/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    ericsson.com/product-name: VES Collector
+    ericsson.com/product-number: CXD 101 324
+    ericsson.com/product-revision: 0.0.2
+  labels:
+    app: eric-oss-ves-collector
+    app.kubernetes.io/instance: eric-oss-adc
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: eric-oss-ves-collector
+    app.kubernetes.io/version: 0.0.2-2
+    chart: eric-oss-ves-collector-0.0.2-2
+    helm.sh/chart: eric-oss-ves-collector-0.0.2-2
+  name: eric-oss-ves-collector
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eric-oss-ves-collector
+  template:
+    metadata:
+      annotations:
+        checksum/configmap-cma: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+        checksum/configmap-filter: aa9685b5f9fa94499075d819cb01c745127e15ea8c5688237491bba97b457641
+        checksum/configmap-process: 4edb34de7161cb4d88498784c6ee060a38eb82628f4904863742dcafbf234e7a
+        checksum/configmap-rsyslog: 034c3b6169bdff3be76f64bfefe48d14bbaa5513c5b60da81c934e5159e23169
+        checksum/configmap-ves: 92f524ac5e142f74f8a285c32e915179a8b4f23da5436f5d1f7dec859d55caf8
+        ericsson.com/product-name: VES Collector
+        ericsson.com/product-number: CXD 101 324
+        ericsson.com/product-revision: 0.0.2
+        prometheus.io/path: /metrics
+        prometheus.io/port: "2555"
+        prometheus.io/scrape: "true"
+      labels:
+        app: eric-oss-ves-collector
+        app.kubernetes.io/instance: eric-oss-adc
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: eric-oss-ves-collector
+        app.kubernetes.io/version: 0.0.2-2
+        chart: eric-oss-ves-collector-0.0.2-2
+        helm.sh/chart: eric-oss-ves-collector-0.0.2-2
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - eric-oss-ves-collector
+              topologyKey: kubernetes.io/hostname
+            weight: 100
+      containers:
+      - env:
+        - name: DEBUG
+          value: "false"
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: RESOURCE_NAME
+          value: $(POD_NAMESPACE)-$(POD_NAME)
+        - name: CONTAINER_NAME
+          value: termination
+        - name: PRODUCT_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['ericsson.com/product-name']
+        - name: PRODUCT_VERSION
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['ericsson.com/product-revision']
+        - name: DEPLOYMENT_NAME
+          value: eric-oss-ves-collector
+        - name: ADAPTER_TYPE
+          value: ves_collector
+        - name: TZ
+          value: UTC
+        - name: EEA_LOGLEVEL
+          value: "5"
+        - name: MODULE_ID
+          value: eric-oss-ves-collector
+        - name: ST_SB_TLS_VERIFY_CLIENT_CERT
+          value: "true"
+        image: armdocker.rnd.ericsson.se/proj-eric-oss-drop/eric-oss-ves-collector:0.0.2-2
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          initialDelaySeconds: 30
+          periodSeconds: 60
+          tcpSocket:
+            port: 2555
+        name: termination
+        ports:
+        - containerPort: 2555
+          name: pm-metrics
+          protocol: TCP
+        readinessProbe:
+          initialDelaySeconds: 30
+          periodSeconds: 60
+          tcpSocket:
+            port: 2555
+        resources:
+          limits:
+            cpu: "3"
+            ephemeral-storage: 2Gi
+            memory: 4Gi
+          requests:
+            cpu: "1"
+            ephemeral-storage: 2Gi
+            memory: 2Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - all
+          privileged: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 420
+        startupProbe:
+          failureThreshold: 30
+          periodSeconds: 10
+          tcpSocket:
+            port: 2555
+        volumeMounts:
+        - mountPath: /run
+          name: run-dir
+        - mountPath: /data/eea_log
+          name: eea-log-dir
+        - mountPath: /opt/ericsson/eea/conf/process.conf
+          name: eric-csm-proc-config
+          subPath: process.conf
+        - mountPath: /etc/rsyslog.conf
+          name: eea-csm-rsyslog-client-conf
+          subPath: rsyslog.conf
+        - mountPath: /opt/ericsson/eea/conf/ves.conf
+          name: eric-csm-ves-config
+          subPath: ves.conf
+        - mountPath: /run/eea
+          name: run-eea-dir
+        - mountPath: /data/coredumps
+          name: coredumps-dir
+      imagePullSecrets:
+      - name: k8s-registry-secret
+      nodeSelector: null
+      securityContext:
+        fsGroup: 10000
+      serviceAccount: ""
+      serviceAccountName: eric-oss-ves-collector-sa
+      volumes:
+      - emptyDir: {}
+        name: run-dir
+      - emptyDir: {}
+        name: eea-log-dir
+      - emptyDir: {}
+        name: coredumps-dir
+      - configMap:
+          name: eric-oss-ves-collector-rsyslog
+        name: eea-csm-rsyslog-client-conf
+      - configMap:
+          name: eric-oss-ves-collector-proc-conf
+        name: eric-csm-proc-config
+      - configMap:
+          name: eric-oss-ves-collector-ves-conf
+        name: eric-csm-ves-config
+      - emptyDir: {}
+        name: run-eea-dir
+---
+# Source: eric-oss-adc/charts/eric-oss-3gpp-pm-xml-core-parser/templates/hpa.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+---
+# Source: eric-oss-adc/charts/eric-oss-3gpp-pm-xml-core-parser/templates/rolebinding.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+---
+# Source: eric-oss-adc/charts/eric-oss-3gpp-pm-xml-core-parser/templates/rolebinding_openshift.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+---
+# Source: eric-oss-adc/charts/eric-oss-3gpp-pm-xml-ran-parser/templates/hpa.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+---
+# Source: eric-oss-adc/charts/eric-oss-3gpp-pm-xml-ran-parser/templates/rolebinding.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+---
+# Source: eric-oss-adc/charts/eric-oss-3gpp-pm-xml-ran-parser/templates/rolebinding_openshift.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+---
+# Source: eric-oss-adc/charts/eric-oss-5gpmevt-filetx-proc/templates/hpa.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+---
+# Source: eric-oss-adc/charts/eric-oss-5gpmevt-filetx-proc/templates/rolebinding.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+---
+# Source: eric-oss-adc/charts/eric-oss-5gpmevt-filetx-proc/templates/rolebinding_openshift.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+---
+# Source: eric-oss-adc/charts/eric-oss-5gpmevt-filetx-proc/templates/securitypolicy.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+---
+# Source: eric-oss-adc/charts/eric-oss-enm-fns/templates/hpa.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+---
+# Source: eric-oss-adc/charts/eric-oss-enm-fns/templates/rolebinding.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+---
+# Source: eric-oss-adc/charts/eric-oss-enm-fns/templates/rolebinding_openshift.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+---
+# Source: eric-oss-adc/charts/eric-oss-sftp-filetrans/templates/hpa.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+---
+# Source: eric-oss-adc/charts/eric-oss-sftp-filetrans/templates/rolebinding.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+---
+# Source: eric-oss-adc/charts/eric-oss-sftp-filetrans/templates/rolebinding_openshift.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+---
+# Source: eric-oss-adc/templates/configmap/eric-oss-adc-dependent-services-info-adc.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eric-oss-adc-dependent-services-info-adc
+  labels:    
+  
+    app.kubernetes.io/name: "eric-oss-adc"
+    app.kubernetes.io/version: "0.0.2-726"
+    app.kubernetes.io/instance: "eric-oss-adc"
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "1"
+    
+    ericsson.com/product-name: "OSS ADC"
+    ericsson.com/product-number: "CXC 101 0000"
+    ericsson.com/product-revision: "0.0.2"
+data:
+  schema-registry: http://eric-schema-registry-sr:8081
+  eric-oss-data-catalog: http://eric-oss-data-catalog:9590
+  message-bus: http://eric-oss-dmm-data-message-bus-kf:9092
+  kafka-bootstrap: http://eric-oss-dmm-kafka-bootstrap:9091
+---
+# Source: eric-oss-adc/charts/eric-oss-3gpp-pm-xml-core-parser/templates/tests/eric-oss-3gpp-pm-xml-core-parser-test.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: eric-oss-3gpp-pm-xml-core-parser-test
+  labels:
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-3gpp-pm-xml-core-parser"
+    app.kubernetes.io/version: "1.0"
+    helm.sh/chart: "eric-oss-3gpp-pm-xml-core-parser-1.3.0-1"
+  annotations:
+    ericsson.com/product-name: "eric-oss-3gpp-pm-xml-core-parser HELM"
+    ericsson.com/product-number: "CXC 201 0000"
+    ericsson.com/product-revision: "1.3.0"
+    "helm.sh/hook": test-success
+spec:
+  imagePullSecrets:
+    - name: "k8s-registry-secret"
+  securityContext:
+    fsGroup: 10000
+  containers:
+  - name: eric-oss-3gpp-pm-xml-core-parser-test
+    image: armdocker.rnd.ericsson.se/proj-eric-oss-drop/eric-oss-helm-test:1.0.0-1
+    securityContext:
+      allowPrivilegeEscalation: false
+      privileged: false
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000
+      capabilities:
+          drop:
+            - all
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
+      limits:
+        cpu: "256m"
+        memory: "1Gi"
+    env:
+      - name: SERVICE_HOSTNAME
+        value: eric-oss-3gpp-pm-xml-core-parser
+      - name: SERVICE_PORT
+        value: "8080"
+    command: [ "/bin/sh", "-c", "status=$(curl --silent --output /dev/null -w '%{http_code}' --connect-timeout 20 http://$SERVICE_HOSTNAME:$SERVICE_PORT/v1/sample) && if [[ $status -eq 200 ]]; then exit 0; else exit 1; fi" ]
+  restartPolicy: Never
+  tolerations:
+        - effect: NoExecute
+          key: node.kubernetes.io/not-ready
+          operator: Exists
+          tolerationSeconds: 0
+        - effect: NoExecute
+          key: node.kubernetes.io/unreachable
+          operator: Exists
+          tolerationSeconds: 0
+  terminationGracePeriodSeconds:
+        30
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+            - key: app
+              operator: In
+              values:
+              - eric-oss-3gpp-pm-xml-core-parser
+          topologyKey: "kubernetes.io/hostname"
+---
+# Source: eric-oss-adc/charts/eric-oss-3gpp-pm-xml-ran-parser/templates/tests/eric-oss-3gpp-pm-xml-ran-parser-test.yaml
+#
+# COPYRIGHT Ericsson 2021
+#
+#
+#
+# The copyright to the computer program(s) herein is the property of
+#
+# Ericsson Inc. The programs may be used and/or copied only with written
+#
+# permission from Ericsson Inc. or in accordance with the terms and
+#
+# conditions stipulated in the agreement/contract under which the
+#
+# program(s) have been supplied.
+#
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: eric-oss-3gpp-pm-xml-ran-parser-test
+  labels:
+    app.kubernetes.io/instance: "eric-oss-adc"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-oss-3gpp-pm-xml-ran-parser"
+    app.kubernetes.io/version: "1.0"
+    helm.sh/chart: "eric-oss-3gpp-pm-xml-ran-parser-1.48.0-2"
+  annotations:
+    ericsson.com/product-name: "eric-oss-3gpp-pm-xml-ran-parser HELM"
+    ericsson.com/product-number: "CXC 201 0000"
+    ericsson.com/product-revision: "1.48.0"
+    "helm.sh/hook": test-success
+spec:
+  imagePullSecrets:
+    - name: "k8s-registry-secret"
+  securityContext:
+    fsGroup: 10000
+  containers:
+  - name: eric-oss-3gpp-pm-xml-ran-parser-test
+    image: armdocker.rnd.ericsson.se/proj-eric-oss-drop/eric-oss-helm-test:1.0.0-1
+    securityContext:
+      allowPrivilegeEscalation: false
+      privileged: false
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000
+      capabilities:
+          drop:
+            - all
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "128Mi"
+      limits:
+        cpu: "256m"
+        memory: "1Gi"
+    env:
+      - name: SERVICE_HOSTNAME
+        value: eric-oss-3gpp-pm-xml-ran-parser
+      - name: SERVICE_PORT
+        value: "8080"
+    command: [ "/bin/sh", "-c", "status=$(curl --silent --output /dev/null -w '%{http_code}' --connect-timeout 20 http://$SERVICE_HOSTNAME:$SERVICE_PORT/v1/sample) && if [[ $status -eq 200 ]]; then exit 0; else exit 1; fi" ]
+  restartPolicy: Never
+  tolerations:
+        - effect: NoExecute
+          key: node.kubernetes.io/not-ready
+          operator: Exists
+          tolerationSeconds: 0
+        - effect: NoExecute
+          key: node.kubernetes.io/unreachable
+          operator: Exists
+          tolerationSeconds: 0
+  terminationGracePeriodSeconds:
+        30
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+            - key: app
+              operator: In
+              values:
+              - eric-oss-3gpp-pm-xml-ran-parser
+          topologyKey: "kubernetes.io/hostname"
+

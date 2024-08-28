@@ -1,0 +1,47 @@
+{
+  "test_to_ensure_all_containers_with_securitycontext_has_runAsNonRoot_set": {
+    "skips": [
+      [["eric-data-search-engine-ingest"], ["Deployment"], "Not required, exempt", "skip"],
+      [["eric-data-search-engine-master"], ["Deployment"], "Not required, exempt", "skip"],
+      [["eric-data-search-engine-master"], ["StatefulSet"], "Not required, exempt", "skip"],
+      [["eric-ctrl-bro"], ["StatefulSet"], "Not required, exempt", "skip"],
+      [["eric-data-coordinator-zk"], ["StatefulSet"], "Not required, exempt", "skip"],
+      [["eric-data-search-engine-data"], ["StatefulSet"], "Not required, exempt", "skip"],
+      [["-pg"], ["StatefulSet"], "Not required, exempt", "skip"],
+      [["-postgres"], ["StatefulSet"], "Not required, exempt", "skip"],
+      [["eric-data-message-bus-kf"], ["Deployment"], "Not required, exempt", "skip"],
+      [["eric-data-search-engine-data"], ["StatefulSet"], "Not required, exempt", "skip"],
+      [["-hook-cleanup"], ["Job"], "Not required, exempt", "skip"],
+      [["eric-data-distributed-coordinator-"], ["StatefulSet"], "Not required, exempt", "skip"],
+      [["eric-data-search-engine-postupgrade"], ["Job"], "Not required, exempt", "skip"],
+      [["eric-pm-alert-manager"], ["StatefulSet"], "Not required, exempt", "skip"],
+      [["eric-eo-cm-idam-userstore-replication"], ["Job"], "Should be removed once EO-178109 is resolved", "skip"]
+    ],
+    "runTests": true
+  },
+  "test_validate_minimum_replica_count": {
+    "skips": [],
+    "runTests": true
+  },
+  "test_to_ensure_cvnfm_containters_with_securitycontext_dont_have_runAsUser_set": {
+    "skips": [],
+    "runTests": false
+  },
+  "test_storage_class_names_use_default_storage_class": {
+    "skips": [
+      [["eric-pm-server"], ["StatefulSet"], "Should be removed once EO-177677 is resolved", "skip"],
+      [["eric-ctrl-bro"], ["StatefulSet"], "Should be removed once EO-177677 is resolved", "skip"],
+      [["eric-data-search-engine-data"], ["StatefulSet"], "Should be removed once EO-177677 is resolved", "skip"],
+      [["eric-data-search-engine-master"], ["StatefulSet"], "Should be removed once EO-177677 is resolved", "skip"],
+      [["eric-eo-cm-cust-wf-db-sitename1"], ["StatefulSet"], "Should be removed once EO-177677 is resolved", "skip"],
+      [["eric-eo-cm-db-sitename1"], ["StatefulSet"], "Should be removed once EO-177677 is resolved", "skip"],
+      [["eric-eo-cm-order-mgmt-ca-db-sitename1"], ["StatefulSet"], "Should be removed once EO-177677 is resolved", "skip"],
+      [["eric-act-activation-engine-cli"], ["StatefulSet"], "Should be removed once EO-177677 is resolved", "skip"],
+      [["eric-eo-act-cna-wide-column-database-cd"], ["CassandraCluster"], "Should be removed once EO-177677 is resolved", "skip"],
+      [["eric-data-message-bus-kf"], ["StatefulSet"], "Should be removed once EO-177677 is resolved", "skip"]
+    ],
+    "runTests": true
+  }
+}
+
+

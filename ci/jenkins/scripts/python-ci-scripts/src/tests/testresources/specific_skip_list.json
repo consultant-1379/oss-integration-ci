@@ -1,0 +1,63 @@
+{
+  "test_node_selector_fields": {
+    "skips": [],
+    "runTests": true
+  },
+
+  "test_openshift_cluster_role_binding_referenced_per_service_account": {
+    "skips": [
+      [["sample-app-postgres-*"], ["ServiceAccount"], "Not required, exempt", "skip"]
+    ],
+    "runTests": true
+  },
+
+  "test_to_ensure_all_containers_with_security_context_has_run_as_non_root_set": {
+    "skips": [
+      [["sample-app-postgres-*"], ["StatefulSet"], "Not required, exempt", "skip"],
+      [["sample-app-postgres-*"], ["Job"], "Not required, exempt", "skip"]
+    ],
+    "runTests": true
+  },
+
+  "test_post_upgrade_is_used_in_post_install_service_hook": {
+    "skips": [
+      [["sample-app-postgres-*"], ["Job"], "Not required, exempt", "skip"],
+      [["sample-app-postgres-*"], ["Secret"], "Not required, exempt", "skip"]
+    ],
+    "runTests": true
+  },
+
+  "test_post_install_is_used_in_post_upgrade_service_hook": {
+    "skips": [
+      [["sample-app-postgres-*"], ["Job"], "Not required, exempt", "skip"]
+    ],
+    "runTests": true
+  },
+
+  "test_pre_upgrade_is_used_in_pre_install_service_hook": {
+    "skips": [
+      [["-db$"], ["Role", "RoleBinding"], "https://cc-jira.rnd.ki.sw.ericsson.se/browse/ADPPRG-29560", "dates"]
+    ],
+    "runTests": true
+  },
+
+  "test_zypper_commands_are_not_used": {
+    "skips": [],
+    "runTests": true
+  },
+
+  "test_minimum_image_version": {
+    "skips": [],
+    "runTests": true
+  },
+
+  "test_node_port_is_not_used_in_service_exposure": {
+    "skips": [],
+    "runTests": true
+  },
+
+  "test_storage_class_names_use_default_storage_class": {
+    "skips": [],
+    "runTests": true
+  }
+}

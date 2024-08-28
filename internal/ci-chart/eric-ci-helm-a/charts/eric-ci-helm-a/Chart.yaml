@@ -1,0 +1,12 @@
+apiVersion: v2
+dependencies:
+- condition: eric-ci-helm-b.enabled
+  name: eric-ci-helm-b
+  repository: https://arm.seli.gic.ericsson.se/artifactory/proj-eric-oss-drop-helm-local
+  version: 1.0.4
+description: Test chart to test the CI Flows
+maintainers:
+- email: pdlticketm@pdl.internal.ericsson.com
+  name: Ticketmaster
+name: eric-ci-helm-a
+version: 2.6.0

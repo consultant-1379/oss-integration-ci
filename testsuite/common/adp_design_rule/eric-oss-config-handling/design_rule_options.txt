@@ -1,0 +1,9 @@
+-DhelmDesignRule.config.DR-D1121-122=skip
+-DhelmDesignRule.config.DR-D1125-052=skip
+-DhelmDesignRule.config.DR-D1125-054=skip
+-DhelmDesignRule.config.DR-D1125-059=skip
+-DhelmDesignRule.config.DR-D1125-057=skip
+-DhelmDesignRule.config.DR-D1123-124=skip
+-DhelmDesignRule.config.DR-D1121-067=skip
+-DhelmDesignRule.config.DR-D1121-060=skip
+-DhelmDesignRule.config.eric-oss-ncmp.DR-D470222-010=skip

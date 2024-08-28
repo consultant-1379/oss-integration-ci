@@ -1,0 +1,16 @@
+[submodule "bob"]
+	path = bob
+	url = ../../../adp-cicd/bob
+	branch = master
+[submodule "eo-integration-ci"]
+	path = eo-integration-ci
+	url = ../../com.ericsson.oss.orchestration.eo/eo-integration-ci
+	branch = master
+[submodule "oss-common-ci"]
+	path = oss-common-ci
+	url = ../../com.ericsson.oss.orchestration.common/oss-common-ci
+	branch = master
+[submodule "com.ericsson.idunaas.ci"]
+	path = com.ericsson.idunaas.ci
+	url = ../../../ENMaaS/com.ericsson.idunaas.ci
+	branch = master

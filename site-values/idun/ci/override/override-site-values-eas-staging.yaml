@@ -1,0 +1,86 @@
+# This override delta file was prepared for usage with main file:
+# site-values/idun/ci/template/site-values-latest.yaml
+
+global:
+  security:
+    tls:
+      enabled: false
+
+# For EAS tests
+eric-oss-ericsson-adaptation:
+  eric-eo-enm-stub:
+    enabled: true
+  eric-oss-enm-notification-simulator:
+    enabled: true
+
+  eric-oss-ran-topology-adapter:
+    rtaUser:
+      username: "rta-user"
+      password: "Ericsson123!"
+
+# Required for ADC functional testing
+eric-oss-adc:
+  stubs:
+    enabled: true
+  preHookJobs:
+    enabled: true
+  eric-oss-3gpp-pm-xml-ran-parser:
+    dmm:
+      enabled: true
+    bdr:
+      enabled: true
+    spring:
+      kafka:
+        auto:
+          start: false
+    connected:
+      systems:
+        enabled: true
+  eric-oss-5gpmevt-filetx-proc:
+    spring:
+      kafka:
+        topics:
+          input:
+            concurrency: 1
+  eric-oss-sftp-filetrans:
+    dmm:
+      enabled: true
+      data_catalog:
+        message_bus_name: "messagebus1"
+        message_bus_namespace: "adc-deploy"
+    bdr:
+      enabled: true
+    spring:
+      kafka:
+        auto:
+          start: false
+        topics:
+          input:
+            name: "file-notification-service--sftp-filetrans--"
+          output:
+            name: "sftp-filetrans--"
+          enm_id: "enm1"
+    connected:
+      systems:
+        enabled: true
+  eric-oss-file-notification-enm-stub:
+    configMap:
+      spring:
+        sftp:
+          numberOfNodes:
+            fileTrans: 2000
+            pmEvent5g: 100
+        manualMode: true
+
+eric-topology-handling:
+  eric-oss-common-topology-svc:
+    eric-oss-cmn-topology-svc-core:
+      defaultUser:
+        username: "cts-user"
+        password: "Ericsson123!"
+      useGasHost:
+        enabled: true
+
+eric-cloud-native-base:
+  eric-odca-diagnostic-data-collector:
+    sftpServerHost: "sftp-server:22"

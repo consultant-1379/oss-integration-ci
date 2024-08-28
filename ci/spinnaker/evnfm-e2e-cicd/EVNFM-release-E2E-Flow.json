@@ -1,0 +1,278 @@
+{
+  "application": "evnfm-e2e-cicd",
+  "description": "This pipeline is maintained by spinnaker as a code, any changes made through the ui will be overwritten. Template name: eo_pipeline_evnfm in repo am-ci-flow",
+  "id": "f04fb3b9-3ad8-4200-9b2b-7ced1915a844",
+  "index": 10,
+  "lastModifiedBy": "amadm100",
+  "limitConcurrent": false,
+  "name": "EVNFM-release-E2E-Flow",
+  "parameterConfig":   [
+        {
+      "default": "Manual Run",
+      "description": "",
+      "hasOptions": false,
+      "name": "TRIGGER",
+      "pinned": true,
+      "required": false
+    },
+        {
+      "default": "true",
+      "description": "",
+      "hasOptions": true,
+      "name": "SUBMIT_TO_EO_STAGING",
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "eric-eo-helmfile",
+      "description": "Name of the integration chart which will be used for the Initial install",
+      "hasOptions": false,
+      "name": "II_INT_CHART_NAME",
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "0.0.0",
+      "description": "Version of the Integration Chart which will be used for the Initial Install",
+      "hasOptions": false,
+      "name": "II_INT_CHART_VERSION",
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "https://arm.seli.gic.ericsson.se/artifactory/proj-eo-drop-helm",
+      "description": "Repo of the Integration Chart which will be used for the Initial Install",
+      "hasOptions": false,
+      "name": "II_INT_CHART_REPO",
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "default",
+      "description": "If set to default - value from Baseline pipeline will be applied",
+      "hasOptions": false,
+      "name": "DESIGN_RULE_OPTIONS",
+      "pinned": true,
+      "required": true
+    }
+  ],
+  "schema": "1",
+  "spelEvaluator": "v4",
+  "stages":   [
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failOnFailedExpressions": false,
+      "failPipeline": false,
+      "name": "Commit Info",
+      "refId": "Commit Info",
+      "requisiteStageRefIds": [],
+      "type": "evaluateVariables",
+      "variables":       [
+                {
+          "key": "GIT_COMMIT_AUTHOR",
+          "value": "${trigger['payload']['GIT_COMMIT_AUTHOR']?: 'Commit info is missing in release job'}"
+        },
+                {
+          "key": "GIT_COMMIT_AUTHOR_EMAIL",
+          "value": "${trigger['payload']['GIT_COMMIT_AUTHOR_EMAIL']?: 'Commit info is missing in release job'}"
+        },
+                {
+          "key": "GIT_COMMIT_SUMMARY",
+          "value": "${trigger['payload']['GIT_COMMIT_SUMMARY']?: 'Commit info is missing in release job'}"
+        },
+                {
+          "key": "GERRIT_CHANGE_URL",
+          "value": "${trigger['payload']['GERRIT_CHANGE_URL']?: 'Commit info is missing in release job'}"
+        }
+      ]
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CI-Gerrit-Notification",
+      "master": "oss-fem8s11-eiffel052",
+      "name": "Gerrit Feedback on Trigger",
+      "parameters":       {
+        "GERRIT_CHANGE_NUMBER": "${trigger['payload']['GERRIT_CHANGE_NUMBER']}",
+        "GERRIT_PATCHSET_NUMBER": "${trigger['payload']['GERRIT_PATCHSET_NUMBER']}",
+        "Message": "Spinnaker pipeline triggered. https://spinnaker.rnd.gic.ericsson.se/#/applications/${execution['application']}/executions/details/${execution['id']}"
+      },
+      "refId": "Gerrit Feedback on Trigger",
+      "requisiteStageRefIds": [],
+      "type": "jenkins"
+    },
+        {
+      "application": "evnfm-e2e-cicd",
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "name": "EVNFM_Application_Staging",
+      "pipeline": "ab22a3f8-c857-4e38-8628-8d6eff8667a8",
+      "pipelineParameters":       {
+        "GERRIT_BRANCH": "${trigger['payload']['GERRIT_BRANCH']}",
+        "GERRIT_REFSPEC": "${trigger['payload']['GERRIT_REFSPEC']}",
+        "II_INT_CHART_NAME": "${trigger['parameters']['II_INT_CHART_NAME']}",
+        "II_INT_CHART_REPO": "${trigger['parameters']['II_INT_CHART_REPO']}",
+        "II_INT_CHART_VERSION": "${trigger['parameters']['II_INT_CHART_VERSION']}"
+      },
+      "refId": "EVNFM_Application_Staging",
+      "requisiteStageRefIds": [],
+      "type": "pipeline",
+      "waitForCompletion": true
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CI-Gerrit-Notification",
+      "master": "oss-fem8s11-eiffel052",
+      "name": "Gerrit Feedback on Failed Application Staging",
+      "parameters":       {
+        "GERRIT_CHANGE_NUMBER": "${trigger['payload']['GERRIT_CHANGE_NUMBER']}",
+        "GERRIT_PATCHSET_NUMBER": "${trigger['payload']['GERRIT_PATCHSET_NUMBER']}",
+        "Message": "Application Staging Testing Failed"
+      },
+      "refId": "Gerrit Feedback on Failed Application Staging",
+      "requisiteStageRefIds": ["EVNFM_Application_Staging"],
+      "stageEnabled":       {
+        "expression": "${#stage('EVNFM_Application_Staging')['status'].toString() != 'SUCCEEDED'}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CI-Gerrit-Notification",
+      "master": "oss-fem8s11-eiffel052",
+      "name": "Gerrit Feedback on Successful Application Staging",
+      "parameters":       {
+        "GERRIT_CHANGE_NUMBER": "${trigger['payload']['GERRIT_CHANGE_NUMBER']}",
+        "GERRIT_PATCHSET_NUMBER": "${trigger['payload']['GERRIT_PATCHSET_NUMBER']}",
+        "Message": "Application Staging Testing  SUCCEEDED - All Flows Completed"
+      },
+      "refId": "Gerrit Feedback on Successful Application Staging",
+      "requisiteStageRefIds": ["EVNFM_Application_Staging"],
+      "stageEnabled":       {
+        "expression": "${#stage('EVNFM_Application_Staging')['status'].toString() == 'SUCCEEDED'",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "name": "Stop pipeline if App Staging failed",
+      "preconditions": [      {
+        "context":         {
+          "stageName": "EVNFM_Application_Staging",
+          "stageStatus": "SUCCEEDED"
+        },
+        "failPipeline": true,
+        "type": "stageStatus"
+      }],
+      "refId": "Stop pipeline if App Staging failed",
+      "requisiteStageRefIds":       [
+        "EVNFM_Application_Staging",
+        "Gerrit Feedback on Successful Application Staging",
+        "Gerrit Feedback on Failed Application Staging"
+      ],
+      "type": "checkPreconditions"
+    },
+        {
+      "application": "eoapp",
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "name": "EO_Product_Staging",
+      "pipeline": "fe9cb49d-cb50-4966-bcf5-2c51dd381399",
+      "pipelineParameters":       {
+        "CHART_NAME": "${ #stage('EVNFM_Application_Staging')['outputs']['INT_CHART_NAME']}",
+        "CHART_REPO": "${ #stage('EVNFM_Application_Staging')['outputs']['INT_CHART_REPO']}",
+        "CHART_VERSION": "${ #stage('EVNFM_Application_Staging')['outputs']['INT_CHART_VERSION']}"
+      },
+      "refId": "EO_Product_Staging",
+      "requisiteStageRefIds": ["Stop pipeline if App Staging failed"],
+      "stageEnabled":       {
+        "expression": "${trigger['parameters']['SUBMIT_TO_EO_STAGING'].toString() == 'true'}",
+        "type": "expression"
+      },
+      "type": "pipeline",
+      "waitForCompletion": true
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CI-Gerrit-Notification",
+      "master": "oss-fem8s11-eiffel052",
+      "name": "Gerrit Feedback on Failed EO_Product_Staging",
+      "parameters":       {
+        "GERRIT_CHANGE_NUMBER": "${trigger['payload']['GERRIT_CHANGE_NUMBER']}",
+        "GERRIT_PATCHSET_NUMBER": "${trigger['payload']['GERRIT_PATCHSET_NUMBER']}",
+        "Message": "EO_Product_Staging Testing Failed"
+      },
+      "refId": "Gerrit Feedback on Failed EO_Product_Staging",
+      "requisiteStageRefIds": ["EO_Product_Staging"],
+      "stageEnabled":       {
+        "expression": "${trigger['parameters']['SUBMIT_TO_EO_STAGING'].toString() == 'true' and not {'SUCCEEDED', 'SKIPPED'}.contains(#stage('EO_Product_Staging')['status'])}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CI-Gerrit-Notification",
+      "master": "oss-fem8s11-eiffel052",
+      "name": "Gerrit Feedback on Successful EO_Product_Staging",
+      "parameters":       {
+        "GERRIT_CHANGE_NUMBER": "${trigger['payload']['GERRIT_CHANGE_NUMBER']}",
+        "GERRIT_PATCHSET_NUMBER": "${trigger['payload']['GERRIT_PATCHSET_NUMBER']}",
+        "Message": "EO_Product_Staging Testing  SUCCEEDED - All Flows Completed"
+      },
+      "refId": "Gerrit Feedback on Successful EO_Product_Staging",
+      "requisiteStageRefIds": ["EO_Product_Staging"],
+      "stageEnabled":       {
+        "expression": "${trigger['parameters']['SUBMIT_TO_EO_STAGING'].toString() == 'true' and #stage('EO_Product_Staging')['status'].toString() == 'SUCCEEDED'}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "name": "Flow Completed",
+      "preconditions":       [
+                {
+          "context":           {
+            "expression": "${#stage('EVNFM_Application_Staging')['status'].toString() == 'SUCCEEDED'}",
+            "failureMessage": "EVNFM_Application_Staging failed!"
+          },
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context":           {
+            "expression": "${#stage('EO_Product_Staging')['status'].toString() == 'SUCCEEDED' or #stage('EO_Product_Staging')['status'] == 'SKIPPED'}",
+            "failureMessage": "EO_Product_Staging failed!"
+          },
+          "failPipeline": true,
+          "type": "expression"
+        }
+      ],
+      "refId": "Flow Completed",
+      "requisiteStageRefIds":       [
+        "Gerrit Feedback on Failed EO_Product_Staging",
+        "Gerrit Feedback on Successful EO_Product_Staging"
+      ],
+      "type": "checkPreconditions"
+    }
+  ],
+  "triggers": [  {
+    "enabled": true,
+    "source": "submit-EVNFM-chart-reviews",
+    "type": "webhook"
+  }],
+  "updateTs": "1718945267050"
+}

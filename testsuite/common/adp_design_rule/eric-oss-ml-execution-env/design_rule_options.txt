@@ -1,0 +1,2 @@
+-DhelmDesignRule.config.eric-data-document-database-pg.DR-D1121-121=skip
+-DhelmDesignRule.config.eric-aiml-model-lcm.DR-D1121-121=skip

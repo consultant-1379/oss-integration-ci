@@ -1,0 +1,19 @@
+apiVersion: v2
+dependencies:
+- condition: eric-eo-api-gateway.enabled
+  name: eric-eo-api-gateway
+  repository: https://arm.rnd.ki.sw.ericsson.se/artifactory/proj-so-gs-all-helm/
+  version: 3.0.0-185
+- condition: eric-eo-usermgmt.enabled
+  name: eric-eo-usermgmt
+  repository: https://arm.seli.gic.ericsson.se/artifactory/proj-eric-oss-drop-helm
+  version: 1.87.0-1
+- condition: eric-eo-usermgmt-ui.enabled
+  name: eric-eo-usermgmt-ui
+  repository: https://arm.rnd.ki.sw.ericsson.se/artifactory/proj-so-gs-all-helm
+  version: 1.9.0-0
+description: Chart containing common base services for OSS Applications
+maintainers:
+- name: Ticketmaster
+name: ci-helm-chart
+version: 0.1.1-0

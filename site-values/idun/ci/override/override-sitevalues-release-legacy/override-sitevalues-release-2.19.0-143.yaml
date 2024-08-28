@@ -1,0 +1,108 @@
+eric-cloud-native-base:
+  eric-data-search-engine:
+    fastButUnsafeUpgrade:
+      enabled: true
+#Added for ADP Diagnostic Data Collector
+  eric-odca-diagnostic-data-collector:
+    sftpServerHost: sfts.sero.gic.ericsson.se:22
+    collectionWindow: 1440
+    logplanes: "_all"
+    sftpFileLocation: "/IdunReleaseBUR/ADP_Diagnostic_Data"
+    sftpSecretName: eric-odca-diagnostic-data-collector-sftp-credentials
+#IDUN-86633 - Increase Kafka PVC size
+  eric-data-message-bus-kf:
+    persistence:
+      persistentVolumeClaim:
+        size: 15Gi
+eric-oss-adc:
+  eric-oss-enm-fns:
+    configuredQueries: |-
+      enms:
+        - name: ProdEngENM
+          periodSeconds: 60
+          queries:
+            - name: query1
+              topic: sftp-filetrans
+              dataSpace: "4G5G"
+              dataCategory: PM_COUNTERS
+              dataType: PM_STATISTICAL
+              nodeType: "RadioNode"
+              fileType: "xml.gz"
+              fileLocation: ""
+              id: 0
+            - name: query2
+              topic: 4g-event
+              dataSpace: 4G
+              dataCategory: PM_EVENTS
+              dataType: PM_CELLTRACE
+              nodeType: "RadioNode"
+              fileType: "bin.gz"
+              fileLocation: ""
+              id: 0
+            - name: query3
+              topic: 5g-event
+              dataSpace: 5G
+              dataCategory: PM_EVENTS
+              dataType: "PM_CELLTRACE_*"
+              nodeType: "RadioNode"
+              fileType: "gpb.gz"
+              fileLocation: ".*_1_\\d+\\.gpb(?:\\.gz)?$"
+              id: 0
+    dmm:
+      dataCatalog:
+        messageBusNamespace: "NAMESPACE"
+  eric-oss-sftp-filetrans:
+    subsystem:
+      name: "ProdEngENM"
+    dmm:
+      data_catalog:
+        message_bus_namespace: "NAMESPACE"
+        data_provider_type_version_id: "ProdEngENM"
+        data_collector_name: "pm-counter-sftp-filetrans-ProdEngENM"
+        data_service:
+          data_service_instance:
+            consumed_data_provider: ProdEngENM
+    spring:
+      kafka:
+        topics:
+          enm_id: "ProdEngENM"
+    sftp:
+      topic_bucket_backward_compatible: false
+  eric-oss-5gpmevt-filetx-proc:
+    dmm:
+      dataCatalog:
+        dataProviderTypeId: "5g-event-ProdEngENM"
+        dataSpace: "5G"
+        dataCollectorName: "ProdEngENM"
+        messageBusNamespace: "NAMESPACE"
+    spring:
+      kafka:
+        topics:
+          input:
+            name: "file-notification-service--5g-event--ProdEngENM"
+  egressExternalHosts:
+    smegPassThrough:
+      properties:
+        - targetAddress: ENM_SCRIPTING_VM_IP
+          targetPort: ENM_SCRIPTING_VM_PORT
+          protocol: TCP
+          egressGWPort: 7000
+        - targetAddress: ENM_HOSTNAME
+          targetPort: ENM_PORT
+          protocol: TLS
+          egressGWPort: 7001
+eric-oss-common-base:
+  eric-oss-ddc:
+    autoUpload:
+      enabled: DDP_AUTOUPLOAD_ENABLED_REPLACE
+      ddpid: DDP_ID
+      account: DDP_ACCOUNT
+      password: "DDP_PASSWORD"
+  service-mesh-egress-gateway:
+    ports:
+      - port: 7000
+        name: eric-oss-adc1
+        protocol: TCP
+      - port: 7001
+        name: eric-oss-adc2
+        protocol: TCP

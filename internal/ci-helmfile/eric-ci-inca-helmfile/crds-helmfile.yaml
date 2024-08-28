@@ -1,0 +1,13 @@
+bases:
+  - repositories.yaml
+
+releases:
+  - name: eric-tm-ingress-controller-cr-crd
+    namespace: {{ .Values | get "helmfile.crd.namespace" "eric-crd-ns" }}
+    chart: {{ .Values | get "repository" "adp-gs-all" }}/eric-tm-ingress-controller-cr-crd
+    version: 11.0.0+29
+    condition: eric-tm-ingress-controller-cr-crd.enabled
+    labels:
+      csar: eric-cloud-native-base
+    values:
+      - "./values-templates/release_values.yaml.gotmpl"

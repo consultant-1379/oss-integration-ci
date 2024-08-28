@@ -1,0 +1,60 @@
+# Compiled source #
+*.class
+*/bin/*
+
+# Eclipse files
+.project
+.classpath
+.settings
+.metadata
+
+# IntelliJ IDEA files
+.idea
+*.iws
+*.ipr
+*.iml
+*.patch
+
+# Packages
+*.jar
+*.tar
+*.tar.gz
+*.tgz
+*.egg-info
+
+# Maven build files
+target
+reports
+**/dependency-reduced-pom.xml
+
+# PMD
+.pmd
+
+# Merge files
+*.orig
+
+#tmp directories
+tmp/
+test-output/
+test_results/
+
+#cihelm directories
+cihelm/
+cihelmimage/
+
+#BOB Files
+.project_*
+*helm-target
+.bob
+artifact.properties
+
+# Helm Files
+requirements.lock
+charts/*/charts/
+
+# Python files
+__pycache__/
+*.pyc
+
+# venv
+venv/

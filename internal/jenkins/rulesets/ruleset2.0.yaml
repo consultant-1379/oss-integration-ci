@@ -1,0 +1,444 @@
+modelVersion: 2.0
+
+description: "Ticketmaster: oss-integration-ci support pipeline"
+
+docker-images:
+  - adp-release-auto: armdocker.rnd.ericsson.se/proj-adp-cicd-drop/bob-adp-release-auto:latest
+  - adp-inca: armdocker.rnd.ericsson.se/proj-adp-cicd-drop/adp-int-helm-chart-auto:latest
+  - eric-oss-ci-scripts: armdocker.rnd.ericsson.se/proj-eric-oss-drop/eric-oss-ci-scripts:latest
+  - pipeline-mgt-scripts: ${env.PIPELINE_MGT_DOCKER_IMAGE}
+
+properties:
+  - git-image: armdocker.rnd.ericsson.se/dockerhub-ericsson-remote/alpine/git:v2.32.0
+  - image-registry: armdocker.rnd.ericsson.se
+  - python-ci-scripts-dir: ci/jenkins/scripts/python-ci-scripts
+  - python-ci-scripts-image-name: eric-oss-ci-scripts
+  - python-ci-scripts-image-repopath: proj-eric-oss-drop
+  - python-ci-scripts-image-dev-repopath: proj-eric-oss-dev
+  - python-ci-scripts-image-full-name: ${image-registry}/${python-ci-scripts-image-repopath}/${python-ci-scripts-image-name}
+  - python-ci-scripts-image-dev-full-name: ${image-registry}/${python-ci-scripts-image-dev-repopath}/${python-ci-scripts-image-name}
+  - ci-helm-dir: cihelmimage
+  - ci-helm-image: serodocker.sero.gic.ericsson.se/proj-pc-tools-latest/cihelm:latest
+  - git-repo: https://gerrit-gamma.gic.ericsson.se/plugins/gitiles/${env.GERRIT_PROJECT}
+  - cloned-repo-directory: ".bob/cloned_repo"
+  - pipeline-mgt-scripts-dir: internal/pipeline-mgt-scripts
+  - pipeline-mgt-scripts-image-name: eric-oss-pipeline-mgt-scripts
+  - pipeline-mgt-scripts-image-dev-repopath: proj-eric-oss-dev
+  - pipeline-mgt-scripts-image-dev-full-name: ${image-registry}/${pipeline-mgt-scripts-image-dev-repopath}/${pipeline-mgt-scripts-image-name}
+  - pipeline-mgt-scripts-flags: "--user $(id -u):$(id -g)
+                                 --volume ${env.PWD}:/pipeline-mgt-scripts/output-files
+                                 --volume ${env.PWD}:${env.PWD}
+                                 --workdir ${env.PWD}"
+  - eric-oss-ci-scripts-flags: "--user $(id -u):$(id -g)
+                                --volume ${env.PWD}:/ci-scripts/output-files
+                                --volume ${env.PWD}:${env.PWD}
+                                --workdir ${env.PWD}"
+  - project-path: OSS/com.ericsson.oss.orchestration.eo/eo-integration-ci
+  - ci-repo-name: eo-integration-ci
+
+env:
+  - HOME
+  - PWD
+  - GERRIT_USERNAME
+  - GERRIT_PASSWORD
+  - GERRIT_PREPARE_OR_PUBLISH
+  - GERRIT_CHANGE_NUMBER
+  - GERRIT_PATCHSET_NUMBER
+  - GERRIT_REFSPEC
+  - GERRIT_PROJECT (default="OSS/com.ericsson.oss.aeonic/oss-integration-ci")
+  - COMMIT_MESSAGE_FORMAT_MANUAL
+  - GIT_TAG_ENABLED
+  - ARM_REGISTRY_USERNAME
+  - ARM_REGISTRY_PASSWORD
+  - BRANCH
+  - CI_DOCKER_IMAGE (default=local)
+  - CLUSTER_ID
+  - DYNAMIC_CLUSTER_SERVICE_IP (default=10.120.10.7)
+  - DYNAMIC_CLUSTER_SERVICE_PORT (default=8080)
+  - SUBMODULE_SYNC_TIMEOUT (default=400)
+  - NEXT_GERRIT_REFSPEC
+  - NEXT_GERRIT_PATCHSET_NUMBER
+  - CHART_NAME
+  - CHART_VERSION
+  - CHART_REPO
+  - CI_HELM
+  - GIT_REPO_URL
+  - VCS_BRANCH (default='master')
+  - CHART_PATH
+  - HELM_INTERNAL_REPO
+  - HELM_DROP_REPO
+  - HELM_RELEASED_REPO
+  - HELM_UPLOAD_REPO
+  - ALLOW_DOWNGRADE
+  - IGNORE_NON_RELEASED
+  - AUTOMATIC_RELEASE
+  - ALWAYS_RELEASE
+  - VERSION_STEP_STRATEGY_DEPENDENCY
+  - VERSION_STEP_STRATEGY_MANUAL
+  - HELM_REPO_CREDENTIALS
+  - ARM_API_TOKEN
+  - COMMIT_MESSAGE_FORMAT_MANUAL
+  - GIT_TAG_ENABLED
+  - WAIT_SUBMITTABLE_BEFORE_PUBLISH
+  - WAIT_TIMEOUT_SEC_BEFORE_PUBLISH
+  - STATE_VALUES_FILE
+  - HELMFILE_ENVIRONMENT
+  - PIPELINE_MGT_DOCKER_IMAGE (default=armdocker.rnd.ericsson.se/proj-eric-oss-dev/eric-oss-pipeline-mgt-scripts:latest)
+  - BANNER_CSV_FILE
+  - SPIN_USERNAME
+  - SPIN_PASSWORD
+  - APP_LIST
+  - BANNER_TEXT
+  - BG_COLOR
+  - TEXT_COLOR
+  - ENABLED (default=false)
+  - SKIP (default=true)
+  - DELETE (default=false)
+  - EXPIRY_DAYS
+  - PATH_FILTERS (default=all)
+  - EXCLUDES (default=)
+  - PROJECT_NAME
+  - REPO_NAME
+  - JENKINS_USER
+  - JENKINS_TOKEN
+
+var:
+  - version-prefix
+  - next-version-prefix
+  - commithash
+  - ci-scripts-docker-path
+  - cluster-id
+  - cluster-list
+
+rules:
+  git-clean:
+    - task: git-clean
+      cmd: docker run --rm --user $(id -u):$(id -g) -v ${env.PWD}:/git/ ${git-image} clean -xdff
+
+  init:
+    - task: get-current-version
+      cmd: cat ./VERSION_PREFIX > .bob/var.version-prefix
+    - task: get-commit-hash
+      docker-image: adp-release-auto
+      cmd: git rev-parse --short HEAD > .bob/var.commithash
+    - task: write-to-properties-new-version
+      cmd: echo "ERIC-OSS-CI-SCRIPTS_VERSION:${var.next-version-prefix}" >> artifact.properties
+    - task: write-to-properties-image-path
+      cmd: echo "ERIC-OSS-CI-SCRIPTS_IMAGE_PATH:${var.ci-scripts-docker-path}" >> artifact.properties
+    - task: step-version-prefix
+      cmd: echo ${var.next-version-prefix} > ${cloned-repo-directory}/VERSION_PREFIX
+
+  run-python-ci-linting-unit-tests:
+    - task: image:ci-helm
+    - task: test
+      cmd: docker build -t python_ci_scripts_test_results --target test -f ${python-ci-scripts-dir}/Dockerfile .
+    - task: copy_test_results
+      cmd: docker run --rm -u $(id -u):$(id -g) -v ${env.PWD}:/workspace/ --entrypoint cp python_ci_scripts_test_results -r /test_results/ /workspace/
+
+  shellcheck:
+    - task: run-shellcheck
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+        - --entrypoint /bin/bash
+      cmd: -c "find ci/jenkins/scripts -name '*.sh' | xargs -r shellcheck -e SC1091"
+
+  docker-clean:
+    - task: rmi
+      cmd: docker images | grep -E 'none|python-ci-scripts|cihelm' | grep -E 'days|weeks|months' | awk '{print $3}' | xargs -r docker rmi -f || true
+
+  # Build a docker image pointing to internal repository
+  image:
+    - task: ci-helm
+      cmd:
+        - mkdir -p ${ci-helm-dir}
+        - docker pull ${ci-helm-image}
+        - docker create --name cihelm ${ci-helm-image}
+        - docker export cihelm -o ${ci-helm-dir}/image.tar
+        - docker container rm cihelm
+        - tar xf ${ci-helm-dir}/image.tar -C ${ci-helm-dir}
+        - mkdir -p ${python-ci-scripts-dir}/cihelm/python3/bin/ && cp ${ci-helm-dir}/usr/bin/cihelm ${python-ci-scripts-dir}/cihelm/python3/bin/
+        - mkdir -p ${python-ci-scripts-dir}/cihelm/bin/ && cp ${ci-helm-dir}/usr/lib/cihelm/parse_index ${python-ci-scripts-dir}/cihelm/bin/
+        - mkdir -p ${python-ci-scripts-dir}/cihelm/python3/lib/ && cp -r ${ci-helm-dir}/usr/lib/python3.8/site-packages/cihelm ${python-ci-scripts-dir}/cihelm/python3/lib/
+    - task: docker-build
+      cmd: docker build .
+        --target release
+        --file ci/jenkins/scripts/python-ci-scripts/Dockerfile
+        --tag ${var.ci-scripts-docker-path}:${var.next-version-prefix}
+        --build-arg REPOSITORY=${git-repo}
+        --build-arg COMMIT=${var.commithash}
+        --build-arg APP_VERSION=${var.next-version-prefix}
+
+  # Create official package
+  # Call publish only when merged to master
+  push:
+    - task: image-push
+      cmd:
+        - docker image tag ${var.ci-scripts-docker-path}:${var.next-version-prefix} ${var.ci-scripts-docker-path}:${var.next-version-prefix}
+        - docker image tag ${var.ci-scripts-docker-path}:${var.next-version-prefix} ${var.ci-scripts-docker-path}:latest
+        - docker push ${var.ci-scripts-docker-path}:${var.next-version-prefix}
+        - docker push ${var.ci-scripts-docker-path}:latest
+
+  # Gerrit Handling
+  gerrit:
+    - task: get-next-dev-version
+      docker-image: adp-inca
+      docker-flags:
+        - --env GERRIT_USERNAME
+        - --env GERRIT_PASSWORD
+      cmd: next-version --current-version ${var.version-prefix} --version-type PATCH -o .bob/var.next-version
+    - task: set-unique-version
+      cmd: echo $( cat .bob/var.next-version )-${env.GERRIT_CHANGE_NUMBER} > .bob/var.next-version-prefix
+    - task: set-dev-docker-url
+      cmd: echo ${python-ci-scripts-image-dev-full-name} > .bob/var.ci-scripts-docker-path
+    - task: get-next-release-version
+      docker-image: adp-inca
+      docker-flags:
+        - --env GERRIT_USERNAME
+        - --env GERRIT_PASSWORD
+      cmd: next-version --current-version ${var.version-prefix} --version-type PATCH --release -o .bob/var.next-version-prefix
+    - task: set-release-docker-url
+      cmd: echo ${python-ci-scripts-image-full-name} > .bob/var.ci-scripts-docker-path
+    - task: git-tag
+      docker-image: adp-release-auto
+      docker-flags:
+        - --env GERRIT_USERNAME
+        - --env GERRIT_PASSWORD
+      cmd: version-handler create-git-tag
+           --git-repo-path .
+           --tag ${var.release-version-prefix}
+           --message "Release ${var.release-version-prefix}"
+    - task: rebase-review-if-not-mergeable
+      docker-image: adp-inca
+      docker-flags:
+        - --env GERRIT_USERNAME
+        - --env GERRIT_PASSWORD
+      cmd: gerrit rebase --change ${env.GERRIT_CHANGE_NUMBER} --revision ${env.GERRIT_PATCHSET_NUMBER} --review-message-on-failure "Rebase failed. Please rebase locally before pushing to review."
+    - task: clone-repo
+      docker-image: adp-release-auto
+      docker-envs:
+        - GERRIT_USERNAME=${env.GERRIT_USERNAME}
+        - GERRIT_PASSWORD
+      cmd:
+        - rm -rf ${cloned-repo-directory}
+        - gerrit clone --debug --username ${env.GERRIT_USERNAME} --project-path ${env.GERRIT_PROJECT} --git-repo-local ${cloned-repo-directory} --submodule-timeout ${env.SUBMODULE_SYNC_TIMEOUT} --branch ${env.VCS_BRANCH}
+    - task: clone-repo-restricted
+      docker-image: adp-release-auto
+      docker-envs:
+        - GERRIT_USERNAME=${env.GERRIT_USERNAME}
+        - GERRIT_PASSWORD
+      cmd:
+        - rm -rf ${cloned-repo-directory}
+        - gerrit clone --debug --username ${env.GERRIT_USERNAME} --project-path ${env.GERRIT_PROJECT} --git-repo-local ${cloned-repo-directory} --submodule-timeout ${env.SUBMODULE_SYNC_TIMEOUT} --branch ${env.VCS_BRANCH} --clone-only --no-recursive
+    - task: checkout-patch
+      docker-image: adp-release-auto
+      docker-envs:
+        - GERRIT_USERNAME=${env.GERRIT_USERNAME}
+        - GERRIT_PASSWORD
+      cmd: gerrit checkout-patch --debug --refspec ${env.GERRIT_REFSPEC} --project-path ${env.GERRIT_PROJECT} --git-repo-local ${cloned-repo-directory}
+    - task: create-patch
+      docker-image: adp-release-auto
+      docker-envs:
+        - GERRIT_USERNAME=${env.GERRIT_USERNAME}
+        - GERRIT_PASSWORD=${env.GERRIT_PASSWORD}
+      cmd: gerrit create-patch --message 'Version Prefix updated' --git-repo-local ${cloned-repo-directory}
+    - task: push-review
+      cmd:
+        - cd $PWD/${cloned-repo-directory}; git add ./VERSION_PREFIX
+        - cd $PWD/${cloned-repo-directory}; git status
+        - cd $PWD/${cloned-repo-directory}; git commit --amend --no-edit
+        - cd $PWD/${cloned-repo-directory}; git push https://${env.GERRIT_USERNAME}:${env.GERRIT_PASSWORD}@gerrit-gamma.gic.ericsson.se/a/OSS/com.ericsson.oss.aeonic/oss-integration-ci.git HEAD:refs/for/master
+    - task: review-change
+      docker-image: adp-inca
+      docker-flags:
+        - --env GERRIT_USERNAME
+        - --env GERRIT_PASSWORD
+      cmd: gerrit review --change ${env.GERRIT_CHANGE_NUMBER} --revision ${env.NEXT_GERRIT_PATCHSET_NUMBER} --message "Looks very good to the AI" --setLabel Verified="+1" Code-Review="+2"
+    - task: submit-change
+      docker-image: adp-inca
+      docker-flags:
+        - --env GERRIT_USERNAME
+        - --env GERRIT_PASSWORD
+      cmd: gerrit submit --change ${env.GERRIT_CHANGE_NUMBER} --revision ${env.NEXT_GERRIT_PATCHSET_NUMBER} --review-message-on-failure "Change is not submittable, consider rebasing your change"
+
+  build-local-python-ci-image:
+    - task: set-local-version
+      cmd: echo latest > .bob/var.next-version-prefix
+    - task: set-local-docker-url
+      cmd: echo local > .bob/var.ci-scripts-docker-path
+    - rule: image
+    - task: docker-tag
+      cmd: docker tag ${var.ci-scripts-docker-path}:${var.next-version-prefix} ${env.CI_DOCKER_IMAGE}
+
+  get-dynamic-cluster:
+    - task: setup-cluster-id
+      cmd: echo "${env.CLUSTER_ID}" | awk '{print tolower($0)}' > .bob/var.cluster-id
+    - task: get-or-setup-cluster
+      cmd: bash -c '
+        echo "Requesting dynamic cluster http://${env.DYNAMIC_CLUSTER_SERVICE_IP}:${env.DYNAMIC_CLUSTER_SERVICE_PORT}/cluster/${var.cluster-id}";
+        curl -X POST -f http://${env.DYNAMIC_CLUSTER_SERVICE_IP}:${env.DYNAMIC_CLUSTER_SERVICE_PORT}/cluster/${var.cluster-id} > ./admin.conf;
+        echo "Done";'
+
+  teardown-dynamic-cluster:
+    - task: setup-cluster-id
+      cmd: echo "${env.CLUSTER_ID}" | awk '{print tolower($0)}' > .bob/var.cluster-id
+    - task: delete-cluster
+      cmd: bash -c '
+        echo "Deleting dynamic cluster http://${env.DYNAMIC_CLUSTER_SERVICE_IP}:${env.DYNAMIC_CLUSTER_SERVICE_PORT}/cluster/${var.cluster-id}";
+        curl -X DELETE -f http://${env.DYNAMIC_CLUSTER_SERVICE_IP}:${env.DYNAMIC_CLUSTER_SERVICE_PORT}/cluster/${var.cluster-id};
+        echo "Done";'
+
+  review-publish-submit-helmfile:
+    - task: review-publish-submit
+      docker-image: adp-inca
+      docker-flags:
+        - --env GERRIT_REFSPEC
+        - --env CHART_NAME
+        - --env CHART_VERSION
+        - --env CHART_REPO
+        - --env CI_HELM
+        - --env GIT_REPO_URL
+        - --env VCS_BRANCH
+        - --env CHART_PATH
+        - --env HELM_INTERNAL_REPO
+        - --env HELM_DROP_REPO
+        - --env HELM_RELEASED_REPO
+        - --env HELM_UPLOAD_REPO
+        - --env ALLOW_DOWNGRADE
+        - --env IGNORE_NON_RELEASED
+        - --env AUTOMATIC_RELEASE
+        - --env ALWAYS_RELEASE
+        - --env VERSION_STEP_STRATEGY_DEPENDENCY
+        - --env VERSION_STEP_STRATEGY_MANUAL
+        - --env HELM_REPO_CREDENTIALS
+        - --env ARM_API_TOKEN
+        - --env GERRIT_USERNAME
+        - --env GERRIT_PASSWORD
+        - --env COMMIT_MESSAGE_FORMAT_MANUAL
+        - --env GIT_TAG_ENABLED
+        - --env WAIT_SUBMITTABLE_BEFORE_PUBLISH
+        - --env WAIT_TIMEOUT_SEC_BEFORE_PUBLISH
+        - --env STATE_VALUES_FILE=${env.PWD}/internal/build/site-values/site-values.yaml
+        - --env HELMFILE_ENVIRONMENT=build
+      cmd: ihc-auto ${env.GERRIT_PREPARE_OR_PUBLISH} --debug
+
+  # Separate rule to allow for property overrides in pipeline-mgt tasks
+  clone-ci-repo:
+    - task: clone-repo
+      docker-image: adp-release-auto
+      docker-envs:
+        - GERRIT_USERNAME=${env.GERRIT_USERNAME}
+        - GERRIT_PASSWORD
+      cmd:
+        - rm -rf ${cloned-repo-directory}
+        - gerrit clone --debug --username ${env.GERRIT_USERNAME} --project-path ${project-path} --git-repo-local ${cloned-repo-directory} --submodule-timeout ${env.SUBMODULE_SYNC_TIMEOUT}
+
+  clone-ci-repos:
+    - rule: clone-ci-repo
+      properties:
+        - project-path: OSS/com.ericsson.oss.orchestration.eo/eo-integration-ci
+        - repo-name: eo-integration-ci
+        - cloned-repo-directory: .bob/eo_integration_ci_clone
+    - rule: clone-ci-repo
+      properties:
+        - project-path: OSS/com.ericsson.oss.aeonic/oss-integration-ci
+        - repo-name: oss-integration-ci
+        - cloned-repo-directory: .bob/oss_integration_ci_clone
+    - task: prune-eo-integration-ci
+      cmd: rm -rf ${env.PWD}/.bob/oss_integration_ci_clone/eo-integration-ci
+    - task: prune-oss-common-ci
+      cmd: rm -rf ${env.PWD}/.bob/oss_integration_ci_clone/oss-common-ci
+    - task: prune-idunaas-ci
+      cmd: rm -rf ${env.PWD}/.bob/oss_integration_ci_clone/com.ericsson.idunaas.ci
+    - rule: clone-ci-repo
+      properties:
+        - project-path: OSS/com.ericsson.oss.orchestration.common/oss-common-ci
+        - repo-name: oss-common-ci
+        - cloned-repo-directory: .bob/oss_common_ci_clone
+
+  ###############################################
+  # Pipeline management utility tasks
+  ###############################################
+  run-pipeline-mgt-linting-unit-tests:
+    - task: test
+      cmd: docker build -t pipeline_mgt_scripts_test_results --target test -f ./${pipeline-mgt-scripts-dir}/Dockerfile ${pipeline-mgt-scripts-dir}
+    - task: copy_test_results
+      cmd: docker run --rm -u $(id -u):$(id -g) -v ${env.PWD}:/workspace/ --entrypoint cp pipeline_mgt_scripts_test_results -r /test_results/ /workspace/
+
+  build-pipeline-mgt-image:
+    - task: get-commit-hash
+      docker-image: adp-release-auto
+      cmd: git rev-parse --short HEAD > .bob/var.commithash
+    - task: docker-build
+      cmd: docker build ${pipeline-mgt-scripts-dir}
+        --target release
+        --file ./${pipeline-mgt-scripts-dir}/Dockerfile
+        --tag ${var.ci-scripts-docker-path}:${var.next-version-prefix}
+        --build-arg REPOSITORY=${git-repo}
+        --build-arg COMMIT=${var.commithash}
+
+  publish-pipeline-mgt-dev-image:
+    - task: set-latest-version
+      cmd: echo latest > .bob/var.next-version-prefix
+    - task: set-docker-url
+      cmd: echo ${pipeline-mgt-scripts-image-dev-full-name} > .bob/var.ci-scripts-docker-path
+    - rule: build-pipeline-mgt-image
+    - task: image-push
+      cmd: docker push ${var.ci-scripts-docker-path}:${var.next-version-prefix}
+
+  build-local-pipeline-mgt-image:
+    - task: set-local-version
+      cmd: echo latest > .bob/var.next-version-prefix
+    - task: set-local-docker-url
+      cmd: echo local > .bob/var.ci-scripts-docker-path
+    - rule: build-pipeline-mgt-image
+
+  # Pipeline mgt - Spinnaker operations
+  sync-global-banners:
+    - task: run-sync
+      docker-image: pipeline-mgt-scripts
+      docker-flags:
+        - ${pipeline-mgt-scripts-flags}
+        - "-e SPIN_USERNAME=${env.SPIN_USERNAME}"
+        - "-e SPIN_PASSWORD=${env.SPIN_PASSWORD}"
+      cmd: spinnaker-update-banners-from-csv --filename ${env.BANNER_CSV_FILE}
+
+  add-global-banner:
+    - task: run-update
+      docker-image: pipeline-mgt-scripts
+      docker-flags:
+        - ${pipeline-mgt-scripts-flags}
+        - "-e SPIN_USERNAME=${env.SPIN_USERNAME}"
+        - "-e SPIN_PASSWORD=${env.SPIN_PASSWORD}"
+      cmd: spinnaker-update-app-banner --app-list "${env.APP_LIST}" --banner-text "${env.BANNER_TEXT}" --bg-color ${env.BG_COLOR} --text-color ${env.TEXT_COLOR} --enabled ${env.ENABLED} --skip ${env.SKIP} --delete ${env.DELETE}
+
+  # Pipeline mgt - Repo operations
+  run-cert-expiry-repo-checks:
+    - task: generate-lr-cluster-list
+      docker-image: pipeline-mgt-scripts
+      docker-flags:
+        - ${pipeline-mgt-scripts-flags}
+        - "-e JENKINS_USER=${env.JENKINS_USER}"
+        - "-e JENKINS_TOKEN=${env.JENKINS_TOKEN}"
+      cmd: list-lockable-resources
+    - task: set-cluster-list-var
+      cmd: cat ./lr_cluster_list > .bob/var.cluster-list
+    - rule: clone-ci-repos
+    - task: run-cert-inspect-eo-integration-ci
+      docker-image: pipeline-mgt-scripts
+      docker-flags:
+        - ${pipeline-mgt-scripts-flags}
+        - "-v ${env.PWD}/.bob/eo_integration_ci_clone:/repo"
+      cmd: report-repo-certificates-for-expiry --repo-path /repo --warn-days ${env.EXPIRY_DAYS} --report-name eo-integration-ci --filters "${env.PATH_FILTERS},${var.cluster-list}" --excludes "${env.EXCLUDES}"
+    - task: run-cert-inspect-oss-integration-ci
+      docker-image: pipeline-mgt-scripts
+      docker-flags:
+        - ${pipeline-mgt-scripts-flags}
+        - "-v ${env.PWD}/.bob/oss_integration_ci_clone:/repo"
+      cmd: report-repo-certificates-for-expiry --repo-path /repo --warn-days ${env.EXPIRY_DAYS} --report-name oss-integration-ci --filters "${env.PATH_FILTERS},${var.cluster-list}" --excludes "${env.EXCLUDES}"
+    - task: run-cert-inspect-oss-common-ci
+      docker-image: pipeline-mgt-scripts
+      docker-flags:
+        - ${pipeline-mgt-scripts-flags}
+        - "-v ${env.PWD}/.bob/oss_common_ci_clone:/repo"
+      cmd: report-repo-certificates-for-expiry --repo-path /repo --warn-days ${env.EXPIRY_DAYS} --report-name oss-common-ci --filters "${env.PATH_FILTERS},${var.cluster-list}" --excludes "${env.EXCLUDES}"

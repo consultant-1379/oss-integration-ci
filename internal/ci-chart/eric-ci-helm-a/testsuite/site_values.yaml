@@ -1,0 +1,49 @@
+global:
+  createClusterRoles: false
+  security:
+    privilegedPolicyClusterRoleName: eric-app-ns-allowed-use-privileged-policy
+    privilegedMetricsPolicyClusterRoleName: eric-app-ns-allowed-metrics-privileged-policy
+    privilegedMetricsPolicyClusterRoleBindingName: eric-app-ns-allowed-metrics-privileged-policy-cluster-rolebinding
+    privilegedPolicyClusterRoleBindingName: eric-app-ns-allowed-use-privileged-policy-cluster-rolebinding
+    restrictedPolicyClusterRoleName: eric-app-ns-allowed-use-restricted-policy
+  hosts:
+    iam: dummy
+  networkPolicy:
+    enabled: true
+  registry:
+    url: "registry.dummy.hostname.com/also/path"
+    username: "admin"
+    password: "ericsson"
+  pullSecret: "dummy-pull-secret"
+enabled: true
+faultMappings:
+  myfile1.json: dummy
+alertRules:
+  myFile2.json: dummy
+psp-role-binding:
+  enabled: false
+
+eric-ci-helm-b:
+  enabled: true
+  faultMappings:
+    myfile1.json: dummy
+  alertRules:
+    myFile2.json: dummy
+  psp-role-binding:
+    enabled: false
+
+eric-cloud-native-base:
+  eric-si-application-sys-info-handler:
+    enabled: true
+  eric-fh-snmp-alarm-provider:
+    enabled: true
+  eric-data-distributed-coordinator-ed:
+    enabled: true
+  eric-lm-combined-server-db-pg:
+    enabled: true
+  eric-cm-mediator:
+    enabled: true
+  eric-sec-certm:
+    enabled: true
+  eric-odca-diagnostic-data-collector:
+    enabled: true

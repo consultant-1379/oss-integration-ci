@@ -1,0 +1,36 @@
+# This override delta file was prepared for usage with main file:
+# site-values/ci/site-values-latest.yaml
+
+eric-oss-common-base:
+  service-mesh-ingress-gateway:
+    enabled: false
+
+  eric-log-transformer:
+    egress:
+      syslog:
+        enabled: false
+        remoteHosts: []
+
+eric-eo-so:
+  tlsDev:
+    enabled: true
+  so-enterprise:
+    enabled: true
+  so-slicing:
+    enabled: true
+  stubs:
+    enabled: true
+  ingress:
+    enabled: true
+
+# Required for EAS functional testing
+eric-oss-ericsson-adaptation:
+  eric-eo-enm-stub:
+    enabled: true
+  eric-oss-enm-notification-simulator:
+    enabled: true
+
+optionality:
+  eric-oss-common-base:
+    service-mesh-ingress-gateway:
+      enabled: false

@@ -1,0 +1,53 @@
+# This override delta file was prepared for usage with main file:
+# site-values/eo/ci/template/site-values-latest.yaml
+
+
+global:
+  nodeSelector:
+    nodetype: eo
+# Enabling stubs from SO
+
+stubs:
+  enabled: true
+
+eric-eo-evnfm:
+  eric-lcm-container-registry:
+    persistence:
+      persistentVolumeClaim:
+        size: "40Gi"
+  eric-global-lcm-container-registry:
+    hostname: 'dummy'
+    username: 'dummy'
+    password: 'dummy'
+  eric-am-onboarding-service:
+    onboarding:
+      skipCertificateValidation: false
+
+eric-eo-so:
+  stubs:
+    enabled: true
+
+# Fill only if deploying Ericsson Adaptation (EAS)
+eric-oss-ericsson-adaptation:
+  eric-eo-enm-stub:
+    enabled: true
+  eric-oss-enm-notification-simulator:
+    enabled: true
+
+eric-oss-uds:
+  eric-oss-uds-policy-artifact-ui:
+    resources:
+      limits:
+        cpu: 200m
+        memory: 200Mi
+      requests:
+        cpu: 100m
+        memory: 100Mi
+
+eric-cloud-native-base:
+  eric-lm-combined-server:
+    licenseServerClient:
+      licenseServer:
+        thrift:
+          # Mandatory: licenseServerClient.licenseServer.thrift.host - The NELS thrift server address or service name
+          host: ""

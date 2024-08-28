@@ -1,0 +1,31 @@
+bases:
+  - environment.yaml
+  - repositories.yaml
+
+---
+
+helmDefaults:
+  wait: true
+  timeout: {{ .Values | get "helmfile.timeout" 1800 }}
+
+---
+
+releases:
+  - name: eric-data-document-database-pg
+    namespace: {{ .Values | get "helmfile.app.namespace" "eric-app-ns" }}
+    chart: {{ .Values | get "repository" "eric-data-document-database-pg" }}/eric-data-document-database-pg
+    version: 7.6.0-15
+    installed: {{ .Values | get "tags.appmgr" false }}
+    labels:
+      csar: eric-data-document-database-pg
+    values:
+      - "./values-templates/release_values.yaml.gotmpl"
+  - name: eric-ci-helm-b
+    namespace: {{ .Values | get "helmfile.app.namespace" "eric-app-ns" }}
+    chart: {{ .Values | get "repository" "eric-oss-drop" }}/eric-ci-helm-b
+    version: 1.0.1
+    installed: {{ .Values | get "tags.appmgr" false }}
+    labels:
+      csar: eric-ci-helm-b
+    values:
+      - "./values-templates/release_values.yaml.gotmpl"

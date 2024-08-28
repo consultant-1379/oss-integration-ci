@@ -1,0 +1,85 @@
+{
+  "appConfig": {},
+  "application": "common-e2e-cicd",
+  "description": "",
+  "disabled": false,
+  "id": "a6643bed-e55f-48c4-ad1d-ba9ae283da31",
+  "index": 10,
+  "keepWaitingPipelines": false,
+  "lastModifiedBy": "ZSRRAES",
+  "limitConcurrent": false,
+  "name": "eo-csar-build",
+  "notifications": [],
+  "parameterConfig":   [
+        {
+      "default": "eric-eo-helmfile",
+      "description": "Name of the helmfile that holds the Application to build into CSAR's",
+      "hasOptions": false,
+      "label": "INT_CHART_NAME",
+      "name": "INT_CHART_NAME",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "0.0.0-1",
+      "description": "Version of the Integration Chart that holds the new microservice",
+      "hasOptions": false,
+      "label": "INT_CHART_VERSION",
+      "name": "INT_CHART_VERSION",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "https://arm.seli.gic.ericsson.se/artifactory/proj-eo-drop-helm",
+      "description": "Repo of the Integration Chart that holds the new microservice",
+      "hasOptions": false,
+      "label": "INT_CHART_REPO",
+      "name": "INT_CHART_REPO",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "eric-eo-helmfile/helmfile.yaml",
+      "description": "Full path to the helmfile yaml file within the extracted product helfile archive.",
+      "hasOptions": false,
+      "label": "PATH_TO_HELMFILE",
+      "name": "PATH_TO_HELMFILE",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "eric-eo-helmfile/build-environment/tags_true.yaml",
+      "description": "Site values file used to generate what CSAR are to be built",
+      "hasOptions": false,
+      "label": "STATE_VALUES_FILE",
+      "name": "STATE_VALUES_FILE",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    }
+  ],
+  "schema": "1",
+  "stages": [  {
+    "application": "common-e2e-cicd",
+    "failPipeline": true,
+    "name": "CSAR Build",
+    "pipeline": "a1761b58-9846-46db-8833-9c6e3b3eb293",
+    "pipelineParameters":     {
+      "INT_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+      "INT_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+      "INT_CHART_VERSION": "${trigger['parameters']['INT_CHART_VERSION']}",
+      "PATH_TO_HELMFILE": "${trigger['parameters']['PATH_TO_HELMFILE']}",
+      "STATE_VALUES_FILE": "${trigger['parameters']['STATE_VALUES_FILE']}"
+    },
+    "refId": "1",
+    "requisiteStageRefIds": [],
+    "type": "pipeline",
+    "waitForCompletion": true
+  }],
+  "triggers": [],
+  "updateTs": "1693468312451"
+}

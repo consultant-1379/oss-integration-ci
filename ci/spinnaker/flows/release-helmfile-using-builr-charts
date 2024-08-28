@@ -1,0 +1,353 @@
+{
+  "appConfig": {},
+  "keepWaitingPipelines": false,
+  "lastModifiedBy": "emanjoh",
+  "limitConcurrent": true,
+  "parameterConfig": [
+    {
+      "default": "",
+      "description": "The Microservice Chart Name of the Chart changed within the Integration Chart.",
+      "hasOptions": false,
+      "label": "Microservice Chart Name",
+      "name": "CHART_NAME",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "",
+      "description": "Microservice Chart Version of the Chart changed within the Integration Chart.",
+      "hasOptions": false,
+      "label": "Microservice Chart Version",
+      "name": "CHART_VERSION",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "",
+      "description": "Microservice Chart Repo of the Chart changed within the Integration Chart.",
+      "hasOptions": false,
+      "label": "Microservice Chart Repo",
+      "name": "CHART_REPO",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "eric-oss-common-base",
+      "description": "Integration Chart Name.",
+      "hasOptions": false,
+      "label": "Integration Chart Name",
+      "name": "INT_CHART_NAME",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "",
+      "description": "Integration Chart Version.",
+      "hasOptions": false,
+      "label": "Integration Chart Version",
+      "name": "INT_CHART_VERSION",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "",
+      "description": "Integration Chart Repo.",
+      "hasOptions": false,
+      "label": "Integration Chart Repo",
+      "name": "INT_CHART_REPO",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    },
+    {
+      "default": "true",
+      "description": "This is used when you do no want to release the helmfile at the end of the flow, used during the platform staging flow",
+      "hasOptions": true,
+      "label": "HelmFile Upload Flag",
+      "name": "HELMFILE_UPLOAD",
+      "options": [
+        {
+          "value": "false"
+        },
+        {
+          "value": "true"
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "prepare",
+      "description": "Used within InCa to state when the chart should be a snapshot or released officially to the appropriate repo. Options: 'prepare-dev :: Prepare Integration Helm Chart for development. prepare :: Prepare Integration Helm Chart publish :: Checks in the updates to git and upload to the release repo. prep :: Builds a local copy of the snapshot tar file and executes the precode tests against the updated chart",
+      "hasOptions": true,
+      "label": "Gerrit Prepare or Publish",
+      "name": "GERRIT_PREPARE_OR_PUBLISH",
+      "options": [
+        {
+          "value": "prepare"
+        },
+        {
+          "value": "publish"
+        },
+        {
+          "value": "prepare-dev"
+        },
+        {
+          "value": "prep"
+        }
+      ],
+      "pinned": false,
+      "required": true
+    }
+  ],
+  "spelEvaluator": "v4",
+  "stages": [
+    {
+      "continuePipeline": false,
+      "failPipeline": true,
+      "job": "Helmfile-Fetch-Build-Upload",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Helmfile Fetch Build Upload",
+      "parameters": {
+        "CHART_NAME": "${INT_CHART_NAME}",
+        "CHART_REPO": "${INT_CHART_REPO}",
+        "CHART_VERSION": "${INT_CHART_VERSION}",
+        "GERRIT_PREPARE_OR_PUBLISH": "${trigger['parameters']['GERRIT_PREPARE_OR_PUBLISH']}",
+        "GERRIT_REFSPEC": ""
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "1",
+      "requisiteStageRefIds": [
+        "5"
+      ],
+      "stageEnabled": {
+        "expression": "\"${trigger['parameters']['HELMFILE_UPLOAD']}\" == \"true\"",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+    {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-Common-Base-Fetch-Build-Upload",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "OSS COMMON BASE Fetch, Build and Upload due to Postgres Delivery",
+      "parameters": {
+        "ARMDOCKER_USER_SECRET": "ciloopman-docker-auth-config",
+        "CHART_NAME": "${trigger['parameters']['CHART_NAME']}",
+        "CHART_REPO": "${trigger['parameters']['CHART_REPO']}",
+        "CHART_VERSION": "${trigger['parameters']['CHART_VERSION']}",
+        "GERRIT_PREPARE_OR_PUBLISH": "${trigger['parameters']['GERRIT_PREPARE_OR_PUBLISH']}",
+        "GERRIT_REFSPEC": "",
+        "GERRIT_USER_SECRET": "ciloopman-user-creds",
+        "GIT_REPO_URL": "https://gerrit.ericsson.se/a/OSS/com.ericsson.oss/oss-common-base.git",
+        "HELM_DROP_REPO": "https://arm.seli.gic.ericsson.se/artifactory/proj-eric-oss-drop-helm",
+        "HELM_INTERNAL_REPO": "https://arm.seli.gic.ericsson.se/artifactory/proj-eric-oss-ci-internal-helm",
+        "HELM_RELEASED_REPO": "https://arm.epk.ericsson.se/artifactory/proj-eo-released-helm",
+        "SLAVE_LABEL": "evo_docker_engine_gic_IDUN",
+        "VCS_BRANCH": "",
+        "VERSION_STEP_STRATEGY_DEPENDENCY": "PATCH",
+        "VERSION_STEP_STRATEGY_MANUAL": "PATCH",
+        "WAIT_TIMEOUT_SEC_BEFORE_PUBLISH": "240"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "2",
+      "requisiteStageRefIds": [],
+      "stageEnabled": {
+        "expression": "\"${trigger['parameters']['INT_CHART_NAME']}\" == \"eric-cloud-native-base\" and ( \"${trigger['parameters']['CHART_NAME']}\" == \"eric-data-document-database-pg\" or \"${trigger['parameters']['CHART_NAME']}\" == \"eric-eo-api-gateway\" )",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+    {
+      "failOnFailedExpressions": false,
+      "name": "Set Variables for Chart Details include ADP & OSS Common Base Int",
+      "refId": "3",
+      "requisiteStageRefIds": [
+        "2"
+      ],
+      "stageEnabled": {
+        "expression": "\"${#stage('OSS COMMON BASE Fetch, Build and Upload due to Postgres Delivery')['status']}\" == \"SUCCEEDED\"",
+        "type": "expression"
+      },
+      "type": "evaluateVariables",
+      "variables": [
+        {
+          "key": "INT_CHART_NAME",
+          "value": "${trigger['parameters']['INT_CHART_NAME']}, ${#stage(\"OSS COMMON BASE Fetch, Build and Upload due to Postgres Delivery\")[\"context\"][\"INT_CHART_NAME\"]}"
+        },
+        {
+          "key": "INT_CHART_VERSION",
+          "value": "${trigger['parameters']['INT_CHART_VERSION']}, ${#stage(\"OSS COMMON BASE Fetch, Build and Upload due to Postgres Delivery\")[\"context\"][\"INT_CHART_VERSION\"]}"
+        },
+        {
+          "key": "INT_CHART_REPO",
+          "value": "${trigger['parameters']['INT_CHART_REPO']}, ${#stage(\"OSS COMMON BASE Fetch, Build and Upload due to Postgres Delivery\")[\"context\"][\"INT_CHART_REPO\"]}"
+        },
+        {
+          "key": "WHAT_CHANGED",
+          "value": "BOTH"
+        }
+      ]
+    },
+    {
+      "failOnFailedExpressions": false,
+      "name": "Set Variables for  ADP Chart Details",
+      "refId": "4",
+      "requisiteStageRefIds": [],
+      "stageEnabled": {
+        "expression": "\"${trigger['parameters']['INT_CHART_NAME']}\" == \"eric-cloud-native-base\" and ( \"${trigger['parameters']['CHART_NAME']}\" != \"eric-data-document-database-pg\" or \"${trigger['parameters']['CHART_NAME']}\" != \"eric-eo-api-gateway\" )",
+        "type": "expression"
+      },
+      "type": "evaluateVariables",
+      "variables": [
+        {
+          "key": "INT_CHART_NAME",
+          "value": "${trigger['parameters']['INT_CHART_NAME']}"
+        },
+        {
+          "key": "INT_CHART_VERSION",
+          "value": "${trigger['parameters']['INT_CHART_VERSION']}"
+        },
+        {
+          "key": "INT_CHART_REPO",
+          "value": "${trigger['parameters']['INT_CHART_REPO']}"
+        },
+        {
+          "key": "WHAT_CHANGED",
+          "value": "ADP"
+        }
+      ]
+    },
+    {
+      "name": "Check Preconditions",
+      "preconditions": [
+        {
+          "context": {
+            "expression": "\"${#stage('Set Variables for Chart Details include ADP & OSS Common Base Int')['status']}\" == \"SUCCEEDED\" or \"${#stage('Set Variables for Chart Details include ADP & OSS Common Base Int')['status']}\" == \"SKIPPED\""
+          },
+          "failPipeline": true,
+          "type": "expression"
+        },
+        {
+          "context": {
+            "expression": "\"${#stage('Set Variables for  ADP Chart Details')['status']}\" == \"SUCCEEDED\" or \"${#stage('Set Variables for  ADP Chart Details')['status']}\" == \"SKIPPED\""
+          },
+          "failPipeline": true,
+          "type": "expression"
+        },
+        {
+          "context": {
+            "expression": "\"${#stage('Set Variables for OSS Common Chart Details')['status']}\" == \"SUCCEEDED\" or \"${#stage('Set Variables for OSS Common Chart Details')['status']}\" == \"SKIPPED\""
+          },
+          "failPipeline": true,
+          "type": "expression"
+        }
+      ],
+      "refId": "5",
+      "requisiteStageRefIds": [
+        "3",
+        "4",
+        "7"
+      ],
+      "type": "checkPreconditions"
+    },
+    {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-Common-Base-Fetch-Build-Upload",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "OSS COMMON BASE Fetch, Build and Upload",
+      "parameters": {
+        "ARMDOCKER_USER_SECRET": "ciloopman-docker-auth-config",
+        "CHART_NAME": "${trigger['parameters']['CHART_NAME']}",
+        "CHART_REPO": "${trigger['parameters']['CHART_REPO']}",
+        "CHART_VERSION": "${trigger['parameters']['CHART_VERSION']}",
+        "GERRIT_PREPARE_OR_PUBLISH": "${trigger['parameters']['GERRIT_PREPARE_OR_PUBLISH']}",
+        "GERRIT_REFSPEC": "",
+        "GERRIT_USER_SECRET": "ciloopman-user-creds",
+        "GIT_REPO_URL": "https://gerrit.ericsson.se/a/OSS/com.ericsson.oss/oss-common-base.git",
+        "HELM_DROP_REPO": "https://arm.seli.gic.ericsson.se/artifactory/proj-eric-oss-drop-helm",
+        "HELM_INTERNAL_REPO": "https://arm.seli.gic.ericsson.se/artifactory/proj-eric-oss-ci-internal-helm",
+        "HELM_RELEASED_REPO": "https://arm.epk.ericsson.se/artifactory/proj-eo-released-helm",
+        "SLAVE_LABEL": "evo_docker_engine_gic_IDUN",
+        "VCS_BRANCH": "",
+        "VERSION_STEP_STRATEGY_DEPENDENCY": "PATCH",
+        "VERSION_STEP_STRATEGY_MANUAL": "PATCH",
+        "WAIT_TIMEOUT_SEC_BEFORE_PUBLISH": "240"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "6",
+      "requisiteStageRefIds": [],
+      "stageEnabled": {
+        "expression": "\"${trigger['parameters']['INT_CHART_NAME']}\" == \"eric-oss-common-base\"",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+    {
+      "failOnFailedExpressions": false,
+      "name": "Set Variables for OSS Common Chart Details",
+      "refId": "7",
+      "requisiteStageRefIds": [
+        "6"
+      ],
+      "stageEnabled": {
+        "expression": "\"${#stage('OSS COMMON BASE Fetch, Build and Upload')['status']}\" == \"SUCCEEDED\"",
+        "type": "expression"
+      },
+      "type": "evaluateVariables",
+      "variables": [
+        {
+          "key": "INT_CHART_NAME",
+          "value": "${#stage(\"OSS COMMON BASE Fetch, Build and Upload\")[\"context\"][\"INT_CHART_NAME\"]}"
+        },
+        {
+          "key": "INT_CHART_VERSION",
+          "value": "${#stage(\"OSS COMMON BASE Fetch, Build and Upload\")[\"context\"][\"INT_CHART_VERSION\"]}"
+        },
+        {
+          "key": "INT_CHART_REPO",
+          "value": "${#stage(\"OSS COMMON BASE Fetch, Build and Upload\")[\"context\"][\"INT_CHART_REPO\"]}"
+        },
+        {
+          "key": "WHAT_CHANGED",
+          "value": "OSS"
+        }
+      ]
+    }
+  ],
+  "triggers": [],
+  "updateTs": "1628856673793"
+}

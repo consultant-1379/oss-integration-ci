@@ -1,0 +1,160 @@
+# This override delta file was prepared for usage with main file:
+# site-values/eo/ci/template/site-values-latest.yaml
+
+
+global:
+  hosts:
+    gr: 'GR_HOST_REPLACE'
+  nodeSelector:
+    role: "ha-tests"
+  tolerations:
+    - key: "node-role.kubernetes.io/ha-tests"
+      effect: "NoSchedule"
+  ericsson:
+    licensing:
+      licenseDomains:
+      - productType: "Ericsson_Orchestrator"
+        swltId: "STB-EVNFM-1"
+        customerId: 800141
+        applicationId: "800141_STB-EVNFM-1_Ericsson_Orchestrator"
+  licensing:
+    sites:
+      - hostname: "nelsaas-vnf2-thrift.sero.gic.ericsson.se"
+
+eric-cloud-native-service-mesh:
+  eric-mesh-controller:
+    replicaCount: 1
+    pilot:
+      env:
+        PILOT_ENABLE_INBOUND_PASSTHROUGH: false
+
+eric-eo-evnfm:
+  eric-lcm-container-registry:
+    persistence:
+      persistentVolumeClaim:
+        size: "40Gi"
+  application-manager-postgres:
+    highAvailability:
+      replicaCount: 2
+    probes:
+      logshipper:
+        livenessProbe:
+          initialDelaySeconds: 300
+  eric-lcm-helm-chart-registry:
+    ingress:
+      hostname: 'HELM_CHART_HOST_REPLACE'
+eric-oss-function-orchestration-common:
+  evnfm-toscao:
+    tolerations:
+      - key: "node-role.kubernetes.io/ha-tests"
+        effect: "NoSchedule"
+  eric-eo-fh-event-to-alarm-adapter:
+    enabled: true
+  eric-eo-batch-manager:
+    enabled: false
+
+eric-cloud-native-base:
+  eric-cloud-native-kvdb-rd-operand:
+    replicationFactor: 0
+  eric-pm-server:
+    enabled: true
+  eric-cm-mediator:
+    replicaCount: 1
+  eric-cm-mediator-db-pg:
+    highAvailability:
+      replicaCount: 1
+  eric-lm-combined-server-db-pg:
+    highAvailability:
+      replicaCount: 1
+  eric-sec-access-mgmt:
+    replicaCount: 2
+    brAgent:
+      enabled: false
+  eric-fh-alarm-handler-db-pg:
+    highAvailability:
+      replicaCount: 1
+  eric-fh-alarm-handler:
+    replicaCount: 1
+  eric-sec-access-mgmt-db-pg:
+    highAvailability:
+      replicaCount: 1
+    brAgent:
+      enabled: false
+  eric-sec-key-management:
+    replicaCount:
+      kms: 1
+  eric-lm-combined-server:
+    replicaCount:
+      licenseConsumerHandler: 1
+    labels:
+      eric-si-application-sys-info-handler-access: "true"
+    licenseServerClient:
+      replicaCount: 1
+      asih:
+        port: 8080
+  eric-sec-sip-tls:
+    replicaCount: 1
+  eric-data-object-storage-mn:
+    enabled: false
+  eric-fh-snmp-alarm-provider:
+    enabled: false
+  eric-data-key-value-database-rd:
+    resources:
+      kvdbOperator:
+        limits:
+          cpu: 100m
+          memory: 200Mi
+          ephemeral-storage: 2Gi
+  eric-log-shipper:
+    enabled: false
+  eric-ctrl-bro:
+    enabled: false
+  eric-data-search-engine:
+    enabled: false
+  eric-data-search-engine-curator:
+    enabled: false
+  eric-log-transformer:
+    enabled: false
+  eric-data-distributed-coordinator-ed:
+    pods:
+      dced:
+        # The number of pods in the Data Distributed Coordinator-ED ensemble
+        replicaCount: 1
+    brAgent:
+      enabled: false
+
+eric-oss-common-base:
+  eric-oss-common-postgres:
+    brAgent:
+      enabled: false
+    highAvailability:
+      replicaCount: 1
+  service-mesh-ingress-gateway:
+    replicaCount: 1
+  eric-eo-usermgmt:
+    replicaCount: 1
+  eric-eo-usermgmt-ui:
+    replicaCount: 1
+  eric-adp-gui-aggregator-service:
+    replicaCount: 1
+    tolerations:
+      - key: "node-role.kubernetes.io/ha-tests"
+        effect: "NoSchedule"
+  eric-eo-api-gateway:
+    tolerations:
+      - key: "node-role.kubernetes.io/ha-tests"
+        effect: "NoSchedule"
+  eric-eo-common-br-agent:
+    enabled: false
+  eric-pm-alert-manager:
+    enabled: true
+    tolerations:
+      - key: "node-role.kubernetes.io/ha-tests"
+        effect: "NoSchedule"
+  eric-pm-kube-state-metrics:
+    enabled: true
+    tolerations:
+      - key: "node-role.kubernetes.io/ha-tests"
+        effect: "NoSchedule"
+  eric-cnom-server:
+    enabled: false

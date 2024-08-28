@@ -1,0 +1,8 @@
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+        - name: eric-vnflcm-service
+          command:
+            - bash

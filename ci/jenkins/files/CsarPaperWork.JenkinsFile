@@ -1,0 +1,104 @@
+#!/usr/bin/env groovy
+
+pipeline {
+    agent {
+        label 'evo_docker_engine'
+    }
+    parameters {
+        string(
+            name: 'CSARS_MAIN_PAGE_ID',
+            defaultValue: '2019825898',
+            description: 'Csars parent page ID from confluence'
+            )
+        string(
+            name: 'CONFLUENCE_URL',
+            defaultValue: 'https://eteamspace.internal.ericsson.com',
+            description: 'Confluence url'
+            )
+        string(
+            name: 'CONFLUENCE_TOKEN',
+            defaultValue: 'eoadm100-confluence-token-eteams',
+            description: 'Credentials ID which contains confluence access token'
+            )
+        string(
+            name: 'RELEASE_TYPE',
+            defaultValue: 'RELEASE',
+            description: 'Release type is "RELEASE" or "DROP_BACK"'
+            )
+        string(
+            name: 'SPRINT_NUMBER',
+            defaultValue: 'None',
+            description: 'The Release associated to this build i.e. 20.1'
+            )
+        string(
+            name: 'PRODUCT_NAME',
+            defaultValue: 'EO',
+            description: 'The product name i.e. EO'
+            )
+        string(
+            name: 'PRODUCT_HELMFILE_REPO',
+            defaultValue: 'https://arm.seli.gic.ericsson.se/artifactory/proj-eo-drop-helm/eric-eo-helmfile/eric-eo-helmfile',
+            description: 'The helmfile drop repo'
+            )
+        string(
+            name: 'PRODUCT_VERSION',
+            defaultValue: 'None',
+            description: 'The version of the product'
+            )
+        string(
+            name: 'JIRA',
+            defaultValue: 'None',
+            description: 'List of JIRA associated with the build'
+            )
+        string(
+            name: 'DM_VERSION',
+            defaultValue: 'None',
+            description: 'Version DM to release'
+            )
+        string(
+            name: 'CSARS_LIST',
+            defaultValue: 'None',
+            description: 'CSARs comma seperated'
+            )
+        string(
+            name: 'PAPERWORK_DOCKER_IMAGE',
+            defaultValue: 'armdocker.rnd.ericsson.se/proj-app_staging/eo-paperwork:latest',
+            description: 'Docker image used for paperwork'
+            )
+    }
+    environment {
+        CONFLUENCE_TOKEN = credentials("${params.CONFLUENCE_TOKEN}")
+    }
+    stages {
+        stage('Set build name') {
+            steps {
+                script {
+                    currentBuild.displayName = "${BUILD_NUMBER}: ${SPRINT_NUMBER} ${RELEASE_TYPE} ${PRODUCT_NAME} ${PRODUCT_VERSION}"
+                }
+            }
+        }
+        stage('Run paperwork') {
+            steps {
+                retry(count: 3){
+                    script {
+                        sh """
+                        docker run --rm \
+                        --env CSARS_MAIN_PAGE_ID=${params.CSARS_MAIN_PAGE_ID} \
+                        --env CONFLUENCE_URL=${params.CONFLUENCE_URL} \
+                        --env CONFLUENCE_TOKEN=${env.CONFLUENCE_TOKEN} \
+                        --env RELEASE_TYPE=${params.RELEASE_TYPE} \
+                        --env SPRINT_NUMBER=${params.SPRINT_NUMBER} \
+                        --env PRODUCT_NAME=${params.PRODUCT_NAME} \
+                        --env PRODUCT_HELMFILE_REPO=${params.PRODUCT_HELMFILE_REPO} \
+                        --env PRODUCT_VERSION=${params.PRODUCT_VERSION} \
+                        --env DM_VERSION=${params.DM_VERSION} \
+                        --env JIRA=${params.JIRA} \
+                        --env CSARS_LIST=${params.CSARS_LIST} \
+                        ${params.PAPERWORK_DOCKER_IMAGE}
+                        """
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,8 @@
+-DhelmDesignRule.config.DR-D1125-052=skip
+-DhelmDesignRule.config.DR-D1125-054=skip
+-DhelmDesignRule.config.DR-D1125-059=skip
+-DhelmDesignRule.config.DR-D1125-057=skip
+-DhelmDesignRule.config.DR-D1126-030=skip
+-DhelmDesignRule.config.DR-D1121-060=skip
+-DhelmDesignRule.config.DR-D1121-067=skip
+-DhelmDesignRule.config.DR-D1121-106=skip

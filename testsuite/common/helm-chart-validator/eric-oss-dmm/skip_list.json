@@ -1,0 +1,47 @@
+{
+  "test_minimum_image_version": {
+    "skips": [],
+    "runTests": true
+  },
+
+  "test_to_ensure_all_containers_with_security_context_has_run_as_non_root_set": {
+    "skips": [
+      [["-pg"], ["StatefulSet"], "Not required, exempt", "skip"],
+      [["-postgres"], ["StatefulSet"], "Not required, exempt", "skip"],
+      [["eric-pm-server"], ["StatefulSet"], "Not required, exempt", "skip"]
+    ],
+    "runTests": true
+  },
+  "test_node_port_is_not_used_in_service_exposure": {
+    "skips": [],
+    "runTests": true
+  },
+  "test_zypper_commands_are_not_used": {
+    "skips": [],
+    "runTests": true
+  },
+  "test_ensure_network_policy_has_a_port_for_egress_open_connection": {
+    "skips": [],
+    "runTests": true
+  },
+  "test_service_mesh_virtual_service_export_to": {
+    "skips": [],
+    "runTests": true
+  },
+  "test_service_mesh_destination_rule_export_to": {
+    "skips": [],
+    "runTests": true
+  },
+  "test_service_mesh_service_entry_export_to": {
+    "skips": [],
+    "runTests": true
+  },
+  "test_service_mesh_ingress_gateway_hosts": {
+    "skips": [],
+    "runTests": true
+  },
+  "test_autoscaling_resources": {
+    "skips": [],
+    "runTests": true
+  }
+}

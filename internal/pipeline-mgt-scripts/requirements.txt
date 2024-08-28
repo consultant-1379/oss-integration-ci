@@ -1,0 +1,5 @@
+click==7.0
+oyaml==1.0
+pyOpenSSL==23.0.0
+jenkins-lockable-resources==1.1.0
+PyYAML==5.3

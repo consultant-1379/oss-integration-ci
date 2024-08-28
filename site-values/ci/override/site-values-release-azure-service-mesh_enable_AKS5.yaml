@@ -1,0 +1,7 @@
+eric-oss-common-base:
+  service-mesh-ingress-gateway:
+    service:
+      annotations:
+        cloudProviderLB:
+          service.beta.kubernetes.io/azure-load-balancer-internal: 'true'
+          service.beta.kubernetes.io/azure-load-balancer-internal-subnet: 'ecn-subnet-1'

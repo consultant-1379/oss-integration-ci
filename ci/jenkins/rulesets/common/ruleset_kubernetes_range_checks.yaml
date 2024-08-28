@@ -1,0 +1,78 @@
+modelVersion: 2.0
+
+description: "This is a reusable bob ruleset file dedicated to running kubernetes compatibility checks"
+
+docker-images:
+  - adp-inca: armdocker.rnd.ericsson.se/proj-adp-cicd-drop/adp-int-helm-chart-auto:latest
+  - adp-release-auto: armdocker.rnd.ericsson.se/proj-adp-cicd-drop/bob-adp-release-auto:latest
+  - adp-helm-dr-check: armdocker.rnd.ericsson.se/proj-adp-cicd-drop/adp-helm-dr-checker:41.12.6
+  - deprek8ion: armdocker.rnd.ericsson.se/proj-ecm-gcr/swade1987/deprek8ion:1.1.42
+  - ci-helm: serodocker.sero.gic.ericsson.se/proj-pc-tools-latest/cihelm:latest
+  - eric-oss-ci-scripts: ${env.CI_DOCKER_IMAGE}
+
+env:
+  - PWD
+  - GERRIT_USERNAME
+  - GERRIT_PASSWORD
+  - KUBE_VERSION_FILE_PATH
+  - SITE_VALUES_FILE_PATH_FOR_KUBERNETES_COMPATIBILITY_CHECKS
+  - HELMFILE_OR_HELM_CHART_FILE_PATH
+  - KUBEVAL_KINDS_TO_SKIP
+  - HELM_REPO_CREDENTIALS
+  - CHART_FILE_PATH
+  - CI_DOCKER_IMAGE (default=armdocker.rnd.ericsson.se/proj-eric-oss-drop/eric-oss-ci-scripts:latest)
+  - CI_KUBECONFORM_IMAGE (default=armdocker.rnd.ericsson.se/proj-eric-oss-drop/eric-oss-ci-kubeconform:latest)
+  - LOCAL_PACKAGE_CACHE_DIRECTORY (default=${env.PWD}/cachedir/)
+  - MOUNTED_PACKAGE_CACHE_DIRECTORY (default=${env.PWD}/cachedir/)
+
+rules:
+  run-helm-dependency-update:
+    - task: run-helm-dependency-update
+      docker-image: ci-helm
+      docker-flags:
+        - "-v /etc/group:/etc/group:ro"
+        - "-v /etc/passwd:/etc/passwd:ro"
+        - "-v '${env.HELM_REPO_CREDENTIALS}':'${env.HELM_REPO_CREDENTIALS}'"
+      cmd:
+        --helm-credentials "${env.HELM_REPO_CREDENTIALS}"
+        --retry-timeout 300
+        dependency update "${env.CHART_FILE_PATH}"
+
+  run-kubernetes-compatibility-tests:
+    - task: generate-supported-kubernetes-versions
+      docker-image: adp-release-auto
+      cmd: ${env.PWD}/oss-integration-ci/ci/jenkins/scripts/common/kubernetes_range_checkers/print_supported_k8s_versions.sh ${env.KUBE_VERSION_FILE_PATH} > ${env.PWD}/.bob/var.supported-k8s-versions
+
+    - task: generate-manifests-for-kubernetes-versions
+      docker-image: adp-inca
+      docker-flags:
+        - "--env HELM_VERSION=3.11.3"
+        - "--env GERRIT_USERNAME"
+        - "--env GERRIT_PASSWORD"
+        - "--env XDG_DATA_HOME=/helm_data/"
+      docker-mounts:
+        - "${env.LOCAL_PACKAGE_CACHE_DIRECTORY}:${env.MOUNTED_PACKAGE_CACHE_DIRECTORY}"
+        - "${env.PWD}/testsuite/helm-chart-validator/helm_file_plugin/file/:/helm_data/helm/plugins/file/"
+      cmd: ${env.PWD}/oss-integration-ci/ci/jenkins/scripts/common/kubernetes_range_checkers/generate_helm_templates_for_supported_k8s.sh "${env.HELMFILE_OR_HELM_CHART_FILE_PATH}" ${env.SITE_VALUES_FILE_PATH_FOR_KUBERNETES_COMPATIBILITY_CHECKS} "${env.PWD}/.bob/var.supported-k8s-versions" "${env.PWD}/.bob/helm-templates"
+
+    - task: run-kubeval
+      docker-image: adp-helm-dr-check
+      cmd: ${env.PWD}/oss-integration-ci/ci/jenkins/scripts/common/kubernetes_range_checkers/kubeval.sh ${env.PWD}/.bob/var.supported-k8s-versions ${env.PWD}/.bob/helm-templates "${env.KUBEVAL_KINDS_TO_SKIP}"
+
+    - task: run-deprek8ion
+      docker-image: deprek8ion
+      docker-flags:
+        - "--entrypoint ${env.PWD}/oss-integration-ci/ci/jenkins/scripts/common/kubernetes_range_checkers/deprek8ion.sh"
+      cmd: ${env.PWD}/.bob/var.supported-k8s-versions ${env.PWD}/.bob/helm-templates
+
+  run-kubernetes-cr-conformance-tests:
+    - task: run-kubeconform
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - --user 0:0
+        - --volume ${env.PWD}/.docker:/root/.docker
+        - --volume /var/run/docker.sock:/var/run/docker.sock
+        - --volume ${env.PWD}:/ci-scripts/output-files
+        - --volume ${env.PWD}:${env.PWD}
+        - --workdir ${env.PWD}
+      cmd: crd_executor check-crs-from-templates-dir --dir ${env.PWD}/.bob/helm-templates --image ${env.CI_KUBECONFORM_IMAGE}

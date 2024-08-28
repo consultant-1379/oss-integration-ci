@@ -1,0 +1,35 @@
+# This override delta file was prepared for usage with main file:
+# site-values/eo/ci/template/site-values-latest.yaml
+
+eric-oss-function-orchestration-common:
+  eric-eo-evnfm-nbi:
+    eric-evnfm-rbac:
+      eric-eo-evnfm-drac:
+        enabled: true
+        domainRoles:
+        - name: E-VNFM_Spider_A Domain Role
+          nodeTypes:
+          - spider-app-multi-a-v2
+          - spider-app-single-a-v2
+          - spider-app-multi-a-tosca
+        - name: E-VNFM_Spider_B Domain Role
+          nodeTypes:
+          - spider-app-multi-b-v2
+          - spider-app-multi-b-tosca
+        - name: E-VNFM_Spider_DM Domain Role
+          nodeTypes:
+          - spider-app-multi-a-tosca-dm
+          - spider-app-multi-b-tosca-dm
+          - spider-app-multi-a-rel4-non-scalable-dm
+          - spider-app-multi-b-rel4-mixed-vdu-dm
+          - spider-app-multi-b-v2-dm
+        - name: E-VNFM_Spider_Rel4 Domain Role
+          nodeTypes:
+          - spider-app-multi-a-etsi-tosca-rel4
+          - spider-app-multi-b-etsi-tosca-rel4
+          - multi-chart-etsi-rel4-cmpv2-enrollmen
+        - name: E-VNFM_Basic Domain Role
+          nodeTypes:
+          - basic-app-a
+          - basic-app-b
+          - basic-app-c

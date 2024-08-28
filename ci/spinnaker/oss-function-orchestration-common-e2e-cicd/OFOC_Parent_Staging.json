@@ -1,0 +1,453 @@
+{
+  "appConfig": {},
+  "keepWaitingPipelines": false,
+  "lastModifiedBy": "zboitar",
+  "limitConcurrent": true,
+  "parameterConfig": [
+    {
+      "default": "",
+      "description": "Application chart name",
+      "hasOptions": false,
+      "label": "CHART_NAME",
+      "name": "CHART_NAME",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": true
+    },
+    {
+      "default": "",
+      "description": "Application chart repo",
+      "hasOptions": false,
+      "label": "CHART_REPO",
+      "name": "CHART_REPO",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": true
+    },
+    {
+      "default": "",
+      "description": "Application chart version",
+      "hasOptions": false,
+      "label": "CHART_VERSION",
+      "name": "CHART_VERSION",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": true
+    },
+    {
+      "default": "",
+      "description": "Integration chart name",
+      "hasOptions": false,
+      "label": "II_INT_CHART_NAME",
+      "name": "II_INT_CHART_NAME",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": true
+    },
+    {
+      "default": "",
+      "description": "Integration chart repo",
+      "hasOptions": false,
+      "label": "II_INT_CHART_REPO",
+      "name": "II_INT_CHART_REPO",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": true
+    },
+    {
+      "default": "",
+      "description": "Integration chart version",
+      "hasOptions": false,
+      "label": "II_INT_CHART_VERSION",
+      "name": "II_INT_CHART_VERSION",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": true
+    },
+    {
+      "default": "true",
+      "description": "Skip Pre-Testing",
+      "hasOptions": false,
+      "label": "SKIP_PRE_TESTING",
+      "name": "SKIP_PRE_TESTING",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": true
+    },
+    {
+      "default": "false",
+      "description": "",
+      "hasOptions": false,
+      "label": "OFOC_SKIP_CHART_RELEASE",
+      "name": "OFOC_SKIP_CHART_RELEASE",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": true
+    },
+    {
+      "default": "",
+      "description": "Gerrit REF Spec is used by Inca to pull down a code review to build a new OSS Common Base",
+      "hasOptions": false,
+      "label": "",
+      "name": "GERRIT_REFSPEC",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": false
+    }
+  ],
+  "schema": "1",
+  "spelEvaluator": "v4",
+  "stages": [
+    {
+      "application": "oss-function-orchestration-common-e2e-cicd",
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "name": "OFOC",
+      "pipeline": "5abd4b28-8a5e-4d33-8a2f-4b70431225fe",
+      "pipelineParameters": {
+        "CHART_NAME": "${trigger['parameters']['CHART_NAME']}",
+        "CHART_REPO": "${trigger['parameters']['CHART_REPO']}",
+        "CHART_VERSION": "${trigger['parameters']['CHART_VERSION']}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['GERRIT_REFSPEC']}",
+        "SKIP_CHART_RELEASE": "${trigger['parameters']['OFOC_SKIP_CHART_RELEASE']}"
+      },
+      "refId": "1",
+      "requisiteStageRefIds": [],
+      "type": "pipeline",
+      "waitForCompletion": true
+    },
+    {
+      "application": "oss-function-orchestration-common-e2e-cicd",
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "name": "VMVNFM",
+      "pipeline": "5abd4b28-8a5e-4d33-8a2f-4b70431225fe",
+      "pipelineParameters": {
+        "CHART_NAME": "${trigger['parameters']['CHART_NAME']}",
+        "CHART_REPO": "${trigger['parameters']['CHART_REPO']}",
+        "CHART_VERSION": "${trigger['parameters']['CHART_VERSION']}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['GERRIT_REFSPEC']}",
+        "TAGS": "eoVmvnfm"
+      },
+      "refId": "2",
+      "requisiteStageRefIds": [
+        "13"
+      ],
+      "type": "pipeline",
+      "waitForCompletion": true
+    },
+    {
+      "application": "oss-function-orchestration-common-e2e-cicd",
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "name": "OFOC_Functional_Testing",
+      "pipeline": "3e133d8f-a9b0-4252-b016-7a3f07603af8",
+      "pipelineParameters": {
+        "ADC_HOSTNAME": "${ADC_HOSTNAME}",
+        "APPMGR_HOSTNAME": "${APPMGR_HOSTNAME}",
+        "CIMS_CLUSTER": "${#stage(\"OFOC\")[\"context\"][\"CIMS_CLUSTER\"]}",
+        "CLUSTER": "${#stage(\"OFOC\")[\"context\"][\"TEST_CLUSTER\"]}",
+        "GAS_HOSTNAME": "${#stage(\"OFOC\")[\"context\"][\"GAS_HOSTNAME\"]}",
+        "HOST_HELM": "${#stage(\"OFOC\")[\"context\"][\"EO_HELM_REGISTRY_HOSTNAME_ICCR\"]}",
+        "HOST_IAM": "${#stage(\"OFOC\")[\"context\"][\"IAM_HOSTNAME_ICCR\"]}",
+        "HOST_VNFM": "${#stage(\"OFOC\")[\"context\"][\"EO_VNFM_HOSTNAME_ICCR\"]}",
+        "IAM_HOSTNAME": "${#stage(\"OFOC\")[\"context\"][\"IAM_HOSTNAME\"]}",
+        "KUBE_CONFIG": "${#stage(\"OFOC\")[\"context\"][\"KUBE_CONFIG\"]}",
+        "NAMESPACE": "${#stage(\"OFOC\")[\"context\"][\"NAMESPACE\"]}",
+        "OS_HOSTNAME": "${OS_HOSTNAME}",
+        "PF_HOSTNAME": "${#stage(\"OFOC\")[\"context\"][\"PF_HOSTNAME\"]}",
+        "SO_HOSTNAME": "${#stage(\"OFOC\")[\"context\"][\"SO_HOSTNAME\"]}",
+        "TA_HOSTNAME": "${TA_HOSTNAME}",
+        "UDS_HOSTNAME": "${#stage(\"OFOC\")[\"context\"][\"UDS_HOSTNAME\"]}"
+      },
+      "refId": "3",
+      "requisiteStageRefIds": [
+        "1"
+      ],
+      "stageEnabled": {
+        "expression": "( '${#stage('OFOC')['status']}' == 'SUCCEEDED' or '${#stage('OFOC')['status']}' == 'SKIPPED' )",
+        "type": "expression"
+      },
+      "type": "pipeline",
+      "waitForCompletion": true
+    },
+    {
+      "continuePipeline": false,
+      "failPipeline": true,
+      "job": "E-VNFM_Unlock-Environment",
+      "master": "dss-aispinn-fem4s11-eiffel052",
+      "name": "Cleanup OFOC Namespace",
+      "parameters": {
+        "ENV_NAME": "${#stage(\"OFOC\")[\"context\"][\"RESOURCE_NAME\"]}"
+      },
+      "refId": "8",
+      "requisiteStageRefIds": [
+        "3",
+        "12"
+      ],
+      "sendNotifications": false,
+      "stageEnabled": {
+        "expression": "\"${#stage('Quarantine OFOC Namespace')['status']}\" == \"SKIPPED\"",
+        "type": "expression"
+      },
+      "type": "jenkins",
+      "waitForCompletion": false
+    },
+    {
+      "application": "oss-function-orchestration-common-e2e-cicd",
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "name": "VMVNFM_Functional_Testing",
+      "pipeline": "2952ddb2-dea9-4d08-9fa6-c2bf66d22c81",
+      "refId": "4",
+      "requisiteStageRefIds": [
+        "2"
+      ],
+      "stageEnabled": {
+        "expression": "( '${#stage('VMVNFM')['status']}' == 'SUCCEEDED' or '${#stage('VMVNFM')['status']}' == 'SKIPPED' )",
+        "type": "expression"
+      },
+      "type": "pipeline",
+      "waitForCompletion": true
+    },
+    {
+      "application": "app-staging-sandbox",
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-Integration-Quarantine-Environment",
+      "master": "oss-fem8s11-eiffel052",
+      "name": "Quarantine VMVNFM Namespace",
+      "parameters": {
+        "ENV_NAME": "${#stage(\"VMVNFM\")[\"context\"][\"RESOURCE_NAME\"]}"
+      },
+      "pipelineParameters": {
+        "QUARANTINE": "true"
+      },
+      "refId": "5",
+      "requisiteStageRefIds": [
+        "4"
+      ],
+      "stageEnabled": {
+        "expression": "${parameters['QUARANTINE_ENV'].contains('true')} and \"${#stage('VMVNFM_Functional_Testing')['status']}\" != \"SUCCEEDED\"",
+        "type": "expression"
+      },
+      "type": "jenkins",
+      "waitForCompletion": true
+    },
+    {
+      "continuePipeline": false,
+      "failPipeline": true,
+      "job": "E-VNFM_Unlock-Environment",
+      "master": "dss-aispinn-fem4s11-eiffel052",
+      "name": "Cleanup VMVNFM Namespace",
+      "parameters": {
+        "ENV_NAME": "${#stage(\"VMVNFM\")[\"context\"][\"RESOURCE_NAME\"]}"
+      },
+      "refId": "9",
+      "requisiteStageRefIds": [
+        "4",
+        "5"
+      ],
+      "sendNotifications": false,
+      "stageEnabled": {
+        "expression": "\"${#stage('Quarantine VMVNFM Namespace')['status']}\" == \"SKIPPED\"",
+        "type": "expression"
+      },
+      "type": "jenkins",
+      "waitForCompletion": false
+    },
+    {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "Helm-Chart-Release",
+      "master": "oss-fem8s11-eiffel052",
+      "name": "Fetch Build Upload Release",
+      "parameters": {
+        "ALLOW_DOWNGRADE": "false",
+        "APP_NAME": "eric-oss-function-orchestration-common",
+        "ARMDOCKER_USER_SECRET": "ossapps100-arm-docker-auth-config",
+        "AUTOMATIC_RELEASE": "false",
+        "CHART_NAME": "${#stage(\"OFOC\")[\"context\"][\"pipelineParameters\"][CHART_NAME]}",
+        "CHART_PATH": "charts/eric-oss-function-orchestration-common",
+        "CHART_REPO": "${#stage(\"OFOC\")[\"context\"][\"pipelineParameters\"][CHART_REPO]}",
+        "CHART_VERSION": "${#stage(\"OFOC\")[\"context\"][\"pipelineParameters\"][CHART_VERSION]}",
+        "GERRIT_PREPARE_OR_PUBLISH": "publish",
+        "GERRIT_REFSPEC": "${parameters['GERRIT_REFSPEC']}",
+        "GERRIT_USER_SECRET": "ossapps100-user-creds",
+        "GIT_REPO_URL": "https://gerrit.ericsson.se/a/OSS/com.ericsson.oss.ro/eric-oss-function-orchestration-common.git",
+        "HELM_DROP_REPO": "https://arm.seli.gic.ericsson.se/artifactory/proj-eo-evnfm-drop-helm",
+        "HELM_INTERNAL_REPO": "https://arm.seli.gic.ericsson.se/artifactory/proj-eo-evnfm-drop-helm",
+        "HELM_RELEASED_REPO": "https://arm.seli.gic.ericsson.se/artifactory/proj-eo-evnfm-drop-helm",
+        "HELM_REPO_API_TOKEN": "eo-helm-repo-api-token",
+        "HELM_REPO_CREDENTIALS_ID": "ossapps100_helm_repository_creds_file",
+        "VCS_BRANCH": "master",
+        "WAIT_SUBMITTABLE_BEFORE_PUBLISH": "false"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "6",
+      "requisiteStageRefIds": [
+        "3",
+        "4"
+      ],
+      "stageEnabled": {
+        "expression": "\"${#stage('OFOC_Functional_Testing')['status']}\" == \"SUCCEEDED\" and \"${#stage('VMVNFM_Functional_Testing')['status']}\" == \"SUCCEEDED\" and \"${#stage(\"OFOC\")[\"context\"][\"pipelineParameters\"]['SKIP_CHART_RELEASE']}\" == \"false\"",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+    {
+      "name": "Flow Completed",
+      "preconditions": [
+        {
+          "context": {
+            "expression": "\"${#stage('Fetch Build Upload Release')['status']}\" == \"SUCCEEDED\"  or \"${#stage('Fetch Build Upload Release')['status']}\" == \"SKIPPED\"",
+            "failureMessage": "Failed to release App Chart from microservice change"
+          },
+          "failPipeline": true,
+          "type": "expression"
+        },
+        {
+          "context": {
+            "expression": "\"${#stage('OFOC_Functional_Testing')['status']}\" == \"SUCCEEDED\"",
+            "failureMessage": "OFOC testing failed"
+          },
+          "failPipeline": true,
+          "type": "expression"
+        },
+        {
+          "context": {
+            "expression": "\"${#stage('VMVNFM_Functional_Testing')['status']}\" == \"SUCCEEDED\"",
+            "failureMessage": "VMVNFM Testing Failed"
+          },
+          "failPipeline": true,
+          "type": "expression"
+        },
+        {
+          "context": {
+            "expression": "\"${#stage('OFOC')['status']}\" == \"SUCCEEDED\""
+          },
+          "failPipeline": true,
+          "type": "expression"
+        },
+        {
+          "context": {
+            "expression": "\"${#stage('VMVNFM')['status']}\" == \"SUCCEEDED\""
+          },
+          "failPipeline": true,
+          "type": "expression"
+        },
+        {
+          "context": {
+            "expression": "\"${#stage('Quarantine OFOC Namespace')['status']}\" == \"SUCCEEDED\" or \"${#stage('Quarantine OFOC Namespace')['status']}\" == \"SKIPPED\""
+          },
+          "failPipeline": true,
+          "type": "expression"
+        },
+        {
+          "context": {
+            "expression": "\"${#stage('Quarantine VMVNFM Namespace')['status']}\" == \"SUCCEEDED\" or \"${#stage('Quarantine VMVNFM Namespace')['status']}\" == \"SKIPPED\""
+          },
+          "failPipeline": true,
+          "type": "expression"
+        },
+        {
+          "context": {
+            "expression": "\"${#stage('Cleanup OFOC Namespace')['status']}\" == \"SUCCEEDED\" or \"${#stage('Cleanup OFOC Namespace')['status']}\" == \"SKIPPED\""
+          },
+          "failPipeline": true,
+          "type": "expression"
+        },
+        {
+          "context": {
+            "expression": "\"${#stage('Cleanup VMVNFM Namespace')['status']}\" == \"SUCCEEDED\" or \"${#stage('Cleanup VMVNFM Namespace')['status']}\" == \"SKIPPED\""
+          },
+          "failPipeline": true,
+          "type": "expression"
+        }
+      ],
+      "refId": "7",
+      "requisiteStageRefIds": [
+        "6",
+        "8",
+        "9"
+      ],
+      "type": "checkPreconditions"
+    },
+    {
+      "application": "app-staging-sandbox",
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-Integration-Quarantine-Environment",
+      "master": "oss-fem8s11-eiffel052",
+      "name": "Quarantine OFOC Namespace",
+      "parameters": {
+        "ENV_NAME": "${#stage(\"OFOC\")[\"context\"][\"RESOURCE_NAME\"]}"
+      },
+      "pipelineParameters": {
+        "QUARANTINE": "true"
+      },
+      "refId": "12",
+      "requisiteStageRefIds": [
+        "3"
+      ],
+      "stageEnabled": {
+        "expression": "${parameters['QUARANTINE_ENV'].contains('true')} and \"${#stage('OFOC_Functional_Testing')['status']}\" != \"SUCCEEDED\"",
+        "type": "expression"
+      },
+      "type": "jenkins",
+      "waitForCompletion": true
+    },
+    {
+      "name": "Wait",
+      "refId": "13",
+      "requisiteStageRefIds": [],
+      "type": "wait",
+      "waitTime": 360
+    }
+  ],
+  "triggers": [],
+  "updateTs": "1686766872460"
+}

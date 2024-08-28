@@ -1,0 +1,4 @@
+-DhelmDesignRule.config.eric-cnbase-oss-config.DR-D1121-210=skip
+-DhelmDesignRule.config.eric-cnbase-oss-config.DR-D1121-011=skip
+-DhelmDesignRule.config.eric-cnbase-oss-config.DR-D1123-127=skip
+-DhelmDesignRule.config.eric-cnbase-oss-config.DR-D1123-128=skip

@@ -1,0 +1,70 @@
+{
+  "id": "cb91fbb0-c8d2-406d-adda-0e642f3f90ba",
+  "name": "Create_NameSpace_IDUN_AppStaging",
+  "application": "common-e2e-cicd",
+  "schema": "1",
+  "triggers": [],
+  "index": 1,
+  "updateTs": "1650638835779",
+  "lastModifiedBy": "zolepan",
+  "stages":   [
+        {
+      "completeOtherBranchesThenFail": true,
+      "continuePipeline": false,
+      "failPipeline": false,
+      "job": "ReCreate_Namespace",
+      "master": "oss-fem8s11-eiffel052",
+      "name": "hart906",
+      "parameters":       {
+        "KUBECONFIG_FILE": "hart906-admin-config",
+        "NAMESPACE": "${ parameters[\"NAMESPACE\"] }"
+      },
+      "refId": "1",
+      "requisiteStageRefIds": [],
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": true,
+      "continuePipeline": false,
+      "failPipeline": false,
+      "job": "ReCreate_Namespace",
+      "master": "oss-fem8s11-eiffel052",
+      "name": "hall047",
+      "parameters":       {
+        "KUBECONFIG_FILE": "hall047-config-file",
+        "NAMESPACE": "${ parameters[\"NAMESPACE\"] }"
+      },
+      "refId": "2",
+      "requisiteStageRefIds": [],
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": true,
+      "continuePipeline": false,
+      "failPipeline": false,
+      "job": "ReCreate_Namespace",
+      "master": "oss-fem8s11-eiffel052",
+      "name": "hall947",
+      "parameters":       {
+        "KUBECONFIG_FILE": "hall947-ossapps100-config",
+        "NAMESPACE": "${ parameters[\"NAMESPACE\"] }"
+      },
+      "refId": "3",
+      "requisiteStageRefIds": [],
+      "type": "jenkins"
+    }
+  ],
+  "keepWaitingPipelines": true,
+  "limitConcurrent": true,
+  "parameterConfig": [  {
+    "default": "",
+    "description": "Namespace name that will be created on IDUN App Staging K8S clusters. e.g. \"eas-deploy\"",
+    "hasOptions": false,
+    "label": "",
+    "name": "NAMESPACE",
+    "options": [{"value": ""}],
+    "pinned": true,
+    "required": true
+  }],
+  "spelEvaluator": "v4"
+}

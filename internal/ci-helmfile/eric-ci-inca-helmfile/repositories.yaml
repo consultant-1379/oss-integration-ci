@@ -1,0 +1,9 @@
+repositories:
+  - name: eric-data-document-database-pg
+    url: https://arm.sero.gic.ericsson.se/artifactory/proj-adp-gs-all-helm/
+    username: {{ env "GERRIT_USERNAME" }}
+    password: {{ env "GERRIT_PASSWORD" }}
+  - name: eric-oss-drop
+    url: https://arm.seli.gic.ericsson.se/artifactory/proj-eric-oss-drop-helm-local
+    username: {{ env "GERRIT_USERNAME" }}
+    password: {{ env "GERRIT_PASSWORD" }}

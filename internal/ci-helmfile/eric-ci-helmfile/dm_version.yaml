@@ -1,0 +1,8 @@
+productName: "Deployment Manager"
+images:
+  eric-oss-deployment-manager:
+    productName: "Deployment Manager"
+    registry: "armdocker.rnd.ericsson.se"
+    repoPath: "proj-eric-oss-drop"
+    name: "eric-oss-deployment-manager"
+    tag: "latest"

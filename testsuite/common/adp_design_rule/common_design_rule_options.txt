@@ -1,0 +1,15 @@
+-DhelmDesignRule.config.DR-D1122-131=exempt
+-DhelmDesignRule.config.DR-D1123-113=exempt
+-DhelmDesignRule.config.DR-D1123-132=exempt
+-DhelmDesignRule.config.DR-D1123-133=exempt
+-DhelmDesignRule.config.DR-D1123-135=exempt
+-DhelmDesignRule.config.DR-D1123-136=exempt
+-DhelmDesignRule.config.DR-D1123-137=exempt
+-DhelmDesignRule.config.DR-D1125-024=exempt
+-DhelmDesignRule.config.DR-D1125-025=exempt
+-DhelmDesignRule.config.DR-D1125-026=exempt
+-DhelmDesignRule.config.DR-D1125-027=exempt
+-DhelmDesignRule.config.DR-D1125-028=exempt
+-DhelmDesignRule.config.DR-D1131-110=exempt
+-DhelmDesignRule.config.DR-D470219-140=exempt
+-DhelmDesignRule.config.DR-D470223-010=exempt

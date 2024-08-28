@@ -1,0 +1,70 @@
+{
+  "application": "common-e2e-cicd",
+  "id": "7f601315-3351-447d-b5ec-2fd61f24f046",
+  "index": 6,
+  "keepWaitingPipelines": false,
+  "lastModifiedBy": "zolepan",
+  "limitConcurrent": false,
+  "name": "Onboard_new_IDUN_Application",
+  "parameterConfig":   [
+        {
+      "default": "",
+      "description": "Namespace name that will be created on IDUN App Staging K8S clusters. e.g. \"eas-deploy\"",
+      "hasOptions": false,
+      "label": "",
+      "name": "NAMESPACE",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": false
+    },
+        {
+      "default": "",
+      "description": "Name of spinnaker application. E.g. eas-e2e-cicd",
+      "hasOptions": false,
+      "label": "",
+      "name": "SPINNAKER_APPLICATION_NAME",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "",
+      "description": "e.g. EAS_Functional_Testing",
+      "hasOptions": false,
+      "label": "",
+      "name": "FUNCTIONAL_TESTING_PIPELINE_NAME",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "",
+      "description": "Something like: https://jira-oss.seli.wh.rnd.internal.ericsson.com/browse/SM-105798 ORAN Adaptation",
+      "hasOptions": false,
+      "label": "",
+      "name": "DESCRIPTION",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    }
+  ],
+  "schema": "1",
+  "spelEvaluator": "v4",
+  "stages": [  {
+    "continuePipeline": false,
+    "failPipeline": true,
+    "job": "Create_Spinnaker_Application",
+    "master": "oss-fem8s11-eiffel052",
+    "name": "Create Spinnaker Applicaion",
+    "parameters":     {
+      "DESCRIPTION": "${ parameters[\"DESCRIPTION\"] }",
+      "FUNCTIONAL_TESTING_PIPELINE_NAME": "${ parameters[\"FUNCTIONAL_TESTING_PIPELINE_NAME\"] }",
+      "SPINNAKER_APPLICATION_NAME": "${ parameters[\"SPINNAKER_APPLICATION_NAME\"] }"
+    },
+    "refId": "2",
+    "requisiteStageRefIds": [],
+    "type": "jenkins"
+  }],
+  "triggers": [],
+  "updateTs": "1679650032429"
+}

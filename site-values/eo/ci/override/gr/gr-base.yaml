@@ -1,0 +1,32 @@
+# This override delta file was prepared for usage with main file:
+# site-values/eo/ci/template/site-values-latest.yaml
+
+global:
+  hosts:
+    gr: "GR_HOST_REPLACE"
+
+geo-redundancy:
+  enabled: true
+
+eric-eo-evnfm:
+  eric-global-lcm-container-registry:
+    hostname: "GLOBAL_VNFM_REGISTRY_HOST_REPLACE"
+    username: "vnfm"
+    password: "Ericsson123!"
+
+eric-oss-function-orchestration-common:
+  eric-gr-bur-orchestrator:
+    credentials:
+      username: "gr-user"
+      password: "Ericsson123!"
+    gr:
+      primaryCycleIntervalSeconds: 100
+      logging:
+        config: "classpath:logback-plain-text.xml"
+      bro:
+        autoDelete:
+          backupsLimit: 10
+      registry:
+        userSecretName: "container-credentials"
+        usernameKey: "userid"
+        passwordKey: "userpasswd"

@@ -1,0 +1,49 @@
+bases:
+  - repositories.yaml
+
+---
+
+releases:
+  - name: eric-cloud-native-service-mesh
+    namespace: {{ .Values | get "helmfile.app.namespace" "eric-app-ns" }}
+    chart: {{ .Values | get "repository" "adp-umbrella-released" }}/eric-cloud-native-service-mesh
+    version: 9.1.0
+    values:
+      - "./values-templates/global-values.yaml.gotmpl"
+      - "./values-templates/release-site-values.yaml.gotmpl"
+
+  - name: eric-cnbase-oss-config
+    namespace: {{ .Values | get "helmfile.app.namespace" "eric-app-ns" }}
+    chart: {{ .Values | get "repository" "eric-oss-drop" }}/eric-cnbase-oss-config
+    labels:
+        project: "eric-eiae-helmfile"
+    version: 1.7.0
+    values:
+      - "./values-templates/global-values.yaml.gotmpl"
+      - "./values-templates/release-site-values.yaml.gotmpl"
+
+  - name: eric-cloud-native-base
+    namespace: {{ .Values | get "helmfile.app.namespace" "eric-app-ns" }}
+    chart: {{ .Values | get "repository" "adp-umbrella-released" }}/eric-cloud-native-base
+    version: 122.2.0-EP1
+    values:
+      - "./values-templates/global-values.yaml.gotmpl"
+      - "./values-templates/release-site-values.yaml.gotmpl"
+
+  - name: eric-cncs-oss-config
+    namespace: {{ .Values | get "helmfile.app.namespace" "eric-app-ns" }}
+    chart: {{ .Values | get "repository" "eric-oss-drop" }}/eric-cncs-oss-config
+    version: 0.21.0
+    values:
+      - "./values-templates/global-values.yaml.gotmpl"
+      - "./values-templates/release-site-values.yaml.gotmpl"
+
+  - name: eric-oss-common-base
+    namespace: {{ .Values | get "helmfile.app.namespace" "eric-app-ns" }}
+    chart: {{ .Values | get "repository" "eric-oss-drop" }}/eric-oss-common-base
+    version: 0.185.0
+    values:
+      - "./values-templates/global-values.yaml.gotmpl"
+      - "./values-templates/release-site-values.yaml.gotmpl"
+
+

@@ -1,0 +1,58 @@
+# This override delta file was prepared for usage with main file:
+# site-values/eoom/ci/template/site-values-latest.yaml
+
+# For EAS tests
+eric-oss-ericsson-adaptation:
+  eric-eo-enm-stub:
+    enabled: true
+  eric-oss-enm-notification-simulator:
+    enabled: true
+
+  eric-oss-ran-topology-adapter:
+    rtaUser:
+      username: "rta-user"
+      password: "Ericsson123!"
+
+eric-oss-dmm:
+  eric-oss-dmm-data-message-bus-kf:
+    persistence:
+      persistentVolumeClaim:
+        size: 2Gi
+
+eric-topology-handling:
+  eric-oss-common-topology-svc:
+    eric-oss-cmn-topology-svc-core:
+      defaultUser:
+        username: "cts-user"
+        password: "Ericsson123!"
+      useGasHost:
+        enabled: true
+
+eric-oss-common-base:
+  eric-oss-ddc:
+    autoUpload:
+      ddpid: DDP_ID
+      account: DDP_ACCOUNT
+      password: "DDP_PASSWORD"
+
+eric-cloud-native-base:
+  eric-data-object-storage-mn:
+    persistence:
+      persistentVolumeClaim:
+        size: 40Gi
+
+#core parser restarts - IDUN-62090
+eric-oss-adc:
+  eric-oss-3gpp-pm-xml-core-parser:
+    spring:
+      kafka:
+        admin:
+          request_timeout_ms: 60000
+    probes:
+      eric-oss-3gpp-pm-xml-core-parser:
+        livenessProbe:
+          initialDelaySeconds: 120
+          periodSeconds: 20
+        readinessProbe:
+          initialDelaySeconds: 90
+          periodSeconds: 15

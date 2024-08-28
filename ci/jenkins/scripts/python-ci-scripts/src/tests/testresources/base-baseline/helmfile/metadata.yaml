@@ -1,0 +1,7 @@
+apiVersion: v2
+description: Helmfile for EO Applications
+maintainers:
+- email: PDLSTEPMAS@pdl.internal.ericsson.com
+  name: Team Stepmaster 2000
+name: eric-eo-helmfile
+version: 2.6.0-90

@@ -1,0 +1,23 @@
+site_name: OSS Integration CI
+site_description: Documentation to help with understanding the flows from oss-integartion-ci repo
+docs_dir: docs
+
+nav:
+  - Home: index.md
+  - Contribution Guide: Contribution_Guide.md
+  - FAQ: FAQ.md
+  - Guide for Deployment related Jenkins Files: guides/Developers_Guide_For_Deployment_Related_Jenkins_Files.md
+  - Guide for Spinnaker flows: guides/Developers_Guide_For_Spinnaker_Flows.md
+  - Guide for CSAR related Jenkins Files: guides/Developers_Guide_For_CSAR_Related_Jenkins_Files.md
+  - Guide for Base Platform Baseline flows: guides/Developers_Guides_For_Base_Platform_Baseline.md
+  - Guide for the Centrilised PCR Helmfile Testsuite: guides/Developers_Guide_For_PCR_Helmfile_Testsuite.md
+  - Guide for the Centrilised Common App Test: guides/Developers_Guide_For_Common_App_Test.md
+  - Guide for Code Review Channel: guides/Guide_For_Code_Review_Channel.md
+
+
+plugins:
+  - techdocs-core
+
+markdown_extensions:
+  - pymdownx.snippets:
+      check_paths: true

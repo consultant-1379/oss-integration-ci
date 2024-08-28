@@ -1,0 +1,7 @@
+# This override delta file was prepared for usage with main file:
+# site-values/idun/ci/template/site-values-latest.yaml
+
+global:
+  security:
+    tls:
+      enabled: false

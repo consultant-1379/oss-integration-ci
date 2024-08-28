@@ -1,0 +1,8 @@
+# DR-D1121-001 - Previously Exemp : IDUN-91103, Tracking JIRA : IDUN-91796
+
+# DR-D1121-210 - skipped as the check ensure the schema validates against the values.yaml. The schema for this chart has
+# extra values that covers the helmfile site values
+
+# DR-D1123-127 - Skipped temporarily due to uplift of helm-dr-checker (To be followed up with Mikael, believed issue due to cnbase-oss-config being seen as a microservice)
+
+# DR-D1123-128 - Skipped temporarily due to uplift of helm-dr-checker (To be followed up with Mikael, believed issue due to cnbase-oss-config being seen as a microservice)

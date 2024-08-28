@@ -1,0 +1,611 @@
+{
+  "appConfig": {},
+  "application": "base-platform-e2e-cicd",
+  "disabled": true,
+  "id": "08535c6d-871c-4b85-81bb-6f4f5c568969",
+  "index": 3,
+  "keepWaitingPipelines": false,
+  "lastModifiedBy": "epakagn",
+  "limitConcurrent": false,
+  "name": "deploy-using-helmfile",
+  "parameterConfig":   [
+        {
+      "default": "eric-oss-common-base",
+      "description": "Name of the integration chart that holds the new microservice",
+      "hasOptions": false,
+      "label": "INT_CHART_NAME",
+      "name": "INT_CHART_NAME",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "0.0.0",
+      "description": "Version of the Integration Chart that holds the new microservice",
+      "hasOptions": false,
+      "label": "INT_CHART_VERSION",
+      "name": "INT_CHART_VERSION",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "https://arm.seli.gic.ericsson.se/artifactory/proj-eric-oss-drop-helm",
+      "description": "Repo of the Integration Chart that holds the new microservice",
+      "hasOptions": false,
+      "label": "INT_CHART_REPO",
+      "name": "INT_CHART_REPO",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "install",
+      "description": "Used to set the deployment Type, option install or upgrade",
+      "hasOptions": false,
+      "label": "Deployment Type",
+      "name": "DEPLOYMENT_TYPE",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "so",
+      "description": "Site values tags which has to be set to true during deployment",
+      "hasOptions": false,
+      "label": "",
+      "name": "TAGS",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "site-values/ci/site-values-latest.yaml",
+      "description": "The Path where all the necessary site values are located for the install/upgrade",
+      "hasOptions": false,
+      "label": "PATH_TO_SITE_VALUES_FILE",
+      "name": "PATH_TO_SITE_VALUES_FILE",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "NONE",
+      "description": "Path within the Repo to the location of the site values override file. Content of this file will override the content for the site values set in the FULL_PATH_TO_SITE_VALUES_FILE paramater.",
+      "hasOptions": false,
+      "label": "",
+      "name": "PATH_TO_SITE_VALUES_OVERRIDE_FILE",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "cloudman-docker-auth-config",
+      "description": "User secret from jenkins to create the Docker login configuration file",
+      "hasOptions": false,
+      "label": "ARMDOCKER_USER_SECRET",
+      "name": "ARMDOCKER_USER_SECRET",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "evo_docker_engine",
+      "description": "Label to choose which Jenkins slave to execute Jenkinsfiles against",
+      "hasOptions": false,
+      "label": "",
+      "name": "SLAVE_LABEL",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "",
+      "description": "Functional user for logging into armdocker",
+      "hasOptions": false,
+      "label": "FUNCTIONAL_USER_SECRET",
+      "name": "FUNCTIONAL_USER_SECRET",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "",
+      "description": "Timeout for helmfile deploy",
+      "hasOptions": false,
+      "label": "HELM_TIMEOUT",
+      "name": "HELM_TIMEOUT",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "GAS Hostname",
+      "hasOptions": false,
+      "label": "GAS_HOSTNAME",
+      "name": "GAS_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "IAM Hostname",
+      "hasOptions": false,
+      "label": "IAM_HOSTNAME",
+      "name": "IAM_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "PF HOSTNAME",
+      "hasOptions": false,
+      "label": "PF_HOSTNAME",
+      "name": "PF_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "SO Hostname Entry",
+      "hasOptions": false,
+      "label": "SO_HOSTNAME",
+      "name": "SO_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "UDS Hostname Entry",
+      "hasOptions": false,
+      "label": "UDS_HOSTNAME",
+      "name": "UDS_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "ADC hostnmae Entry",
+      "hasOptions": false,
+      "label": "ADC_HOSTNAME",
+      "name": "ADC_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "APPMGR hostnmae Entry",
+      "hasOptions": false,
+      "label": "APPMGR_HOSTNAME",
+      "name": "APPMGR_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "BDR_HOSTNAME Entry",
+      "hasOptions": false,
+      "label": "BDR_HOSTNAME",
+      "name": "BDR_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "default",
+      "description": "ML_HOSTNAME Entry",
+      "hasOptions": false,
+      "label": "ML_HOSTNAME",
+      "name": "ML_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "default",
+      "description": "OS_HOSTNAME Entry",
+      "hasOptions": false,
+      "label": "OS_HOSTNAME",
+      "name": "OS_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "default",
+      "description": "TA Hostname Entry",
+      "hasOptions": false,
+      "label": "TA_HOSTNAME",
+      "name": "TA_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "default",
+      "description": "TH_HOSTNAME Entry",
+      "hasOptions": false,
+      "label": "TH_HOSTNAME",
+      "name": "TH_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "default",
+      "description": "LA_HOSTNAME Entry",
+      "hasOptions": false,
+      "label": "LA_HOSTNAME",
+      "name": "LA_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "default",
+      "description": "EVNFM Hostname Entry",
+      "hasOptions": false,
+      "label": "VNFM_HOSTNAME",
+      "name": "VNFM_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "default",
+      "description": "EVNFM Registry Hostname Entry",
+      "hasOptions": false,
+      "label": "REGISTRY_HOSTNAME",
+      "name": "REGISTRY_HOSTNAME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "",
+      "description": "Kubernetes Config File name that is stored in Jenkins",
+      "hasOptions": false,
+      "label": "KUBE_CONFIG",
+      "name": "KUBE_CONFIG",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "",
+      "description": "Path to the Certificates with the repo",
+      "hasOptions": false,
+      "label": "PATH_TO_CERTIFICATES_FILES",
+      "name": "PATH_TO_CERTIFICATES_FILES",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "",
+      "description": "Kubernetes Namespace to deploy the system into",
+      "hasOptions": false,
+      "label": "NAMESPACE",
+      "name": "NAMESPACE",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "armdocker.rnd.ericsson.se",
+      "description": "Registry that should be used for the deployment",
+      "hasOptions": false,
+      "label": "DOCKER_REGISTRY",
+      "name": "DOCKER_REGISTRY",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "None",
+      "description": "Docker Registry Credentials, On;y should be populated if using the local registry",
+      "hasOptions": false,
+      "label": "DOCKER_REGISTRY_CREDENTIALS",
+      "name": "DOCKER_REGISTRY_CREDENTIALS",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "false",
+      "description": "Used to download the officiall released CSAR according to the helmfile version, if set to true the DOCKER_REGISTRY and DOCKER_REGISTRY_CREDENTIALS should be filled",
+      "hasOptions": false,
+      "label": "DOWNLOAD_CSARS",
+      "name": "DOWNLOAD_CSARS",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "None",
+      "description": "",
+      "hasOptions": false,
+      "label": "WHAT_CHANGED",
+      "name": "WHAT_CHANGED",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "default",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "ELASTIC_INGRESS_HOST",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "PROMETHEUS_INGRESS_HOST",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "default",
+      "description": "INGRESS IP to use for the deployment",
+      "hasOptions": false,
+      "label": "INGRESS_IP",
+      "name": "INGRESS_IP",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "false",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "DEPLOY_ALL_CRDS",
+      "options":       [
+        {"value": "true"},
+        {"value": "false"}
+      ],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "false",
+      "description": "Set to true to use the Deploymet Manager function \"prepare\" to generate the site values file",
+      "hasOptions": false,
+      "label": "",
+      "name": "USE_DM_PREPARE",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "false",
+      "description": "Skip CRD Deploy",
+      "hasOptions": true,
+      "label": "",
+      "name": "SKIP_CRD_DEPLOY",
+      "options": [{"value": "true"}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "true",
+      "description": "select true to collect deployment logs when a failure is seen, false to turn off log collection",
+      "hasOptions": false,
+      "label": "COLLECT_LOGS",
+      "name": "COLLECT_LOGS",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "default",
+      "description": "IP for the SNMP Alarm Provider",
+      "hasOptions": false,
+      "label": "FH_SNMP_ALARM_IP",
+      "name": "FH_SNMP_ALARM_IP",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "false",
+      "description": "specifiy if DDP Auto upload should run",
+      "hasOptions": false,
+      "label": "DDP_AUTO_UPLOAD",
+      "name": "DDP_AUTO_UPLOAD",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": false
+    },
+        {
+      "default": "default",
+      "description": "Environment configuration file stored in repo",
+      "hasOptions": false,
+      "label": "ENV_CONFIG_FILE",
+      "name": "ENV_CONFIG_FILE",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "false",
+      "description": "Set to true to use the Deployment Manager parameter \"--skip-upgrade-for-unchanged-releases\" to skip helm upgrades for helm releases whose versions and values have not changed. If false will deploy without the \"--skip-upgrade-for-unchanged-releases\" parameter",
+      "hasOptions": false,
+      "label": "USE_SKIP_UPGRADE_FOR_UNCHANGED_RELEASES",
+      "name": "USE_SKIP_UPGRADE_FOR_UNCHANGED_RELEASES",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": false
+    },
+        {
+      "default": "false",
+      "description": "Set to true to use \"--use-certm\" flag during deployment",
+      "hasOptions": false,
+      "label": "",
+      "name": "USE_CERTM",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "refs/heads/master",
+      "description": "**Only to be used during testing ** Can be used to fetch job JenkinsFile from branch (refs/heads/master) or commit (refs/changes/95/156395/1) | 95 - last 2 digits of Gerrit commit number | 156395 - is Gerrit commit number | 1 - patch number of gerrit commit |",
+      "hasOptions": false,
+      "label": "GERRIT_REFSPEC",
+      "name": "GERRIT_REFSPEC",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": false
+    }
+  ],
+  "schema": "1",
+  "spelEvaluator": "v4",
+  "stages":   [
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": false,
+      "failOnFailedExpressions": false,
+      "failPipeline": true,
+      "job": "OSS-Integration-Helmfile-Deploy",
+      "master": "oss-fem8s11-eiffel052",
+      "name": "Deployment",
+      "parameters":       {
+        "ADC_HOSTNAME": "${parameters['ADC_HOSTNAME']}",
+        "APPMGR_HOSTNAME": "${parameters['APPMGR_HOSTNAME']}",
+        "ARMDOCKER_USER_SECRET": "${parameters['ARMDOCKER_USER_SECRET']}",
+        "BDR_HOSTNAME": "${parameters['BDR_HOSTNAME']}",
+        "COLLECT_LOGS": "${parameters['COLLECT_LOGS']}",
+        "CRD_NAMESPACE": "eric-crd-ns",
+        "DDP_AUTO_UPLOAD": "${parameters['DDP_AUTO_UPLOAD']}",
+        "DEPLOYMENT_TYPE": "${parameters['DEPLOYMENT_TYPE']}",
+        "DEPLOY_ALL_CRDS": "${parameters['DEPLOY_ALL_CRDS']}",
+        "DOCKER_REGISTRY": "${parameters['DOCKER_REGISTRY']}",
+        "DOCKER_REGISTRY_CREDENTIALS": "${parameters['DOCKER_REGISTRY_CREDENTIALS']}",
+        "DOWNLOAD_CSARS": "${parameters['DOWNLOAD_CSARS']}",
+        "ENV_CONFIG_FILE": "${parameters[\"ENV_CONFIG_FILE\"]}",
+        "FH_SNMP_ALARM_IP": "${parameters['FH_SNMP_ALARM_IP']}",
+        "FULL_PATH_TO_SITE_VALUES_FILE": "${parameters['PATH_TO_SITE_VALUES_FILE']}",
+        "FUNCTIONAL_USER_SECRET": "${parameters['FUNCTIONAL_USER_SECRET']}",
+        "GAS_HOSTNAME": "${parameters['GAS_HOSTNAME']}",
+        "GERRIT_REFSPEC": "${parameters['GERRIT_REFSPEC']}",
+        "HELM_TIMEOUT": "${parameters['HELM_TIMEOUT']}",
+        "IAM_HOSTNAME": "${parameters['IAM_HOSTNAME']}",
+        "INGRESS_IP": "${parameters['INGRESS_IP']}",
+        "INT_CHART_NAME": "${parameters['INT_CHART_NAME']}",
+        "INT_CHART_REPO": "${parameters['INT_CHART_REPO']}",
+        "INT_CHART_VERSION": "${parameters['INT_CHART_VERSION']}",
+        "KUBECONFIG_FILE": "${parameters[\"KUBE_CONFIG\"]}",
+        "LA_HOSTNAME": "${parameters['LA_HOSTNAME']}",
+        "ML_HOSTNAME": "${parameters['ML_HOSTNAME']}",
+        "NAMESPACE": "${parameters[\"NAMESPACE\"]}",
+        "OS_HOSTNAME": "${parameters['OS_HOSTNAME']}",
+        "PATH_TO_CERTIFICATES_FILES": "${parameters[\"PATH_TO_CERTIFICATES_FILES\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${parameters[\"PATH_TO_SITE_VALUES_OVERRIDE_FILE\"]}",
+        "PF_HOSTNAME": "${parameters['PF_HOSTNAME']}",
+        "SLAVE_LABEL": "${parameters['SLAVE_LABEL']}",
+        "SO_HOSTNAME": "${parameters['SO_HOSTNAME']}",
+        "TAGS": "${parameters['TAGS']}",
+        "TA_HOSTNAME": "${parameters['TA_HOSTNAME']}",
+        "TH_HOSTNAME": "${parameters['TH_HOSTNAME']}",
+        "UDS_HOSTNAME": "${parameters['UDS_HOSTNAME']}",
+        "USE_CERTM": "${parameters['USE_CERTM']}",
+        "USE_DM_PREPARE": "${parameters['USE_DM_PREPARE']}",
+        "USE_SKIP_UPGRADE_FOR_UNCHANGED_RELEASES": "${parameters['USE_SKIP_UPGRADE_FOR_UNCHANGED_RELEASES']}",
+        "VNFM_HOSTNAME": "${parameters['VNFM_HOSTNAME']}",
+        "VNFM_REGISTRY_HOSTNAME": "${parameters['REGISTRY_HOSTNAME']}",
+        "WHAT_CHANGED": "${parameters['WHAT_CHANGED']}"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "55",
+      "requisiteStageRefIds": ["59"],
+      "type": "jenkins"
+    },
+        {
+      "comments": "",
+      "completeOtherBranchesThenFail": true,
+      "continuePipeline": false,
+      "failOnFailedExpressions": false,
+      "failPipeline": false,
+      "job": "Deployment_Namespace_Preparation_EIC_BP",
+      "master": "oss-fem8s11-eiffel052",
+      "name": "Recreate Namespace",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "ossapps100-arm-docker-auth-config",
+        "ELASTIC_INGRESS_HOST": "${ parameters[\"ELASTIC_INGRESS_HOST\"] }",
+        "KUBECONFIG_FILE": "${ parameters[\"KUBE_CONFIG\"] }",
+        "NAMESPACE": "${ parameters[\"NAMESPACE\"] }",
+        "PROMETHEUS_INGRESS_HOST": "${ parameters[\"PROMETHEUS_INGRESS_HOST\"] }"
+      },
+      "refId": "57",
+      "requisiteStageRefIds": ["58"],
+      "stageEnabled":       {
+        "expression": "'${parameters['DEPLOYMENT_TYPE']}' == 'install'",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": true,
+      "continuePipeline": false,
+      "failPipeline": false,
+      "job": "OSS-Integration-Purge",
+      "master": "oss-fem8s11-eiffel052",
+      "name": "Purge Namespace",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${parameters['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${parameters['FUNCTIONAL_USER_SECRET']}",
+        "KUBECONFIG_FILE": "${parameters[\"KUBE_CONFIG\"]}",
+        "NAMESPACE": "${parameters[\"NAMESPACE\"]}",
+        "TIMEOUT_IN_SECONDS": "300"
+      },
+      "refId": "58",
+      "requisiteStageRefIds": [],
+      "stageEnabled":       {
+        "expression": "'${parameters['DEPLOYMENT_TYPE']}' == 'install'",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": true,
+      "continuePipeline": false,
+      "failPipeline": false,
+      "job": "NeLS-simulator-installation",
+      "master": "oss-fem8s11-eiffel052",
+      "name": "NELSSimInstall",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "cloudman-docker-auth-config",
+        "FUNCTIONAL_USER_CREDENTIALS": "cloudman-user-creds",
+        "KUBECONFIG_FILE": "${ parameters[\"KUBE_CONFIG\"] }",
+        "LICENSE_KEYS": "false",
+        "NAMESPACE": "${ parameters[\"NAMESPACE\"] }"
+      },
+      "propertyFile": "",
+      "refId": "59",
+      "requisiteStageRefIds": ["57"],
+      "stageEnabled":       {
+        "expression": "'${parameters['DEPLOYMENT_TYPE']}' == 'install'",
+        "type": "expression"
+      },
+      "stageTimeoutMs": 600000,
+      "type": "jenkins"
+    }
+  ],
+  "triggers": [],
+  "updateTs": "1718629067387"
+}

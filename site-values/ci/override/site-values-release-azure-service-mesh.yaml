@@ -1,0 +1,16 @@
+eric-oss-common-base:
+  service-mesh-ingress-gateway:
+    service:
+      annotations:
+        # Cloud Provider(for ex. AWS):
+        #  < Keys are to be placed in the cloudProviderLB hash. >
+        cloudProviderLB:
+          service.beta.kubernetes.io/azure-load-balancer-internal: 'true'
+          service.beta.kubernetes.io/azure-load-balancer-internal-subnet: 'aks-ecn-idun-lb-subnet'
+eric-cloud-native-base:
+  eric-fh-snmp-alarm-provider:
+    service:
+      annotations:
+        cloudProviderLB:
+          service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+          service.beta.kubernetes.io/azure-load-balancer-internal-subnet: 'aks-ecn-idun-lb-subnet'

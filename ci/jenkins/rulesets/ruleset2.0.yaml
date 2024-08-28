@@ -1,0 +1,2033 @@
+modelVersion: 2.0
+
+description: "TicketMaster: OSS Pipeline"
+
+docker-images:
+  - adp-release-auto: ${adp-release-auto-image-name}
+  - adp-helm-install: armdocker.rnd.ericsson.se/proj-adp-cicd-drop/bob-py3kubehelmbuilder:latest
+  - adp-inca: ${adp-int-helm-chart-auto}
+  - pipeline-download-injector: armdocker.rnd.ericsson.se/proj-eric-oss-dev-test/data-store-client:0.0.34
+  - deployment-manager: ${env.DEPLOYMENT_MANAGER_DOCKER_IMAGE}
+  - csar-builder: ${csar-builder-image-full-name}
+  - adp-helm-dr-check: armdocker.rnd.ericsson.se/proj-adp-cicd-drop/adp-helm-dr-checker:58.47.0
+  - adp-helm-dr-check-kubernetes-tests: armdocker.rnd.ericsson.se/proj-adp-cicd-drop/adp-helm-dr-checker:41.12.6
+  - ci-utils: armdocker.rnd.ericsson.se/proj-idun-aas/ci-utils:latest
+  - eric-oss-ci-scripts: ${env.CI_DOCKER_IMAGE}
+  - deployment-time-collector: armdocker.rnd.ericsson.se/proj-eanhpha-dev/timing-helm-release:latest
+  - deprek8ion: armdocker.rnd.ericsson.se/proj-ecm-gcr/swade1987/deprek8ion:1.1.42
+  - testware-cli-image: armdocker.rnd.ericsson.se/proj-eric-oss-drop/k6-reporting-tool-cli:latest
+  - techdocs: armdocker.rnd.ericsson.se/proj-eric-oss-drop/techdocs-cli:latest
+
+properties:
+  - git-image: armdocker.rnd.ericsson.se/dockerhub-ericsson-remote/alpine/git:v2.32.0
+  - helm-charts-dir: charts
+  - helm-chart-artifactory-url: https://arm.epk.ericsson.se/artifactory
+  - kube-config-path: ./admin.conf
+  - docker-config-path: ./.docker/config.json
+  - image-registry: armdocker.rnd.ericsson.se
+  - seli-artifactory-url: https://arm.seli.gic.ericsson.se/artifactory
+  - csar-builder-image-repo-path: proj-am/releases
+  - csar-builder-image-name: eric-am-package-manager
+  - csar-builder-image-tag: 2.113.0-9
+  - csar-builder-image-full-name: ${image-registry}/${csar-builder-image-repo-path}/${csar-builder-image-name}:${csar-builder-image-tag}
+  - adp-release-auto-image-name: armdocker.rnd.ericsson.se/proj-adp-cicd-drop/bob-adp-release-auto:latest
+  - adp-int-helm-chart-auto: armdocker.rnd.ericsson.se/proj-adp-cicd-drop/adp-int-helm-chart-auto:0.27.2-1
+  - adp-crd-handler-image-name: ${image-registry}/proj-adp-cicd-drop/adp-crd-handler:0.1.1-0
+  - deployment-manager-flags: "--user $(id -u):$(id -g)
+                               --volume ${env.PWD}:/workdir
+                               --volume /etc/hosts:/etc/hosts"
+  - deployment-manager-flags-idunaas: "--volume ${env.PWD}:/workdir
+                                       --volume ${env.PWD}/aws:/.aws
+                                       --volume /etc/hosts:/etc/hosts
+                                       --volume /usr/local/bin:/usr/local/bin
+                                       --volume /usr/local/aws-cli:/usr/local/aws-cli
+                                       --workdir /workdir"
+  - ci-utils-flags: "--volume ${env.PWD}:/workdir
+                     --volume /etc/hosts:/etc/hosts
+                     --volume ${env.PWD}/dockerconfig.json:/.docker/config.json
+                     --workdir /workdir"
+  - eric-oss-ci-scripts-flags: "--user $(id -u):$(id -g)
+                                --volume ${env.PWD}:/ci-scripts/output-files
+                                --volume ${env.PWD}:${env.PWD}
+                                --workdir ${env.PWD}"
+  - csar-build-flags: "--env DOCKER_CONFIG=/.docker
+                       --user $(id -u):$(id -g)
+                       --volume ${env.PWD}:/csar
+                       --volume ${env.PWD}/.docker:/.docker
+                       --workdir /csar"
+  - csar-sol-version: "2.5.1"
+  - helm-cache-tags: "--env HELM_VERSION=3.13.2
+                      --env XDG_DATA_HOME=/helm_data/
+                      --env HELM_CACHE_HOME=${env.PWD}
+                      --env HELM_CONFIG_HOME=${env.PWD}
+                      --volume ${env.DEPENDENCY_CACHE_DIRECTORY}:${env.DEPENDENCY_CACHE_DIRECTORY}"
+  - start-server-event-tags: "--user $(id -u):$(id -g)
+                              --volume ${env.PWD}:${env.PWD}
+                              --workdir ${env.PWD}"
+  - python-scripts-dir: ci/jenkins/scripts/python-ci-scripts
+  - site-values-file: ${testsuite-dir}/site_values.yaml
+  - testsuite-dir: oss-common-ci/testsuite/helm-chart-validator
+  - cloned-repo-directory: ".bob/cloned_repo"
+  - artifactory-subpath: artifactory
+  - artifactory-api-storage-subpath: api/storage
+  - artifactory-csar-repo-subpath: csars
+  - helm-chart-validator-name: helm-chart-validator
+  - techdocs-generate-volume: "--volume ${env.PWD}/${cloned-repo-directory}:${env.PWD}/${cloned-repo-directory}:rw
+                               --workdir ${env.PWD}/${cloned-repo-directory}"
+  - techdocs-docker-params: "--env HOME=/tmp
+                             --volume ${env.HOME}/.netrc:/tmp/.netrc"
+
+env:
+  - HOME
+  - PWD
+  - NAMESPACE
+  - CHART_NAME
+  - CHART_REPO
+  - CHART_VERSION
+  - INT_CHART_NAME
+  - INT_CHART_REPO
+  - INT_CHART_VERSION
+  - HELMFILE_CHART_NAME
+  - HELMFILE_CHART_VERSION
+  - HELMFILE_CHART_REPO
+  - UNCHANGED_CHART_NAME
+  - UNCHANGED_CHART_REPO
+  - UNCHANGED_CHART_VERSION
+  - SNAP_INT_CHART_VERSION
+  - DEPLOYMENT_TYPE
+  - PATH_TO_CERTIFICATES_FILES
+  - HELMFILE_NAME
+  - FULL_PATH_TO_SITE_VALUES_FILE
+  - FULL_PATH_TO_YAMLLINT_CONFIG_FILE
+  - FULL_PATH_TO_HELMFILE_TEMPLATE_OVERRIDE_FILE
+  - TEMPLATE_OUTPUT_FILE_PATH
+  - YAMLLINT_OUTPUT_FILE_PATH
+  - COMMON_SKIP_LIST_PATH
+  - SPECIFIC_SKIP_LIST_PATH
+  - CHECK_SPECIFIC_CONTENT_FILE_PATH (default="")
+  - FUNCTIONAL_USER_USERNAME
+  - FUNCTIONAL_USER_PASSWORD
+  - FUNCTIONAL_USER_TOKEN
+  - LA_HOSTNAME (default=default)
+  - KAFKA_BOOTSTRAP_HOSTNAME (default=default)
+  - PF_HOSTNAME
+  - UDS_HOSTNAME
+  - SO_HOSTNAME
+  - GAS_HOSTNAME
+  - VNFM_HOSTNAME
+  - VNFM_REGISTRY_HOSTNAME
+  - GLOBAL_VNFM_REGISTRY_HOSTNAME (default=default)
+  - VNFLCM_SERVICE_DEPLOY (default=false)
+  - HELM_REGISTRY_DEPLOY (default=false)
+  - HELM_REGISTRY_HOSTNAME
+  - IAM_HOSTNAME
+  - ADC_HOSTNAME
+  - APPMGR_HOSTNAME (default=default)
+  - OS_HOSTNAME (default=default)
+  - GR_HOSTNAME
+  - GR_SECONDARY_HOSTNAME (default=default)
+  - ML_HOSTNAME (default=default)
+  - AVIZ_HOSTNAME (default=default)
+  - TA_HOSTNAME (default=default)
+  - EAS_HOSTNAME (default=default)
+  - CH_HOSTNAME (default=default)
+  - TH_HOSTNAME (default=default)
+  - BDR_HOSTNAME (default=default)
+  - EIC_HOSTNAME (default=default)
+  - COOKIE_DOMAIN (default=default)
+  - ENV_NAME
+  - ENV_DETAILS_DIR
+  - HELM_TIMEOUT (default=1800)
+  - DOCKER_TIMEOUT (default=60)
+  - JIRA
+  - HELM_REPOSITORY_NAME
+  - TIME
+  - JOB
+  - SSH_REPO_URL
+  - SCRIPTS_DIR
+  - POPULATED_VALUES_FILE_LOCATION
+  - CSAR_STORAGE_INSTANCE
+  - CSAR_STORAGE_REPO
+  - CSAR_STORAGE_URL
+  - CSAR_STORAGE_API_URL (default="https://arm.seli.gic.ericsson.se/artifactory/api/storage/proj-eric-oss-drop-generic-local/csars/")
+  - CUSTWF_LINK
+  - CUSTWF_VERSION
+  - WHAT_CHANGED
+  - PATH_TO_HELMFILE
+  - STATE_VALUES_FILE
+  - USE_TAGS (default=false)
+  - DOCKER_REGISTRY
+  - DOCKER_REGISTRY_USERNAME
+  - DOCKER_REGISTRY_PASSWORD
+  - TAGS
+  - OPTIONAL_TAGS(default='')
+  - CHECK_TAGS  (default=)
+  - CHECK_FULL_VERSION (default='false')
+  - INT_CHART_FULL_NAME
+  - INGRESS_IP
+  - VNFLCM_SERVICE_IP
+  - FH_SNMP_ALARM_IP (default=default)
+  - CRD_NAMESPACE
+  - GET_ALL_IMAGES(default=false)
+  - INCLUDE_CHART_IMAGES (default='false')
+  - FETCH_CHARTS (default='false')
+  - HELM_REPO_NAME
+  - APP_NAME (default="eric-eo")
+  - GERRIT_REFSPEC
+  - GIT_REPO_URL
+  - VCS_BRANCH
+  - CHART_PATH
+  - DOCKER_FILE_PATH
+  - HELM_INTERNAL_REPO
+  - HELM_DROP_REPO
+  - HELM_RELEASED_REPO
+  - ALLOW_DOWNGRADE (default=false)
+  - VERSION_CHECK_DOWNGRADE (default=false)
+  - VERSION_CHECK (default=false)
+  - ADD_NEW_REPO_DETAILS (default=false)
+  - SKIP_HELMFILE_REPO_UPDATE (default=false)
+  - IGNORE_NON_RELEASED
+  - AUTOMATIC_RELEASE
+  - ALWAYS_RELEASE
+  - PLUS_RELEASE_MODE (default=false)
+  - VERSION_STEP_STRATEGY_DEPENDENCY
+  - VERSION_STEP_STRATEGY_MANUAL
+  - HELM_REPO_CREDENTIALS
+  - ARM_API_TOKEN
+  - GERRIT_USERNAME
+  - GERRIT_PASSWORD
+  - GERRIT_CENTRAL
+  - GERRIT_MIRROR
+  - COMMIT_MESSAGE_FORMAT_MANUAL
+  - GIT_TAG_ENABLED
+  - WAIT_SUBMITTABLE_BEFORE_PUBLISH
+  - WAIT_TIMEOUT_SEC_BEFORE_PUBLISH
+  - FORCE_VERSION_UPDATE
+  - GERRIT_PREPARE_OR_PUBLISH
+  - DESIGN_RULE_OPTIONS (default="")
+  - DESIGN_RULES_PATH (default="testsuite/common/adp_design_rule")
+  - PATH_TO_AWS_FILES
+  - AWS_ECR_TOKEN
+  - PATH_TO_SITE_VALUES_OVERRIDE_FILE
+  - IDUN_USER_PASSWORD
+  - CI_HELM (default="true")
+  - KC_ADMIN_ID
+  - KC_PASSWORD
+  - PG_USER_ID
+  - PG_PASSWORD
+  - CUSTOM_USER_ID
+  - CUSTOM_PASSWORD
+  - SUPER_USER_ID
+  - SUPER_PASSWORD
+  - METRICS_USER_ID
+  - METRICS_PASSWORD
+  - REPLICA_USER_ID
+  - REPLICA_PASSWORD
+  - RELEASE_NAME
+  - SERACC_CLSROLB_META_NAME
+  - SECRET_NAME
+  - USER_ID
+  - USER_PASSWORD
+  - ENM_CONTAINER_SECRET_NAME
+  - ENM_SCRIPTING_CLUSTER_IP
+  - ENM_USERNAME
+  - ENM_PASSWORD
+  - ENM_CONNECTION_TIMEOUT_IN_MILLISECONDS
+  - ENM_SCRIPTING_SSH_PORT
+  - ENM_VM_SECRET_NAME
+  - ENM_MASTER_SERVICE_IP
+  - ENM_NOTIFICATION_SERVICE_IP
+  - ENM_MASTER_SERVER_HOSTNAME
+  - ENM_NOTIFICATION_SERVICE_HOSTNAME
+  - IGNORE_IF_CREATED (default="false")
+  - CSARs
+  - PRODUCT_NAME
+  - PRODUCT_HELMFILE_REPO
+  - PRODUCT_VERSION
+  - SPRINT_NUMBER
+  - RELEASE_TYPE
+  - EO_VERSION
+  - DM_VERSION
+  - EO_CM_HOSTNAME
+  - EO_CM_IP
+  - EO_CM_ESA_IP
+  - IPV6_ENABLE (default=false)
+  - FORCE_CSAR_REBUILD (default=false)
+  - TAR_BASE_DIR
+  - PROPERTIES_FILE (default=properties.txt)
+  - TAG_HELM_CHART_VALIDATOR (default=latest)
+  - ENV_CONFIG_FILE (default=default)
+  - CI_DOCKER_IMAGE (default=armdocker.rnd.ericsson.se/proj-eric-oss-drop/eric-oss-ci-scripts:latest)
+  - INGRESS_CLASS (default=default)
+  - DEPLOYMENT_MANAGER_DOCKER_IMAGE (default=armdocker.rnd.ericsson.se/proj-eric-oss-drop/eric-oss-deployment-manager:latest)
+  - REGISTRY_SECRET_NAME (default="container-registry-users-secret")
+  - INT_CHART_NAMES
+  - INT_CHART_REPOS
+  - INT_CHART_VERSIONS
+  - TIMEOUT_IN_SECONDS (default="60")
+  - NUMBER_OF_RETRIES_FOR_PV_WAIT (default=20)
+  - TIMEOUT_FOR_WAIT_FOR_PV_WAIT (default="30")
+  - TEARDOWN
+  - GRAFANA_HOSTNAME
+  - GRAFANA_DATASOURCE_NAME
+  - GRAFANA_API_KEY
+  - PMSERVER_PVC_SIZE
+  - PMSERVER_MEMORY_LIMITS
+  - PMSERVER_RETENTION
+  - SUBMODULE_SYNC_TIMEOUT (default=400)
+  - SUBMODULE_UPDATE_TIMEOUT (default=400)
+  - PREFIX_VERSION
+  - GERRIT_PROJECT
+  - GERRIT_BRANCH
+  - GERRIT_CHANGE_NUMBER
+  - GERRIT_PATCHSET_NUMBER
+  - SCHEMA_TESTS_PATH (default="testsuite/schematests/tests")
+  - DDP_AUTO_UPLOAD (default=false)
+  - VERBOSITY (default=3)
+  - HELM_CHART_VALIDATOR_DIRECTORY_PATH (default="testsuite/common/helm-chart-validator")
+  - HELMFILE_VALIDATOR_DIRECTORY_PATH (default="testsuite/common/helmfile-validator")
+  - SEARCH_STRING (default="yaml")
+  - IGNORE_STRINGS (default="None")
+  - TEST_CHART_VERSION (default="0.0.0")
+  - BUCKET_NAME
+  - BUCKET_OUTPUT_DIR
+  - DEPLOYMENT_NAME
+  - SITE_VALUES_FILE_NAME
+  - SITE_VALUES_FILE_LATEST
+  - SITE_VALUES_OVERRIDE_FILE_NAME
+  - DATAFILE_NAME
+  - BUCKET_OUTPUT_FILENAME
+  - DATAFILE_TYPE
+  - USE_SKIP_IMAGE_PUSH (default="false")
+  - USE_SKIP_UPGRADE_FOR_UNCHANGED_RELEASES (default="false")
+  - DEPENDENCY_CACHE_DIRECTORY (default=${env.PWD}/cachedir/)
+  - USE_DEPENDENCY_CACHE (default="true")
+  - USE_CERTM (default="false")
+  - ADP_IAM_AA_CLIENT_PASSWORD
+  - SFTP_USER
+  - SFTP_PASSWORD
+  - CODE_REVIEW_ONLY (default="false")
+  - TESTWARE_API_URL
+  - TESTWARE_K6_TOOL_GUI_URL
+  - TESTWARE_DATABASE_URL
+  - TESTWARE_KAFKA_CONFIG
+  - SPACE_KEY
+  - URL
+  - PARENT_ID
+  - DOCUMENTS_PATH
+  - EXECUTION_TYPE
+  - BUILD_CSAR_TYPE (default="--helm")
+  - CSAR_OUTPUT_FILE
+  - ARTIFACT_NAME
+  - ARTIFACT_VERSION
+  - ARTIFACT_REPO
+  - ARTIFACT_FULL_NAME
+  - ARTIFACT_PATH
+  - FILTER_BY_DAYS_PAST (default=14)
+  - HELMFILE_PATH
+  - TEST_HELMFILE_VERSION
+  - CREATE_TICKETS (default="True")
+  - DEBUG_FLAG (default=" ")
+  - ARMDOCKER_USER_SECRET
+  - FLOW_AREA
+  - CLUSTER_NAME
+  - SKIP_LIST (default="None")
+  - MICROSERVICE_SKIP_LIST (default="None")
+  - EO_LM_HOSTNAME (default=default)
+  - EO_LM_GIT_HOSTNAME (default=default)
+  - EO_LM_OCI_HOSTNAME (default=default)
+  - LICENSE_KEYS
+  - LICENSE_DATA
+  - LOCAL_PACKAGE_CACHE_DIRECTORY (default=${env.PWD}/cachedir/)
+  - MOUNTED_PACKAGE_CACHE_DIRECTORY (default=${env.PWD}/cachedir/)
+  - KUBE_VERSION_FILE_PATH
+  - SITE_VALUES_FILE_PATH_FOR_KUBERNETES_COMPATIBILITY_CHECKS
+  - HELMFILE_OR_HELM_CHART_FILE_PATH
+  - HELMFILE_PATH_FOR_OPTIONALITY
+  - PATH_FOR_OPTIMIZED_FILE
+  - HELM_CHART_VALIDATOR_IMAGE_DIR (default=${env.PWD}/testsuite/helm-chart-validator)
+  - PROJECT_FILE_NAME (default="None")
+  - KUBEVAL_KINDS_TO_SKIP (default="")
+  - OPTIONAL_KEY_VALUE_LIST (default="None")
+  - AWS_ACCESS_KEY_ID
+  - AWS_SECRET_ACCESS_KEY
+  - AWS_REGION (default=eu-west-1)
+  - TECHDOCS_BUCKET_NAME (default=techdocs)
+  - ENTITY_NAMESPACE (default=default)
+  - ENTITY_NAME
+  - ENTITY_KIND
+  - MINIO_ENDPOINT (default=http://osmn.kroto020.rnd.gic.ericsson.se)
+  - USER_SECRET_USERNAME_KEY
+  - USER_SECRET_USERNAME_VALUE
+  - USER_SECRET_PASSWORD_KEY
+  - USER_SECRET_PASSWORD_VALUE
+  - TEMP_SECRET (default="true")
+  - RESOURCE_NAME
+  - RESOURCE_TYPE
+  - DIT_SITE_VALUES_OUTPUT (default="ost_site_values_output.txt")
+
+var:
+  - int_chart-version
+  - helmfile-repo
+  - helmfile-name
+  - secret-list
+  - oss-version
+  - optional-parameter
+  - skip-image-check-push-parameter
+  - skip-upgrade-for-unchanged-releases-parameter
+  - use-certm-parameter
+  - set-review-labels-parameter
+  - oss-dm-container-id
+  - network-policies
+  - helm-template-file
+  - helm-chart-directory
+  - ecr-token
+  - bucket-name
+  - bucket-output-directory
+  - document-name
+  - datafile-name
+  - bucket-output-filename
+  - ocp-fsgroup
+  - git-head-sha
+  - int-chart-name
+  - gerrit-central-git-head-sha
+  - gerrit-mirror-git-head-sha
+  - eric-product-info-details
+  - default-csar-values
+  - local-csar-sha
+  - uploaded-csar-sha
+  - version-prefix
+  - next-version
+  - commit-hash
+  - use-allow-downgrade-parameter
+  - time-stamp
+  - testware-api-url
+  - testware-gui-url
+  - testware-from-version
+  - server-event-deployment-type
+  - server-event-description
+  - server-event-metadata
+  - testware-event-id
+  - testware-deployment-result
+  - use-temp-secret-parameter
+
+rules:
+
+  fetch-chart:
+    - task: helm-pull
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: cihelm_executor cihelm-fetch-single-chart --chart-name ${env.INT_CHART_NAME} --chart-version ${env.INT_CHART_VERSION} --chart-repo ${env.INT_CHART_REPO} --username ${env.FUNCTIONAL_USER_USERNAME} --password ${env.FUNCTIONAL_USER_PASSWORD}
+
+  git-clean:
+    - task: git-clean
+      cmd: docker run --rm --user $(id -u):$(id -g) -v ${env.PWD}:/git ${git-image} clean -xdff || docker run --rm -v ${env.PWD}:/git ${git-image} clean -xdff
+
+  clone-repo:
+    - task: clone-repo
+      cmd: git clone ${env.SSH_REPO_URL} cloned-repo
+
+  check-out-version-tag:
+    - task: check-out-version-tag
+      cmd: cd cloned-repo; if [ $(git tag -l ${env.ARTIFACT_VERSION}) ]; then git checkout tags/${env.ARTIFACT_VERSION}; echo "Checking out tag ${env.ARTIFACT_VERSION}"; else echo "Checking out master"; fi
+
+  fetch-values-from-repo:
+    - task: get-populated-site-values
+      cmd: cp cloned-repo/${env.POPULATED_VALUES_FILE_LOCATION} ./site-values-populated.yaml
+
+  fetch-contents-for-scripts-directory:
+    - task: create-scripts-directory
+      cmd: mkdir ./scripts
+    - task: get-content-for-scripts-directory
+      cmd: cp -r cloned-repo/${env.SCRIPTS_DIR}/* ./scripts/
+
+  get-latest-chart-helmfile-version:
+    - task: helm-search
+      docker-image: adp-release-auto
+      cmd: bash -c 'helm repo add oss ${env.INT_CHART_REPO} --username ${env.FUNCTIONAL_USER_USERNAME} --password ${env.FUNCTIONAL_USER_PASSWORD};
+          helm search repo oss --devel | grep "${env.INT_CHART_NAME}" | cut -f2 > .bob/var.oss-version'
+    - task: write-to-properties
+      cmd: echo "INT_CHART_VERSION:${var.oss-version}" >> artifact.properties
+
+  deployment-manager-init:
+    - task: deployment-manager-init
+      docker-image: deployment-manager
+      docker-in-docker: socket
+      docker-flags:
+        - ${deployment-manager-flags}
+      cmd: init
+    - task: deployment-manager-init-idunaas
+      docker-image: deployment-manager
+      docker-in-docker: socket
+      docker-flags:
+        - ${deployment-manager-flags-idunaas}
+      cmd: init
+
+  copy-certificate-files:
+    - task: copy-certificate-files
+      cmd: cp -r ${env.PWD}/${env.PATH_TO_CERTIFICATES_FILES}/* ${env.PWD}/certificates
+
+  prepare-site-values:
+    - task: rename-ci-site-values
+      cmd: bash -c """
+        if [[ -f ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml ]]; then
+          mv -f ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml ${env.PWD}/ci_site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        """
+    - task: deployment-manager-prepare
+      docker-image: deployment-manager
+      docker-in-docker: socket
+      docker-flags:
+        - ${deployment-manager-flags}
+      cmd: prepare --namespace ${env.NAMESPACE}
+    - task: deployment-manager-prepare-idunaas
+      docker-image: deployment-manager
+      docker-in-docker: socket
+      docker-flags:
+        - ${deployment-manager-flags-idunaas}
+      cmd: prepare --namespace ${env.NAMESPACE}
+    - task: populate-prepare-dm-site-values
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: site_values_executor merge-yaml-files --path-base-yaml ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml --path-override-yaml ${env.PWD}/ci_site_values_${env.INT_CHART_VERSION}.yaml --path-output-yaml ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml --check-values-only true
+
+  modify-site-values:
+    - task: create-site-values-update
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: site_values_executor create-site-values-file --optional-key-value-list ${env.OPTIONAL_KEY_VALUE_LIST} --path-output-yaml ${env.PWD}/site_values_update_${env.INT_CHART_VERSION}.yaml
+    - task: merge-site-values-update
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: site_values_executor merge-yaml-files --path-base-yaml ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml --path-override-yaml ${env.PWD}/site_values_update_${env.INT_CHART_VERSION}.yaml --path-output-yaml ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml
+
+  override-site-values:
+    - task: override-site-values
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: site_values_executor merge-yaml-files --path-base-yaml ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml --path-override-yaml "${env.PWD}/${env.PATH_TO_SITE_VALUES_OVERRIDE_FILE}" --path-output-yaml ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml
+
+  override-functional-password:
+    - task: override-functional-password
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: site_values_executor replacing-password --state-values-file ${env.PWD}/${env.STATE_VALUES_FILE}
+
+  update-site-values-registry:
+    - task: substitute-global-registry-details
+      cmd:
+        - perl -pi -e 's/DOCKER_REGISTRY_REPLACE/'${env.DOCKER_REGISTRY}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml
+        - perl -pi -e 's/USERNAME_REPLACE/'${env.FUNCTIONAL_USER_USERNAME}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml
+        - perl -pi -e 's/PASSWORD_REPLACE/'${env.FUNCTIONAL_USER_PASSWORD}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml
+    - task: substitute-local-registry-details
+      cmd:
+        - perl -pi -e 's/DOCKER_REGISTRY_REPLACE/'${env.DOCKER_REGISTRY}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml
+        - perl -pi -e 's/USERNAME_REPLACE/'${env.DOCKER_REGISTRY_USERNAME}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml
+        - perl -pi -e 's/PASSWORD_REPLACE/'${env.DOCKER_REGISTRY_PASSWORD}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml
+
+  update-site-values:
+    - task: substitute-application-hosts
+      cmd: bash -c """
+        if [[ ${env.SO_HOSTNAME} != "default" ]]; then
+          perl -pi -e 's/SO_HOST_REPLACE/'${env.SO_HOSTNAME}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.UDS_HOSTNAME} != "default" ]]; then
+          perl -pi -e 's/UDS_HOST_REPLACE/'${env.UDS_HOSTNAME}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.LA_HOSTNAME} != "default" ]]; then
+          perl -pi -e 's/LA_HOST_REPLACE/'${env.LA_HOSTNAME}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.KAFKA_BOOTSTRAP_HOSTNAME} != "default" ]]; then
+          perl -pi -e 's/KAFKA_BOOTSTRAP_HOST_REPLACE/'${env.KAFKA_BOOTSTRAP_HOSTNAME}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.IAM_HOSTNAME} != "default" ]]; then
+          perl -pi -e 's/IAM_HOST_REPLACE/'${env.IAM_HOSTNAME}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.PF_HOSTNAME} != "default" ]]; then
+          perl -pi -e 's/PF_HOST_REPLACE/'${env.PF_HOSTNAME}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.ADC_HOSTNAME} != "default" ]]; then
+          perl -pi -e 's/ADC_HOST_REPLACE/'${env.ADC_HOSTNAME}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.TA_HOSTNAME} != "default" ]]; then
+          perl -pi -e 's/TA_HOST_REPLACE/'${env.TA_HOSTNAME}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.EAS_HOSTNAME} != "default" ]]; then
+          perl -pi -e 's/EAS_HOST_REPLACE/'${env.EAS_HOSTNAME}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.CH_HOSTNAME} != "default" ]]; then
+          perl -pi -e 's/CH_HOST_REPLACE/'${env.CH_HOSTNAME}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.TH_HOSTNAME} != "default" ]]; then
+          perl -pi -e 's/TH_HOST_REPLACE/'${env.TH_HOSTNAME}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.APPMGR_HOSTNAME} != "default" ]]; then
+          perl -pi -e 's/APPMGR_HOST_REPLACE/'${env.APPMGR_HOSTNAME}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.OS_HOSTNAME} != "default" ]]; then
+          perl -pi -e 's/OS_HOST_REPLACE/'${env.OS_HOSTNAME}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.GAS_HOSTNAME} != "default" ]]; then
+          perl -pi -e 's/GAS_HOST_REPLACE/'${env.GAS_HOSTNAME}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.VNFM_HOSTNAME} != "default" ]]; then
+          perl -pi -e 's/VNFM_HOST_REPLACE/'${env.VNFM_HOSTNAME}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.GLOBAL_VNFM_REGISTRY_HOSTNAME} != "default" ]]; then
+          perl -pi -e 's/GLOBAL_VNFM_REGISTRY_HOST_REPLACE/'${env.GLOBAL_VNFM_REGISTRY_HOSTNAME}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.VNFM_REGISTRY_HOSTNAME} != "default" ]]; then
+          perl -pi -e 's/VNFM_REGISTRY_HOST_REPLACE/'${env.VNFM_REGISTRY_HOSTNAME}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.HELM_REGISTRY_HOSTNAME} != "default" ]]; then
+          perl -pi -e 's/HELM_CHART_HOST_REPLACE/'${env.HELM_REGISTRY_HOSTNAME}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.EIC_HOSTNAME} != "default" ]]; then
+          perl -pi -e 's/EIC_HOST_REPLACE/'${env.EIC_HOSTNAME}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.COOKIE_DOMAIN} != "default" ]]; then
+          perl -pi -e 's/COOKIE_DOMAIN_REPLACE/'${env.COOKIE_DOMAIN}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.GR_SECONDARY_HOSTNAME} != "default" ]]; then
+          perl -pi -e 's/GR_SECONDARY_HOST_REPLACE/'${env.GR_SECONDARY_HOSTNAME}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.GR_HOSTNAME} != "default" ]]; then
+          perl -pi -e 's/GR_HOST_REPLACE/'${env.GR_HOSTNAME}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.ML_HOSTNAME} != "default" ]]; then
+          perl -pi -e 's/ML_HOST_REPLACE/'${env.ML_HOSTNAME}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.AVIZ_HOSTNAME} != "default" ]]; then
+          perl -pi -e 's/AVIZ_HOST_REPLACE/'${env.AVIZ_HOSTNAME}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.BDR_HOSTNAME} != "default" ]]; then
+          perl -pi -e 's/BDR_HOST_REPLACE/'${env.BDR_HOSTNAME}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.VNFLCM_SERVICE_IP} != "default" ]]; then
+          perl -pi -e 's/VNFLCM_SERVICE_IP_REPLACE/'${env.VNFLCM_SERVICE_IP}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.INGRESS_IP} != "default" ]]; then
+          perl -pi -e 's/INGRESS_IP_REPLACE/'${env.INGRESS_IP}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.FH_SNMP_ALARM_IP} != "default" ]]; then
+          perl -pi -e 's/FH_SNMP_ALARM_IP_REPLACE/'${env.FH_SNMP_ALARM_IP}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.INGRESS_CLASS} != "default" ]]; then
+          perl -pi -e 's/eo_iccr/'${env.INGRESS_CLASS}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.EO_CM_HOSTNAME} != "default" ]]; then
+          perl -pi -e 's/EO_CM_HOST_REPLACE/'${env.EO_CM_HOSTNAME}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.EO_CM_IP} != "default" ]]; then
+          perl -pi -e 's/EO_CM_IP_REPLACE/'${env.EO_CM_IP}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.EO_CM_ESA_IP} != "default" ]]; then
+          perl -pi -e 's/EO_CM_ESA_IP_REPLACE/'${env.EO_CM_ESA_IP}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.EO_LM_HOSTNAME} != "default" ]]; then
+        perl -pi -e 's/EO_LM_HOST_REPLACE/'${env.EO_LM_HOSTNAME}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.EO_LM_GIT_HOSTNAME} != "default" ]]; then
+        perl -pi -e 's/EO_LM_GIT_HOST_REPLACE/'${env.EO_LM_GIT_HOSTNAME}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;
+        if [[ ${env.EO_LM_OCI_HOSTNAME} != "default" ]]; then
+        perl -pi -e 's/EO_LM_OCI_HOST_REPLACE/'${env.EO_LM_OCI_HOSTNAME}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+        fi;"""
+    - task: substitute-application-deployment-option
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: site_values_executor set-deployment-tags --deployment-tags "${env.TAGS}" --state-values-file ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml
+
+    - task: substitute-application-service-option
+      cmd:
+        - perl -pi -e 's/VNFLCM_SERVICE_DEPLOY_REPLACE/'${env.VNFLCM_SERVICE_DEPLOY}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml
+        - perl -pi -e 's/HELM_REGISTRY_DEPLOY_REPLACE/'${env.HELM_REGISTRY_DEPLOY}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml
+    - task: substitute-aws-ecr-token
+      cmd:
+        - perl -pi -e 's/PASSWORD_REPLACE/'${env.AWS_ECR_TOKEN}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml
+    - task: substitute-idun-credential
+      cmd:
+        - perl -pi -e 's/IDUN_CRED_REPLACE/'${env.IDUN_USER_PASSWORD}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml
+    - task: substitute-ipv6-enable
+      cmd:
+        - perl -pi -e 's/IPV6_ENABLE_REPLACE/'${env.IPV6_ENABLE}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml
+    - task: substitute-values-from-env-file
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: site_values_executor substitute-values --state-values-file ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml --file ${env.ENV_CONFIG_FILE}
+    - task: substitute-ddp-details
+      cmd:
+        - perl -pi -e 's/DDP_AUTOUPLOAD_ENABLED_REPLACE/'${env.DDP_AUTO_UPLOAD}'/' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml;
+
+  execute-helm-install:
+    - task: deploy-helm-chart-using-helm-install
+      docker-image: adp-helm-install
+      cmd: helm ${env.DEPLOYMENT_TYPE} ${env.INT_CHART_NAME} ${env.INT_CHART_NAME}-${env.INT_CHART_VERSION}.tgz -f site-values-${env.INT_CHART_VERSION}.yaml --namespace ${env.NAMESPACE} --kubeconfig ./kube_config/config --wait --timeout ${env.HELM_TIMEOUT}s;
+
+  execute-deployment-manager:
+    - task: deploy-helm-chart
+      docker-image: deployment-manager
+      docker-in-docker: socket
+      docker-flags:
+        - ${deployment-manager-flags}
+      cmd: ${env.DEPLOYMENT_TYPE} --namespace ${env.NAMESPACE} --helm-timeout ${env.HELM_TIMEOUT} --verbosity ${env.VERBOSITY}
+
+  gather-logs:
+    - task: gather-deployment-manager-logs
+      docker-image: deployment-manager
+      docker-in-docker: socket
+      docker-flags:
+        - ${deployment-manager-flags}
+      cmd: collect-logs --namespace ${env.NAMESPACE}
+    - task: gather-deployment-manager-logs-idunaas
+      docker-image: deployment-manager
+      docker-in-docker: socket
+      docker-flags:
+        - ${deployment-manager-flags-idunaas}
+      cmd: collect-logs --namespace ${env.NAMESPACE}
+    - task: gather-adp-k8s-logs
+      docker-image: ci-utils
+      docker-in-docker: socket
+      docker-flags:
+        - ${ci-utils-flags}
+        - "-e KUBECONFIG=./kube_config/config"
+      cmd: bash -c 'eo-integration-ci/app-staging/ci/jenkins/scripts/collect_ADP_logs.sh ${env.NAMESPACE}'
+    - task: gather-adp-k8s-logs-local
+      docker-image: eric-oss-ci-scripts
+      docker-in-docker: socket
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+        - "--volume /etc/hosts:/etc/hosts"
+        - "--volume ${env.PWD}/dockerconfig.json:/.docker/config.json"
+        - "-e KUBECONFIG=./kube_config/config"
+        - --entrypoint /bin/bash
+      cmd: ${env.PWD}/ci/jenkins/scripts/collect_ADP_logs.sh ${env.NAMESPACE}
+    - task: gather-system-logs
+      cmd: sudo bash -c '${env.PWD}/ci/jenkins/scripts/collect_system_logs.sh'
+
+  gather-environment-details:
+    - task: gather-environment-details
+      cmd: bash -c '
+        if [ -f ${env.ENV_DETAILS_DIR}/${env.ENV_NAME}.conf ]; then
+           echo "Gathering details for ${env.ENV_NAME}";
+           cat ${env.ENV_DETAILS_DIR}/${env.ENV_NAME}.conf > artifact.properties;
+        else
+           echo "Unable to find file associated with ${env.ENV_NAME}";
+           exit 1;
+        fi'
+
+  remove-all-helm-releases-from-namespace:
+    - task: remove-all-releases
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: helm_chart_executor remove-releases --namespace ${env.NAMESPACE} --kubeconfig-file ${kube-config-path}
+
+  remove-eric-storage-encryption-provider-release-from-namespace:
+    - task: remove-sep-release
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: helm_chart_executor remove-sep-release --namespace ${env.NAMESPACE} --kubeconfig-file ${kube-config-path}
+
+  remove-kt-resources:
+    - task: remove-kt-resources
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: kubectl_executor remove-kafka-topic-resources --namespace ${env.NAMESPACE} --kubeconfig-file ${kube-config-path}
+
+  remove-all-crd-helm-releases-from-namespace:
+    - task: remove-all-crd-releases
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: helm_chart_executor remove-releases --namespace ${env.CRD_NAMESPACE} --kubeconfig-file ${kube-config-path}
+
+  remove-all-crd-components:
+    - task: remove-all-crd-components
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: crd_executor remove-crd-components --namespace ${env.CRD_NAMESPACE} --kubeconfig-file ${kube-config-path}
+
+  remove-clusterroles:
+    - task: remove-deployment-clusterroles
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: kubectl_executor remove-cluster-roles --namespace ${env.NAMESPACE} --kubeconfig-file ${kube-config-path}
+
+
+  remove-cluster-rolebindings:
+    - task: remove-deployment-clusterrolebindings
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: kubectl_executor remove-cluster-role-bindings --namespace ${env.NAMESPACE} --kubeconfig-file ${kube-config-path}
+
+
+  remove-installed-pvcs:
+    - task: remove-pvcs
+      docker-image: adp-helm-install
+      cmd: /bin/bash -c "kubectl delete pvc --all --wait=true -n ${env.NAMESPACE} --kubeconfig ${kube-config-path} &&
+        if ! kubectl get pvc -n ${env.NAMESPACE} --kubeconfig ${kube-config-path} 2>&1 | grep -q 'No resources found'; then
+        kubectl wait --for=delete pvc --all --timeout=${env.TIMEOUT_IN_SECONDS}s -n ${env.NAMESPACE} --kubeconfig ${kube-config-path};
+        fi"
+
+  remove-tls-secrets:
+    - task: get-secrets
+      docker-image: adp-helm-install
+      cmd: kubectl get secrets -n ${env.NAMESPACE} --kubeconfig ${kube-config-path} | egrep 'tls-secret|iam-cacert-secret|eric-sec-sip-tls-bootstrap-ca-cert|eric-sec-sip-tls-trusted-root-cert' | awk '{print $1}' > .bob/var.secret-list
+    - task: remove-secrets
+      docker-image: adp-helm-install
+      cmd: /bin/bash -c 'for SECRET in $(cat .bob/var.secret-list);
+          do echo "Removing $SECRET";
+          kubectl delete -n ${env.NAMESPACE} --kubeconfig ${kube-config-path} secret $SECRET;
+        done;'
+
+  remove-network-policies:
+    - task: get-policies-to-remove
+      docker-image: adp-helm-install
+      cmd: kubectl -n ${env.NAMESPACE} --kubeconfig ${kube-config-path} get networkpolicies -l='app.kubernetes.io/managed-by=Helm' | awk '{print $1}' > .bob/var.network-policies
+    - task: append-additional-hook-policies
+      docker-image: adp-helm-install
+      cmd: kubectl -n ${env.NAMESPACE} --kubeconfig ${kube-config-path} get networkpolicies -o=jsonpath='{.items[?(@.metadata.annotations.helm\.sh/hook=="pre-upgrade")].metadata.name}' >> .bob/var.network-policies
+    - task: remove-first-line
+      cmd: sed -i '1d' .bob/var.network-policies
+    - task: remove-duplicates
+      cmd: sort -u -o .bob/var.network-policies .bob/var.network-policies
+    - task: remove-network-policies
+      docker-image: adp-helm-install
+      cmd: /bin/bash -c 'for POLICY in $(cat .bob/var.network-policies);
+        do echo "Removing $POLICY";
+        kubectl delete -n ${env.NAMESPACE} --kubeconfig ${kube-config-path} networkpolicy $POLICY;
+        done;'
+
+  wait-for-pvs:
+    - task: wait-on-pvs
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: kubectl_executor wait-for-persistent-volumes-deletion --namespace ${env.NAMESPACE} --kubeconfig-file ${kube-config-path} --timeout ${env.TIMEOUT_FOR_WAIT_FOR_PV_WAIT} --retries ${env.NUMBER_OF_RETRIES_FOR_PV_WAIT}
+
+  uds-backend-job-wait:
+    - task: waiting-for-uds-job
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: kubectl_executor uds-backend-job-wait --name ${env.JOB} --namespace ${env.NAMESPACE} --timeout ${env.TIME} --kubeconfig-file ${kube-config-path}
+
+  eo-cm-onboarding-check:
+    - task: check-eo-cm-status
+      docker-image: adp-helm-install
+      cmd: ${env.PWD}/ci/jenkins/scripts/check_eo_cm_onboarding_status.sh ${env.NAMESPACE} ${kube-config-path}
+
+  csar-management:
+    - task: set-scripts-and-values-file
+      cmd: echo " --values ./site-values-populated.yaml --scripts ./scripts" > .bob/var.optional-parameter
+    - task: set-values-file-only
+      cmd: echo " --values ./site-values-populated.yaml" > .bob/var.optional-parameter
+    - task: set-script-dir-only
+      cmd: echo " --scripts ./scripts" > .bob/var.optional-parameter
+    - task: set-empty-optional-values
+      cmd: echo "" > .bob/var.optional-parameter
+    - task: set-eric-product-info-only
+      cmd: echo " --eric-product-info" > .bob/var.eric-product-info-details
+    - task: set-eric-product-info-disable-helm-template
+      cmd: echo " --eric-product-info --disable-helm-template" > .bob/var.eric-product-info-details
+    - task: set-empty-product-info
+      cmd: echo "" > .bob/var.eric-product-info-details
+    - task: set-default-values
+      cmd: echo " --helm3 --helm-version 3.13.0 --docker-config /.docker --agentk --sol-version ${csar-sol-version}" > .bob/var.default-csar-values
+    - task: print-site-values-content
+      cmd: cat ${env.CSAR_OUTPUT_FILE}
+    - task: build-csar
+      docker-image: csar-builder
+      docker-in-docker: socket
+      docker-flags:
+        - ${csar-build-flags}
+      cmd: generate --name ${env.ARTIFACT_NAME}-${env.ARTIFACT_VERSION} ${env.BUILD_CSAR_TYPE} ${env.ARTIFACT_FULL_NAME} ${var.default-csar-values} ${var.optional-parameter} ${var.eric-product-info-details}
+    - task: upload-csar
+      cmd: curl -X PUT -u ${env.FUNCTIONAL_USER_USERNAME}:${env.FUNCTIONAL_USER_PASSWORD} -T ${env.ARTIFACT_NAME}-${env.ARTIFACT_VERSION}.csar ${seli-artifactory-url}/${env.CSAR_STORAGE_REPO}/csars/${env.ARTIFACT_NAME}/${env.ARTIFACT_VERSION}/${env.ARTIFACT_NAME}-${env.ARTIFACT_VERSION}.csar
+    - task: upload-csar-build-info
+      cmd: curl -X PUT -u ${env.FUNCTIONAL_USER_USERNAME}:${env.FUNCTIONAL_USER_PASSWORD} -T csar-build-info.txt ${seli-artifactory-url}/${env.CSAR_STORAGE_REPO}/csars/${env.ARTIFACT_NAME}/${env.ARTIFACT_VERSION}/csar-build-info.txt
+    - task: combine-csar-manifest-and-images-info
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: csar_executor combine-csar-build-info --manifest-file manifest.txt --images-file Files/images.txt
+    - task: merge-site-values
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: site_values_executor merge-yaml-files --path-base-yaml ${env.PWD}/${env.STATE_VALUES_FILE} --path-override-yaml ${env.PWD}/${env.PATH_TO_SITE_VALUES_OVERRIDE_FILE} --path-output-yaml ${env.CSAR_OUTPUT_FILE} --check-values-only false
+    - task: download-and-compare-csar-build-info
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+        - ${helm-cache-tags}
+        - --env FUNCTIONAL_USER_USERNAME
+        - --env FUNCTIONAL_USER_PASSWORD
+      cmd: csar_executor download-and-compare-csar-build-info --artifact-url ${seli-artifactory-url}/${env.CSAR_STORAGE_REPO}/csars/${env.ARTIFACT_NAME}/${env.ARTIFACT_VERSION}/csar-build-info.txt --helmfile-name ${env.HELMFILE_CHART_NAME} --helmfile-version ${env.HELMFILE_CHART_VERSION} --helmfile-repo ${env.HELMFILE_CHART_REPO} --path-to-helmfile ${env.PWD}/${env.HELMFILE_CHART_NAME}/helmfile.yaml --state-values-file ${env.PWD}/full-site-values-for-csar-build-info.yaml --chart-name ${env.ARTIFACT_NAME} --chart-cache-directory ${env.DEPENDENCY_CACHE_DIRECTORY}
+    - task: compare-images-between-helmfile-and-csar
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+        - ${helm-cache-tags}
+        - --env FUNCTIONAL_USER_USERNAME
+        - --env FUNCTIONAL_USER_PASSWORD
+      cmd: csar_executor compare-csar-and-helmfile-images --chart-name ${env.INT_CHART_NAMES} --chart-version ${env.INT_CHART_VERSIONS} --path-to-helmfile ${env.PWD}/${env.HELMFILE_CHART_NAME}/helmfile.yaml --state-values-file ${env.PWD}/full-site-values.yaml --helmfile-name ${env.HELMFILE_CHART_NAME} --helmfile-version ${env.HELMFILE_CHART_VERSION} --helmfile-repo ${env.HELMFILE_CHART_REPO} --chart-cache-directory ${env.DEPENDENCY_CACHE_DIRECTORY}
+    - task: get-local-csar-sha
+      cmd: sha256sum ${env.ARTIFACT_NAME}-${env.ARTIFACT_VERSION}.csar | cut -d ' ' -f 1 > .bob/var.local-csar-sha
+    - task: get-uploaded-csar-sha
+      cmd: curl -u ${env.FUNCTIONAL_USER_USERNAME}:${env.FUNCTIONAL_USER_PASSWORD} ${seli-artifactory-url}/${env.CSAR_STORAGE_REPO}/csars/${env.ARTIFACT_NAME}/${env.ARTIFACT_VERSION}/${env.ARTIFACT_NAME}-${env.ARTIFACT_VERSION}.csar.sha256 > .bob/var.uploaded-csar-sha
+    - task: compare-sha-values
+      cmd: bash -c """
+        if [[ ${var.local-csar-sha} != ${var.uploaded-csar-sha} ]]; then
+          echo 'The SHA of the local CSAR does not match the SHA of the CSAR uploaded to artifactory';
+          exit 1;
+        else
+          echo 'The upload was successful based on comparing the SHA of the local and uploaded CSARs';
+        fi;"""
+
+  fetch-helmfile:
+    - task: fetch-helmfile
+      cmd: curl -O -u ${env.FUNCTIONAL_USER_USERNAME}:${env.FUNCTIONAL_USER_PASSWORD} --verbose --ipv4 ${env.INT_CHART_REPO}/${env.INT_CHART_NAME}/${env.INT_CHART_NAME}-${env.INT_CHART_VERSION}.tgz
+
+  helmfile:
+    - task: fetch-helmfile
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: helmfile_executor download-helmfile --chart-name ${env.HELMFILE_CHART_NAME} --chart-version ${env.HELMFILE_CHART_VERSION} --chart-repo ${env.HELMFILE_CHART_REPO} --username ${env.FUNCTIONAL_USER_USERNAME} --user-password ${env.FUNCTIONAL_USER_PASSWORD}
+    - task: fetch-helmfile-using-token
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: helmfile_executor download-helmfile --chart-name ${env.HELMFILE_CHART_NAME} --chart-version ${env.HELMFILE_CHART_VERSION} --chart-repo ${env.HELMFILE_CHART_REPO} --user-token ${env.FUNCTIONAL_USER_TOKEN}
+    - task: extract-helmfile
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: utils_executor extract-tar-file --file ${env.HELMFILE_CHART_NAME}-${env.HELMFILE_CHART_VERSION}.tgz --dir ${env.PWD} --properties-file ${env.PROPERTIES_FILE}
+    - task: get-dm-full-url-version
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: utils_executor get-dm-url-and-tag --image ${env.DEPLOYMENT_MANAGER_DOCKER_IMAGE} --file ${env.PWD}/${env.INT_CHART_NAME}/dm_version.yaml --properties-file ${env.PWD}/IMAGE_DETAILS.txt
+
+  crds:
+    - task: check-for-crds
+      docker-image: eric-oss-ci-scripts
+      docker-in-docker: socket
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+        - --env HELM_CACHE_HOME=${env.PWD}
+        - --env HELM_CONFIG_HOME=${env.PWD}
+        - --env GERRIT_USERNAME
+        - --env GERRIT_PASSWORD
+        - --volume ${env.PWD}/.docker:/root/.docker
+      cmd: crd_executor get-crd-details-from-chart --path-to-helmfile ${env.PWD}/${env.TAR_BASE_DIR}/helmfile.yaml --chart-name "${env.CHART_NAME}" --chart-version "${env.CHART_VERSION}" --chart-repo "${env.CHART_REPO}" --image ${adp-crd-handler-image-name}
+
+  helmfile-charts-mini-csar-build:
+    - task: build-mini-csars
+      cmd: ${env.PWD}/ci/jenkins/scripts/build_csars_from_properties_file.sh -f ${env.PWD}/am_package_manager.properties -d ${csar-builder-image-full-name} -i ${env.INCLUDE_CHART_IMAGES} -s ${csar-sol-version}
+
+  cleanup-charts-mini-csar-build:
+    - task: cleanup-mini-csars
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: utils_executor cleaning-up-workspace-from-properties-file --file ${env.PWD}/am_package_manager.properties
+
+  untar-and-copy-helmfile-to-workdir:
+    - task: untar-and-copy-helmfile-to-workdir
+      cmd: tar -xvf ${env.INT_CHART_NAME}-${env.INT_CHART_VERSION}.tgz
+
+  untar-and-copy-helmfile-to-cloned-repo:
+    - task: untar-and-copy-helmfile-to-cloned-repo
+      cmd:
+        - mkdir -p ${env.PWD}/.bob/cloned_repo/helmfile
+        - tar -xvf ${env.INT_CHART_NAME}-${env.INT_CHART_VERSION}.tgz -C ${env.PWD}/.bob/cloned_repo/helmfile --strip-components 1
+
+  tar-helmfile-from-workdir:
+    - task: tar-helmfile-from-workdir
+      cmd: tar -zcvf ${env.INT_CHART_NAME}-${env.INT_CHART_VERSION}.tgz ${env.INT_CHART_NAME}
+
+  update-repositories-file:
+    - task: update-user-details
+      cmd:
+        - perl -pi -e 's/\{\{ env "GERRIT_USERNAME" \}\}/'${env.FUNCTIONAL_USER_USERNAME}'/' ${env.PWD}/${env.INT_CHART_NAME}/repositories.yaml
+        - perl -pi -e 's/\{\{ env "GERRIT_PASSWORD" \}\}/'${env.FUNCTIONAL_USER_PASSWORD}'/' ${env.PWD}/${env.INT_CHART_NAME}/repositories.yaml
+    - task: populate-default-registry-credentials
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: helmfile_executor populate-repository-credentials --file ${env.PWD}/${env.INT_CHART_NAME}/repositories.yaml --username ${env.FUNCTIONAL_USER_USERNAME} --user-password ${env.FUNCTIONAL_USER_PASSWORD}
+
+  update-crds-helmfile:
+    - task: update-crds-helmfile
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: crd_executor update-crds-helmfile --path-to-helmfile ${env.PWD}/${env.INT_CHART_NAME}/crds-helmfile.yaml
+
+  deploy-helmfile-using-deployment-manager:
+    - task: remove-local-repositories-yaml
+      cmd: rm ${env.PWD}/${env.INT_CHART_NAME}/repositories.yaml
+    - task: print-dm-version
+      docker-image: deployment-manager
+      docker-flags:
+        - ${deployment-manager-flags}
+      cmd: version | (echo -n 'DEPLOYMENT_MANAGER_VERSION=' && cat)
+
+    - task: archive-dm-version
+      docker-image: deployment-manager
+      docker-flags:
+        - ${deployment-manager-flags}
+      cmd: version | (echo -n 'DEPLOYMENT_MANAGER_VERSION=' && cat) >> artifact.properties
+
+    - task: set-skip-image-push-parameter
+      docker-image: adp-helm-install
+      cmd: /bin/bash -c "if ${env.USE_SKIP_IMAGE_PUSH};
+                            then echo '--skip-image-check-push';
+                         else
+                            echo '';
+                         fi" > .bob/var.skip-image-check-push-parameter
+
+    - task: set-skip-upgrade-for-unchanged-releases-parameter
+      docker-image: adp-helm-install
+      cmd: /bin/bash -c "if ${env.USE_SKIP_UPGRADE_FOR_UNCHANGED_RELEASES} && [ '${env.DEPLOYMENT_TYPE}' == 'upgrade' ];
+                            then echo '--skip-upgrade-for-unchanged-releases';
+                         else
+                            echo '';
+                         fi" > .bob/var.skip-upgrade-for-unchanged-releases-parameter
+
+    - task: set-use-certm-parameter
+      docker-image: adp-helm-install
+      cmd: /bin/bash -c "if ${env.USE_CERTM};
+        then echo '--use-certm';
+        else
+        echo '';
+        fi" > .bob/var.use-certm-parameter
+
+    - task: deploy-helmfile
+      docker-image: deployment-manager
+      docker-in-docker: socket
+      docker-flags:
+        - ${deployment-manager-flags}
+      cmd: ${env.DEPLOYMENT_TYPE} --namespace ${env.NAMESPACE} --docker-timeout ${env.DOCKER_TIMEOUT} --helm-timeout ${env.HELM_TIMEOUT} --crd-namespace ${env.CRD_NAMESPACE} --verbosity ${env.VERBOSITY} ${var.skip-image-check-push-parameter} ${var.skip-upgrade-for-unchanged-releases-parameter} ${var.use-certm-parameter}
+
+    - task: deploy-helmfile-idunaas
+      docker-image: deployment-manager
+      docker-in-docker: socket
+      docker-flags:
+        - "--user 0:0"
+        - ${deployment-manager-flags-idunaas}
+      cmd: ${env.DEPLOYMENT_TYPE} --namespace ${env.NAMESPACE} --docker-timeout ${env.DOCKER_TIMEOUT} --helm-timeout ${env.HELM_TIMEOUT} --crd-namespace ${env.CRD_NAMESPACE} --verbosity ${env.VERBOSITY} ${var.skip-image-check-push-parameter} ${var.skip-upgrade-for-unchanged-releases-parameter} ${var.use-certm-parameter}
+
+  check-helmfile-deployment-status:
+    - task: check-status
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: helmfile_executor check-helmfile-deployment --path-to-helmfile ${env.PWD}/${env.PATH_TO_HELMFILE} --deployment-tags "${env.TAGS}" --optional-tags "${env.OPTIONAL_TAGS}" --optional-key-value-list ${env.OPTIONAL_KEY_VALUE_LIST} --namespace ${env.NAMESPACE} --kubeconfig-file ${kube-config-path} --check-tags "${env.CHECK_TAGS}" --check-full-version ${env.CHECK_FULL_VERSION}
+    - task: execute-health-check-using-deployment-manager
+      docker-image: deployment-manager
+      docker-in-docker: socket
+      docker-flags:
+        - ${deployment-manager-flags}
+        - "-e KUBECONFIG=/workdir/kube_config/config"
+      cmd: health-check all --namespace ${env.NAMESPACE}
+
+  get-charts-deployment-time:
+    - task: deployment-time-measurement
+      docker-image: deployment-time-collector
+      docker-flags:
+        - --volume ${env.PWD}/kube_config/config:/workdir/kube_config
+        - --user $(id -u):$(id -g)
+      cmd: -n ${env.NAMESPACE} > deploy-timing.yaml
+
+  # This section should be used to get details from a helmfile.
+  helmfile-details:
+    - task: get-version-details
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: helmfile_executor get-app-version-from-helmfile --state-values-file ${env.PWD}/${env.STATE_VALUES_FILE} --path-to-helmfile ${env.PWD}/${env.PATH_TO_HELMFILE} --tags-set-to-true-only ${env.USE_TAGS}
+    - task: get-set-version-details-for-base-baseline
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: helmfile_executor get-base-baseline --path-to-helmfile ${env.PWD}/${env.PATH_TO_HELMFILE} --project-file-name ${env.PROJECT_FILE_NAME} --execution-type ${env.EXECUTION_TYPE}
+    - task: get-current-helmfile-version
+      cmd: cat ${env.PWD}/${env.HELMFILE_PATH}/metadata.yaml | grep "^version:" | awk '{print $2}' > .bob/var.version-prefix
+    - task: get-current-helmfile-name
+      cmd: cat ${env.PWD}/${env.HELMFILE_PATH}/metadata.yaml | grep "^name:" | awk '{print $2}' > .bob/var.helmfile-name
+    - task: step-helmfile-metadata
+      cmd: /bin/bash -c "sed -i 's|version:.*|version:\ ${env.ARTIFACT_VERSION}|' ${env.PWD}/${env.HELMFILE_PATH}/metadata.yaml"
+
+  # This section should be used to manage a helmfile, building, fetching extracting etc.
+  helmfile-management:
+    - task: rename-helmfile-basename
+      cmd: /bin/bash -c "mv -f ${env.PWD}/${env.HELMFILE_PATH}/ ${env.PWD}/${env.ARTIFACT_NAME}/"
+    - task: package-helmfile
+      cmd: /bin/bash -c "tar -C ${env.PWD}/${env.HELMFILE_PATH}/.. -czvf ${env.ARTIFACT_NAME}-${env.ARTIFACT_VERSION}.tgz $( basename ${env.PWD}/${env.HELMFILE_PATH} )"
+
+  fetch-site-values:
+    - task: fetch-site-values
+      cmd: cp ${env.PWD}/${env.FULL_PATH_TO_SITE_VALUES_FILE} ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml
+
+  get-latest-helmfile-version:
+    - task: get-latest-helmfile-version
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - --env FUNCTIONAL_USER_USERNAME
+        - --env FUNCTIONAL_USER_PASSWORD
+        - --env FUNCTIONAL_USER_TOKEN
+        - ${eric-oss-ci-scripts-flags}
+      cmd: helmfile_executor get-latest-helmfile-version --chart-repo ${env.INT_CHART_REPO} --helmfile-name ${env.INT_CHART_NAME} --filter-by-days-past ${env.FILTER_BY_DAYS_PAST}
+
+  get-microservice-release-details-from-helmfile:
+    - task: microservice-details
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: helmfile_executor get-microservice-details-from-helmfile --state-values-file ${env.PWD}/${env.STATE_VALUES_FILE} --path-to-helmfile ${env.PWD}/${env.PATH_TO_HELMFILE}
+
+  compare-component-versions:
+    - task: compare-microservice-versions-in-application
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - --env FUNCTIONAL_USER_USERNAME
+        - --env FUNCTIONAL_USER_PASSWORD
+        - --env GERRIT_USERNAME
+        - --env GERRIT_PASSWORD
+        - ${eric-oss-ci-scripts-flags}
+      cmd: helm_chart_executor compare-microservice-versions-from-application --state-values-file ${env.PWD}/${env.STATE_VALUES_FILE} --path-to-helmfile ${env.PWD}/${env.PATH_TO_HELMFILE} --chart-name ${env.CHART_NAME} --chart-repo ${env.CHART_REPO} --chart-version ${env.CHART_VERSION}
+    - task: compare-application-versions-in-helmfile
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - --env FUNCTIONAL_USER_USERNAME
+        - --env FUNCTIONAL_USER_PASSWORD
+        - ${eric-oss-ci-scripts-flags}
+      cmd: helmfile_executor compare-application-versions-from-helmfile --state-values-file ${env.PWD}/${env.STATE_VALUES_FILE} --path-to-helmfile ${env.PWD}/${env.PATH_TO_HELMFILE}
+
+  get-release-details-from-helmfile:
+    - task: get-release-info-helmfile-version
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - --env FUNCTIONAL_USER_USERNAME
+        - --env FUNCTIONAL_USER_PASSWORD
+        - ${eric-oss-ci-scripts-flags}
+        - ${helm-cache-tags}
+      cmd: helmfile_executor get-release-details-from-helmfile --state-values-file ${env.PWD}/${env.STATE_VALUES_FILE} --path-to-helmfile ${env.PWD}/${env.PATH_TO_HELMFILE} --get-all-images ${env.GET_ALL_IMAGES} --fetch-charts ${env.FETCH_CHARTS} --helmfile-url ${env.INT_CHART_REPO} --chart-cache-directory ${env.DEPENDENCY_CACHE_DIRECTORY}
+
+  build-application-list-file:
+    - task: build-artifact-properties-for-csar-build-check
+      cmd: echo "${env.ARTIFACT_NAME}=${env.ARTIFACT_VERSION}" > artifact.properties
+
+  check-for-existing-csar-in-repo:
+    - task: check-for-existing-csar-in-repo
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - --env FUNCTIONAL_USER_USERNAME
+        - --env FUNCTIONAL_USER_PASSWORD
+        - ${eric-oss-ci-scripts-flags}
+      cmd: csar_executor check-for-existing-csar --csar-repo-url ${env.CSAR_STORAGE_API_URL} --applications-to-check /ci-scripts/output-files/artifact.properties
+
+  download-csar-to-workspace:
+    - task: download-csars
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - --env FUNCTIONAL_USER_USERNAME
+        - --env FUNCTIONAL_USER_PASSWORD
+        - ${eric-oss-ci-scripts-flags}
+      cmd: csar_executor download-existing-csar --csar-repo-url ${env.CSAR_STORAGE_URL} --applications-to-check /ci-scripts/output-files/build_csar.properties
+
+  refresh-env-token:
+    - task: delete-csi-cinder-controller
+      docker-image: adp-helm-install
+      cmd: ${env.PWD}/ci/jenkins/scripts/refresh_token.sh ${kube-config-path}
+
+  eo-migration-post-cleanup:
+    - task: delete-old-helm-release
+      docker-image: adp-helm-install
+      cmd: /bin/bash -c "if helm status eric-eo-${env.NAMESPACE} --kubeconfig ${kube-config-path} --namespace ${env.NAMESPACE}; then helm uninstall eric-eo-${env.NAMESPACE} --kubeconfig ${kube-config-path} --namespace ${env.NAMESPACE} --debug; fi"
+    - task: cleanup-unused-pvcs
+      docker-image: adp-helm-install
+      cmd: ${env.PWD}/ci/jenkins/scripts/cleanup_unused_pvcs.sh ${env.NAMESPACE} ${kube-config-path}
+
+  review-publish-submit-chart:
+    - task: review-publish-submit
+      docker-image: adp-inca
+      docker-flags:
+        - --env CREATE_ONLY_FULL_VERSION=true
+        - --env CI_HELM
+        - --env GERRIT_REFSPEC
+        - --env CHART_NAME
+        - --env CHART_VERSION
+        - --env CHART_REPO
+        - --env GIT_REPO_URL
+        - --env VCS_BRANCH
+        - --env CHART_PATH
+        - --env HELM_INTERNAL_REPO
+        - --env HELM_DROP_REPO
+        - --env HELM_RELEASED_REPO
+        - --env ALLOW_DOWNGRADE
+        - --env VERSION_CHECK_DOWNGRADE
+        - --env IGNORE_NON_RELEASED
+        - --env AUTOMATIC_RELEASE
+        - --env ALWAYS_RELEASE
+        - --env PLUS_RELEASE_MODE
+        - --env VERSION_STEP_STRATEGY_DEPENDENCY
+        - --env VERSION_STEP_STRATEGY_MANUAL
+        - --env HELM_REPO_CREDENTIALS
+        - --env ARM_API_TOKEN
+        - --env GERRIT_USERNAME
+        - --env GERRIT_PASSWORD
+        - --env COMMIT_MESSAGE_FORMAT_MANUAL
+        - --env GIT_TAG_ENABLED
+        - --env WAIT_SUBMITTABLE_BEFORE_PUBLISH
+        - --env WAIT_TIMEOUT_SEC_BEFORE_PUBLISH
+        - --env FORCE_VERSION_UPDATE
+        - --env STATE_VALUES_FILE=${env.PWD}/.bob/tmp_repo/build/site-values/site-values.yaml
+        - --env HELMFILE_ENVIRONMENT=build
+        - ${env.DEBUG_FLAG}
+      cmd: ihc-auto ${env.GERRIT_PREPARE_OR_PUBLISH}
+
+  copy-helm-template-to-base-dir:
+    - task: get-helm-template-file
+      cmd: bash -c 'ls -1 ${env.PWD}/.bob/ | egrep "[0-9.*].tgz" | head -1 > ${env.PWD}/.bob/var.helm-template-file'
+    - task: copy-helm-template-file
+      cmd: bash -c '\cp ${env.PWD}/.bob/${var.helm-template-file} ${env.PWD}/${var.helm-template-file}'
+
+  validate-helm3-charts:
+    - task: validate
+      docker-image: adp-inca
+      cmd: bash -c 'export PATH=/usr/share/helm/v3.8.1/:$PATH;
+        TEMPLATE_FAILED=blank;
+        for VALUES in $(find ${env.PWD}/${testsuite-dir} | grep yaml | grep -v "[0-9].[0-9].[0-9]-[0-9]");
+          do echo "Scanning $VALUES";
+          helm template ${env.PWD}/${env.APP_NAME}-*.tgz -f $VALUES 1> /dev/null;
+          if [ $? -ne 0 ]; then
+            TEMPLATE_FAILED=true;
+            echo -e "\e[1m\e[31mTEMPLATE_FAILED\e[0m";
+          else
+            echo -e "\e[1m\e[32mTEMPLATE_PASSED\e[0m";
+          fi
+        done;
+        if [ "$TEMPLATE_FAILED" = "true" ]; then
+          echo -e "\e[1m\e[31mOne or More Templates have failed, Please Investigate\e[0m";
+          exit 1;
+        fi'
+
+  design-rule-checker:
+    - task: helm-dr-checker
+      docker-image: adp-helm-dr-check
+      cmd: helm-dr-check
+        --values-file ${site-values-file}
+        --log-level WARN
+        -Dhelmdrck.credential.file.path=${env.HELM_REPO_CREDENTIALS}
+        -DhelmDesignRule.config.DR-D1123-113=exempt
+         ${env.DESIGN_RULE_OPTIONS}
+
+  common-design-rule-checker:
+    - task: helm-dr-checker
+      docker-image: adp-helm-dr-check
+      cmd: helm-dr-check
+        --values-file ${env.PWD}/${env.FULL_PATH_TO_SITE_VALUES_FILE}
+        --log-level WARN
+        --disable-yamllint
+        -Dhelmdrck.credential.file.path=${env.HELM_REPO_CREDENTIALS}
+        ${env.DESIGN_RULE_OPTIONS}
+
+  common-design-rule-build-notification:
+    - task: build-notification
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+        - --entrypoint /usr/bin/python3.10
+        - --env BUILD_NUMBER
+        - --env JOB_URL
+        - --env SELI_ARTIFACTORY_REPO_USER
+        - --env SELI_ARTIFACTORY_REPO_PASS
+      cmd: ci/jenkins/scripts/helm_dr_checker.py validate_helm_dr_compliance
+
+  add-experimental-permissions-for-docker-config-file:
+    - task: add-permissions-to-docker-config-file
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - --volume ${env.PWD}/.docker:/root/.docker
+        - ${eric-oss-ci-scripts-flags}
+      cmd: pre_code_review_executor add-experimental-permissions-for-docker-config-file --docker-file-full-path ${env.PWD}/${env.DOCKER_FILE_PATH}
+
+  unzip-app-chart:
+    - task: untar-file
+      cmd: tar -xvf ${env.PWD}/${var.helm-template-file}
+
+  eric-product-info-check:
+    - task: check-eric-product-info-images
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - --volume ${env.PWD}/.docker:/root/.docker
+        - ${eric-oss-ci-scripts-flags}
+      cmd: pre_code_review_executor check-eric-product-info-images --chart-full-path ${env.PWD}/${env.CHART_PATH}
+
+  generate-secret:
+    - task: eric-sec-access-mgmt-creds
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: kubectl_executor create-generic-secret-from-literals --namespace ${env.NAMESPACE} --kubeconfig-file ${kube-config-path} --from-literals "kcadminid=${env.KC_ADMIN_ID} kcpasswd=${env.KC_PASSWORD} pguserid=${env.PG_USER_ID} pgpasswd=${env.PG_PASSWORD}" --secret-name ${env.SECRET_NAME}
+    - task: eric-sec-access-mgmt-aapxy-creds
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: kubectl_executor create-generic-secret-from-literals --namespace ${env.NAMESPACE} --kubeconfig-file ${kube-config-path} --from-literals "aapxysecret=${env.ADP_IAM_AA_CLIENT_PASSWORD}" --secret-name ${env.SECRET_NAME}
+    - task: database-pg-secret
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: kubectl_executor create-generic-secret-from-literals --namespace ${env.NAMESPACE} --kubeconfig-file ${kube-config-path} --from-literals "custom-user=${env.CUSTOM_USER_ID} custom-pwd=${env.CUSTOM_PASSWORD} super-user=${env.SUPER_USER_ID} super-pwd=${env.SUPER_PASSWORD} metrics-user=${env.METRICS_USER_ID} metrics-pwd=${env.METRICS_PASSWORD} replica-user=${env.REPLICA_USER_ID} replica-pwd=${env.REPLICA_PASSWORD}"  --secret-name ${env.SECRET_NAME}
+    - task: container-vnfm-generic-secret
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: kubectl_executor create-generic-secret-from-literals --namespace ${env.NAMESPACE} --kubeconfig-file ${kube-config-path} --secret-name ${env.ENM_CONTAINER_SECRET_NAME} --from-literals "enm-scripting-ip=${env.ENM_SCRIPTING_CLUSTER_IP} enm-scripting-username=${env.ENM_USERNAME} enm-scripting-password=${env.ENM_PASSWORD} enm-scripting-connection-timeout=${env.ENM_CONNECTION_TIMEOUT_IN_MILLISECONDS} enm-scripting-ssh-port=${env.ENM_SCRIPTING_SSH_PORT}"
+    - task: vm-vnfm-generic-secret
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: kubectl_executor create-generic-secret-from-literals --namespace ${env.NAMESPACE} --kubeconfig-file ${kube-config-path} --from-literals "oss-masterserver-hostname=${env.ENM_MASTER_SERVER_HOSTNAME} oss-notification-hostname=${env.ENM_NOTIFICATION_SERVICE_HOSTNAME} oss-masterservice-ip=${env.ENM_MASTER_SERVICE_IP} oss-notificationservice-ip=${env.ENM_NOTIFICATION_SERVICE_IP}" --secret-name ${env.ENM_VM_SECRET_NAME}
+    - task: eric-odca-ddc-sftp-server-secret
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: kubectl_executor create-generic-secret-from-literals --namespace ${env.NAMESPACE} --kubeconfig-file ${kube-config-path} --from-literals "sftp_credentials.json={\"username\":\"${env.SFTP_USER}\",\"password\":\"${env.SFTP_PASSWORD}\"}" --secret-name ${env.SECRET_NAME}
+    - task: testware-resources-secret
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: kubectl_executor create-generic-secret-from-literals --namespace ${env.NAMESPACE} --kubeconfig-file ${kube-config-path} --from-literals "api_url=${env.TESTWARE_API_URL} gui_url=${env.TESTWARE_K6_TOOL_GUI_URL} database_url=${env.TESTWARE_DATABASE_URL} kafka_config=${env.TESTWARE_KAFKA_CONFIG} ${env.USER_SECRET_USERNAME_KEY}=${env.USER_SECRET_USERNAME_VALUE} ${env.USER_SECRET_PASSWORD_KEY}=${env.USER_SECRET_PASSWORD_VALUE}" --secret-name ${env.SECRET_NAME} --recreate-secret
+    - task: set-temp-secret-parameter
+      docker-image: adp-helm-install
+      cmd: /bin/bash -c "if ${env.TEMP_SECRET};
+        then echo '--temp-secret';
+        else
+        echo '';
+        fi" > .bob/var.use-temp-secret-parameter
+    - task: create-user-secret-from-literals
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: kubectl_executor create-generic-secret-from-literals --namespace ${env.NAMESPACE} --kubeconfig-file ${kube-config-path} --from-literals "${env.USER_SECRET_USERNAME_KEY}=${env.USER_SECRET_USERNAME_VALUE} ${env.USER_SECRET_PASSWORD_KEY}=${env.USER_SECRET_PASSWORD_VALUE}" --secret-name ${env.SECRET_NAME} ${var.use-temp-secret-parameter}
+    - task: get_value_from_configmap_or_secret
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: kubectl_executor get-value-from-configmap-or-secret --resource-name ${env.RESOURCE_NAME} --resource-type ${env.RESOURCE_TYPE} --namespace ${env.NAMESPACE} --kubeconfig-file ${kube-config-path} --search-string "${env.SEARCH_STRING}"
+
+  generate-cluster-role:
+    - task: cluster-role
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: kubectl_executor create-privileged-policy-cluster-role --name ${env.RELEASE_NAME}-${env.NAMESPACE}-allowed-use-privileged-policy --namespace ${env.NAMESPACE} --release-name ${env.RELEASE_NAME} --kubeconfig-file ${kube-config-path}
+
+  generate-am-specific-rolebinding:
+    - task: am-specific-rolebinding
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: kubectl_executor create-cluster-rolebinding --kubeconfig-file ${kube-config-path} --name ${env.NAMESPACE} --cluster-role cluster-admin --service-account "${env.NAMESPACE}:eric-lcm-helm-executor"
+
+  generate-optionality-maximum:
+    - task: make-copy-of-helmfile
+      cmd: cp -rp ${env.HELMFILE_PATH_FOR_OPTIONALITY} ${env.PATH_FOR_OPTIMIZED_FILE}
+    - task: generate-optionality-maximum
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - --env GERRIT_USERNAME
+        - --env GERRIT_PASSWORD
+        - ${eric-oss-ci-scripts-flags}
+      docker-mounts:
+        - "${env.LOCAL_PACKAGE_CACHE_DIRECTORY}:${env.MOUNTED_PACKAGE_CACHE_DIRECTORY}"
+      cmd: helmfile_executor generate-optionality-maximum
+        --path-to-helmfile ${env.PATH_FOR_OPTIMIZED_FILE}/helmfile.yaml
+        --state-values-file ${env.STATE_VALUES_FILE}
+        --chart-cache-directory ${env.MOUNTED_PACKAGE_CACHE_DIRECTORY}
+
+  create-namespace:
+    - task: create-namespace
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: kubectl_executor create-namespace --namespace ${env.NAMESPACE} --kubeconfig-file ${kube-config-path} --ignore-exists ${env.IGNORE_IF_CREATED}
+
+  create-namespace-secret:
+    - task: create-namespace-secret
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: kubectl_executor create-namespace-secret --namespace ${env.NAMESPACE} --secret-name ${env.SECRET_NAME} --kubeconfig-file ${kube-config-path} --dockerconfig-file ${docker-config-path} --ignore-exists ${env.IGNORE_IF_CREATED}
+
+  remove-namespace:
+    - task: remove-namespace
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: kubectl_executor delete-namespace --namespace ${env.NAMESPACE} --kubeconfig-file ${kube-config-path}
+
+  remove-crd-namespace:
+    - task: remove-namespace
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: kubectl_executor delete-namespace --namespace ${env.CRD_NAMESPACE} --kubeconfig-file ${kube-config-path}
+
+  update-evnfm-files:
+    - task: get-cluster-role
+      cmd: cp ${env.PWD}/ci/jenkins/scripts/yaml/ClusterRoleBinding.yaml ./ClusterRoleBinding.yaml
+    - task: substitute-release-in-service-account
+      cmd:
+        - perl -pi -e 's/<SERACC_CLSROLB_META_NAME>/'${env.SERACC_CLSROLB_META_NAME}'/' ${env.PWD}/ClusterRoleBinding.yaml
+        - perl -pi -e 's/<NAMESPACE_NAME>/'${env.NAMESPACE}'/' ${env.PWD}/ClusterRoleBinding.yaml
+
+  evnfm-pre-deployment:
+    - task: create-service-account
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: kubectl_executor create-service-account --name ${env.SERACC_CLSROLB_META_NAME} --namespace ${env.NAMESPACE} --kubeconfig-file ${kube-config-path}
+    - task: create-evnfm-predeploy-cluster-role-binding
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: kubectl_executor create-resource-with-yaml-file --namespace ${env.NAMESPACE} --kubeconfig-file ${kube-config-path} --name ${env.SERACC_CLSROLB_META_NAME}-${env.NAMESPACE} --file ClusterRoleBinding.yaml --resource-name clusterrolebinding
+    - task: create-internal-registry-secret
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: kubectl_executor check-and-create-internal-registry-secret --name ${env.REGISTRY_SECRET_NAME} --namespace ${env.NAMESPACE} --kubeconfig-file ${kube-config-path} --user-id ${env.USER_ID} --user-password ${env.USER_PASSWORD}
+
+  build-mail:
+    - task: build-mail
+      docker-image: adp-helm-install
+      cmd: ${env.PWD}/ci/jenkins/scripts/build_mail.sh --sprint_number=${env.SPRINT_NUMBER} --dm_version=${env.DM_VERSION} --product_version=${env.PRODUCT_VERSION} --product_name=${env.PRODUCT_NAME} --product_helmfile_repo=${env.PRODUCT_HELMFILE_REPO} --jiras=${env.JIRA} --release_type=${env.RELEASE_TYPE} --helmfile_csars=${env.CSARs} --custwf_version=${env.CUSTWF_VERSION} --custwf_link=${env.CUSTWF_LINK}
+
+  prepare-workdir:
+    - task: set-chart-version
+      cmd: 'echo ${env.INT_CHART_VERSION} > .bob/var.int_chart-version'
+    - task: copy-aws-credentials
+      cmd: cp -pr ${env.PWD}/${env.PATH_TO_AWS_FILES} ${env.PWD}/aws
+
+  annotate-namespace-installed-helmfile:
+    - task: annotate-installed-helmfile
+      docker-image: ci-utils
+      docker-in-docker: socket
+      docker-flags:
+        - ${ci-utils-flags}
+      cmd: /bin/bash -c "kubectl annotate --overwrite namespace ${env.NAMESPACE} --kubeconfig ${kube-config-path} idunaas/installed-helmfile=${env.INT_CHART_VERSION}"
+
+  parse-log-file:
+    - task: parse-deployment-log
+      cmd:
+        - perl -ne 'if (m/manager\] \[INFO\]:\sTime Taken:\s(.*)/) { print "DEPLOYMENT_TIME=$1\n" }' logs/*_[ui]??????.log >> artifact.properties
+
+  pm-server-installation:
+    - task: pm-server-installation
+      docker-image: adp-helm-install
+      cmd: ${env.PWD}/ci/jenkins/scripts/pm-server-installation.sh ${env.NAMESPACE} ${env.INGRESS_IP} ${env.TEARDOWN} ${env.FUNCTIONAL_USER_USERNAME} ${env.FUNCTIONAL_USER_PASSWORD} ${env.GRAFANA_HOSTNAME} ${kube-config-path} ${env.GRAFANA_DATASOURCE_NAME} ${env.GRAFANA_API_KEY} ${env.PMSERVER_PVC_SIZE} ${env.PMSERVER_MEMORY_LIMITS} ${env.REGISTRY_SECRET_NAME}
+
+  run-cncs-optionality-check:
+    - task: run-comparison
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: helm_chart_executor cncs-optionality-checker --helmfile-name ${env.INT_CHART_NAME} --helmfile-version ${env.INT_CHART_VERSION} --username ${env.FUNCTIONAL_USER_USERNAME} --user-password ${env.FUNCTIONAL_USER_PASSWORD}
+
+  # Gerrit Handling
+  gerrit:
+    - task: clone-repo
+      docker-image: adp-release-auto
+      docker-envs:
+        - GERRIT_USERNAME=${env.GERRIT_USERNAME}
+        - GERRIT_PASSWORD
+      cmd:
+        - rm -rf ${cloned-repo-directory}
+        - gerrit clone --debug --username ${env.GERRIT_USERNAME} --project-path ${env.GERRIT_PROJECT} --git-repo-local ${cloned-repo-directory} --submodule-timeout ${env.SUBMODULE_SYNC_TIMEOUT}
+    - task: create-patch
+      docker-image: eric-oss-ci-scripts
+      docker-in-docker: socket
+      docker-flags:
+          - ${eric-oss-ci-scripts-flags}
+          - --volume ${env.PWD}/.docker:/root/.docker
+          - --env GERRIT_USERNAME
+          - --env GERRIT_PASSWORD
+      cmd:
+        - gerrit_executor generate-gerrit-patch --image ${adp-release-auto-image-name} --message "${env.COMMIT_MESSAGE_FORMAT_MANUAL}" --git-repo-local ${cloned-repo-directory} --gerrit-branch ${env.GERRIT_BRANCH}
+    - task: check-code-submittable
+      docker-image: eric-oss-ci-scripts
+      docker-in-docker: socket
+      docker-flags:
+          - ${eric-oss-ci-scripts-flags}
+          - --volume ${env.PWD}/.docker:/root/.docker
+          - --env GERRIT_USERNAME
+          - --env GERRIT_PASSWORD
+      cmd:
+        - gerrit_executor check-gerrit-review-submittable --image ${adp-int-helm-chart-auto} --gerrit-change-number ${env.GERRIT_CHANGE_NUMBER} --timeout ${env.WAIT_TIMEOUT_SEC_BEFORE_PUBLISH}
+    - task: set-review-labels
+      cmd: /bin/bash -c "if ${env.CODE_REVIEW_ONLY};
+                          then echo 'Code-Review="+2"';
+                         else
+                          echo 'Verified="+1" Code-Review="+2"';
+                         fi" > .bob/var.set-review-labels-parameter
+    - task: review-change
+      docker-image: adp-inca
+      docker-flags:
+        - --env GERRIT_USERNAME
+        - --env GERRIT_PASSWORD
+      cmd: gerrit review --change ${env.GERRIT_CHANGE_NUMBER} --revision ${env.GERRIT_PATCHSET_NUMBER} --message "Looks very good to the AI" --setLabel ${var.set-review-labels-parameter}
+    - task: submit-change
+      docker-image: adp-inca
+      docker-flags:
+        - --env GERRIT_USERNAME
+        - --env GERRIT_PASSWORD
+      cmd: gerrit submit --change ${env.GERRIT_CHANGE_NUMBER} --revision ${env.GERRIT_PATCHSET_NUMBER} --review-message-on-failure "Change is not submittable, consider rebasing your change"
+    - task: git-tag
+      docker-image: adp-release-auto
+      docker-flags:
+        - --env GERRIT_USERNAME
+        - --env GERRIT_PASSWORD
+      cmd: version-handler create-git-tag --git-repo-path ${cloned-repo-directory} --tag ${env.ARTIFACT_VERSION} --message "${env.COMMIT_MESSAGE_FORMAT_MANUAL}"
+    - task: get-next-release-version
+      docker-image: adp-inca
+      docker-flags:
+        - --env GERRIT_USERNAME
+        - --env GERRIT_PASSWORD
+      cmd: next-version --current-version ${var.version-prefix} --version-type ${env.VERSION_STEP_STRATEGY_MANUAL} --release -o .bob/var.next-version-prefix
+    - task: get-next-dev-version
+      docker-image: adp-inca
+      docker-flags:
+        - --env GERRIT_USERNAME
+        - --env GERRIT_PASSWORD
+      cmd: next-version --current-version ${var.version-prefix} --version-type PATCH -o .bob/var.next-version
+    - task: get-commit-hash
+      docker-image: adp-release-auto
+      cmd: git rev-parse --short HEAD > .bob/var.commit-hash
+    - task: set-unique-version-using-timestamp
+      cmd: echo ${var.next-version}-${var.time-stamp} > .bob/var.next-version-prefix
+    - task: set-unique-version
+      cmd: echo ${var.next-version}-${var.commit-hash} > .bob/var.next-version-prefix
+
+  build-helm-chart-validator-testsuite-image:
+    - task: docker-build
+      cmd: docker build ${env.HELM_CHART_VALIDATOR_IMAGE_DIR}
+        --tag ${helm-chart-validator-name}:${env.TAG_HELM_CHART_VALIDATOR}
+
+  run-helm-chart-validator-testsuite:
+    - task: helm-template
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+        - --entrypoint /bin/bash
+      cmd: -c 'helm template -f ${env.PWD}/${env.FULL_PATH_TO_SITE_VALUES_FILE} ${env.PWD}/${var.helm-template-file} > ${env.PWD}/helm-template-manifest.yaml'
+
+    - task: run-testsuite
+      cmd: docker run
+        --name ${helm-chart-validator-name}_${env.TAG_HELM_CHART_VALIDATOR}
+        -v ${env.PWD}/${var.helm-template-file}:/test-chart.tgz
+        --env GERRIT_USERNAME="${env.GERRIT_USERNAME}"
+        --env GERRIT_PASSWORD="${env.GERRIT_PASSWORD}"
+        ${helm-chart-validator-name}:${env.TAG_HELM_CHART_VALIDATOR}
+    - task: helm-chart-validator
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: pre_code_review_executor static-tests --state-values-file ${env.PWD}/${env.FULL_PATH_TO_SITE_VALUES_FILE} --chart-full-path ${env.PWD}/${var.helm-template-file} --specific-skip-file ${env.PWD}/${env.HELM_CHART_VALIDATOR_DIRECTORY_PATH}/${env.APP_NAME}/skip_list.json  --common-skip-file ${env.PWD}/${env.HELM_CHART_VALIDATOR_DIRECTORY_PATH}/common_skip_list.json
+    - task: validate-chart-against-schema-file
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: pre_code_review_executor validate-chart-against-schema-file --chart-full-path ${env.PWD}/${var.helm-template-file} --directory-path ${env.PWD}/${env.HELM_CHART_VALIDATOR_DIRECTORY_PATH}/${env.APP_NAME} --search-string ${env.SEARCH_STRING} --ignore-strings ${env.IGNORE_STRINGS}
+
+  run-helm-chart-validator-testsuite-on-prep-helmfile:
+    - task: run-testsuite
+      cmd: docker run
+        --name ${helm-chart-validator-name}_${env.TAG_HELM_CHART_VALIDATOR}
+        -v ${env.LOCAL_PACKAGE_CACHE_DIRECTORY}:${env.MOUNTED_PACKAGE_CACHE_DIRECTORY}
+        -v ${env.PATH_FOR_OPTIMIZED_FILE}:/helmfile
+        --env HELM_CACHE_HOME=${env.PWD}
+        --env HELM_CONFIG_HOME=${env.PWD}
+        ${helm-chart-validator-name}:${env.TAG_HELM_CHART_VALIDATOR}
+
+  run-helmfile-validator:
+    - task: gather-site-values-file
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: site_values_executor merge-yaml-files --path-base-yaml ${env.FULL_PATH_TO_SITE_VALUES_FILE} --path-override-yaml ${env.FULL_PATH_TO_HELMFILE_TEMPLATE_OVERRIDE_FILE} --path-output-yaml ${env.PWD}/site_values.yaml --check-values-only false
+    - task: helmfile-template
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - --env GERRIT_USERNAME
+        - --env GERRIT_PASSWORD
+        - ${eric-oss-ci-scripts-flags}
+        - ${helm-cache-tags}
+        - --entrypoint /bin/bash
+      docker-mounts:
+        - "${env.LOCAL_PACKAGE_CACHE_DIRECTORY}:${env.MOUNTED_PACKAGE_CACHE_DIRECTORY}"
+      cmd: -c 'helmfile --environment build --state-values-file ${env.PWD}/site_values.yaml -f ${env.PATH_FOR_OPTIMIZED_FILE}/helmfile.yaml template > ${env.PWD}/helmfile-template-manifest.yaml'
+    - task: helmfile-build
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - --env GERRIT_USERNAME
+        - --env GERRIT_PASSWORD
+        - ${eric-oss-ci-scripts-flags}
+        - ${helm-cache-tags}
+        - --entrypoint /bin/bash
+      docker-mounts:
+        - "${env.LOCAL_PACKAGE_CACHE_DIRECTORY}:${env.MOUNTED_PACKAGE_CACHE_DIRECTORY}"
+      cmd: -c 'helmfile --state-values-file ${env.PWD}/site_values.yaml -f ${env.PATH_FOR_OPTIMIZED_FILE}/helmfile.yaml build &> ${env.PWD}/helmfile-build-manifest.yaml'
+    - task: helmfile-lint
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+        - --entrypoint /bin/bash
+      cmd: -c 'yamllint -c ${env.PWD}/ci/jenkins/config/yamllint_config.yaml ${env.PWD}/helmfile-build-manifest.yaml'
+    - task: helmfile-validator
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - --env GERRIT_USERNAME
+        - --env GERRIT_PASSWORD
+        - ${eric-oss-ci-scripts-flags}
+        - ${helm-cache-tags}
+      docker-mounts:
+        - "${env.LOCAL_PACKAGE_CACHE_DIRECTORY}:${env.MOUNTED_PACKAGE_CACHE_DIRECTORY}"
+      cmd: pre_code_review_executor helmfile-static-tests --state-values-file ${env.STATE_VALUES_FILE} --helmfile-full-path ${env.PATH_FOR_OPTIMIZED_FILE} --specific-skip-file ${env.SPECIFIC_SKIP_LIST_PATH}  --common-skip-file ${env.COMMON_SKIP_LIST_PATH} --check-specific-content ${env.CHECK_SPECIFIC_CONTENT_FILE_PATH}
+
+  run-kubernetes-compatibility-tests:
+    - task: generate-supported-kubernetes-versions
+      docker-image: adp-release-auto
+      cmd: ${env.PWD}/ci/jenkins/scripts/common/kubernetes_range_checkers/print_supported_k8s_versions.sh ${env.KUBE_VERSION_FILE_PATH} > ${env.PWD}/.bob/var.supported-k8s-versions
+
+    - task: generate-manifests-for-kubernetes-versions
+      docker-image: adp-inca
+      docker-flags:
+        - "--env HELM_VERSION=3.13.0"
+        - "--env GERRIT_USERNAME"
+        - "--env GERRIT_PASSWORD"
+        - "--env XDG_DATA_HOME=/helm_data/"
+        - "--env HELM_CACHE_HOME=${env.PWD}"
+        - "--env HELM_CONFIG_HOME=${env.PWD}"
+        - "--volume ${env.DEPENDENCY_CACHE_DIRECTORY}:${env.DEPENDENCY_CACHE_DIRECTORY}"
+      docker-mounts:
+        - "${env.PWD}/testsuite/helm-chart-validator/helm_file_plugin/file/:/helm_data/helm/plugins/file/"
+      cmd: ${env.PWD}/ci/jenkins/scripts/common/kubernetes_range_checkers/generate_helm_templates_for_supported_k8s.sh "${env.HELMFILE_OR_HELM_CHART_FILE_PATH}" ${env.SITE_VALUES_FILE_PATH_FOR_KUBERNETES_COMPATIBILITY_CHECKS} "${env.PWD}/.bob/var.supported-k8s-versions" "${env.PWD}/.bob/helm-templates"
+
+  run-kubernetes-compatibility-tests-kubeval-and-deprek8ion-tests:
+    - task: run-kubeval
+      docker-image: adp-helm-dr-check-kubernetes-tests
+      cmd: ${env.PWD}/ci/jenkins/scripts/common/kubernetes_range_checkers/kubeval.sh ${env.PWD}/.bob/var.supported-k8s-versions ${env.PWD}/.bob/helm-templates "${env.KUBEVAL_KINDS_TO_SKIP}"
+
+    - task: run-deprek8ion
+      docker-image: deprek8ion
+      docker-flags:
+        - "--entrypoint ${env.PWD}/ci/jenkins/scripts/common/kubernetes_range_checkers/deprek8ion.sh"
+      cmd: ${env.PWD}/.bob/var.supported-k8s-versions ${env.PWD}/.bob/helm-templates
+
+  helm-chart-validator-testsuite-report-and-clean:
+    - task: get-test-report
+      cmd: docker cp ${helm-chart-validator-name}_${env.TAG_HELM_CHART_VALIDATOR}:/testsuite/report.html ${env.PWD}/helm-chart-validator-test-report.html
+    - task: clean-container
+      cmd: docker rm -f ${helm-chart-validator-name}_${env.TAG_HELM_CHART_VALIDATOR}
+
+  validate-chart-schema:
+    - task: untar-file
+      cmd: tar -xvf ${env.PWD}/${var.helm-template-file}
+    - task: validate
+      docker-image: adp-release-auto
+      cmd: check-jsonschema --check-metaschema ${env.PWD}/${env.CHART_PATH}/values.schema.json
+    - task: test_schema
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: pre_code_review_executor schema-tests --chart-full-path ${env.PWD}/${var.helm-template-file} --directory-path ${env.PWD}/${env.CHART_PATH}/../../${env.SCHEMA_TESTS_PATH}
+
+  validate-site-values-template-schema:
+    - task: convert
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: utils_executor convert-yaml-to-json --yaml-file ${env.PWD}/.bob/cloned_repo/helmfile/templates/site-values-template.yaml --json-file ${env.PWD}/.bob/cloned_repo/helmfile/templates/site-values-template.json
+    - task: validate
+      docker-image: adp-release-auto
+      cmd: check-jsonschema --schemafile ${env.PWD}/.bob/cloned_repo/helmfile/site-values-template.schema.json ${env.PWD}/.bob/cloned_repo/helmfile/templates/site-values-template.json
+    - task: cleanup
+      cmd: rm ${env.PWD}/.bob/cloned_repo/helmfile/templates/site-values-template.json
+
+  lint:
+    - task: helm
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: pre_code_review_executor helm-lint --chart-full-path ${env.PWD}/${env.CHART_PATH} --state-values-file ${env.PWD}/${env.FULL_PATH_TO_SITE_VALUES_FILE}
+    - task: yaml-application-chart
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: pre_code_review_executor yaml-lint-application-chart --chart-full-path ${env.PWD}/${env.CHART_PATH} --state-values-file ${env.PWD}/${env.FULL_PATH_TO_SITE_VALUES_FILE} --yamllint-config ${env.PWD}/${env.FULL_PATH_TO_YAMLLINT_CONFIG_FILE} --template-output-file-path ${env.TEMPLATE_OUTPUT_FILE_PATH} --yamllint-log-file ${env.YAMLLINT_OUTPUT_FILE_PATH}
+    - task: yaml-helmfile
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - --env GERRIT_USERNAME
+        - --env GERRIT_PASSWORD
+        - ${eric-oss-ci-scripts-flags}
+        - ${helm-cache-tags}
+      docker-mounts:
+        - "${env.LOCAL_PACKAGE_CACHE_DIRECTORY}:${env.MOUNTED_PACKAGE_CACHE_DIRECTORY}"
+      cmd: pre_code_review_executor yaml-lint-helmfile --helmfile-full-path ${env.PATH_FOR_OPTIMIZED_FILE}/helmfile.yaml --state-values-file ${env.STATE_VALUES_FILE} --yamllint-config ${env.PWD}/${env.FULL_PATH_TO_YAMLLINT_CONFIG_FILE} --template-output-file-path ${env.TEMPLATE_OUTPUT_FILE_PATH} --yamllint-log-file ${env.YAMLLINT_OUTPUT_FILE_PATH}
+
+  pylint:
+    - task: run-pylint
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+        - --entrypoint pylint
+      cmd: $(git -C ${env.PWD}/.bob/cloned_repo show --pretty="format:" --name-only --diff-filter=dr $(git -C ${env.PWD}/.bob/cloned_repo log --pretty=format:'%H' -n 1) *.py | awk '{print ".bob/cloned_repo/"$0""}') --rcfile ${env.PWD}/ci/jenkins/scripts/python-ci-scripts/pylintrc --disable import-error
+    - task: run-flake8
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+        - --entrypoint flake8
+      cmd: $(git -C ${env.PWD}/.bob/cloned_repo show --pretty="format:" --name-only --diff-filter=dr $(git -C ${env.PWD}/.bob/cloned_repo log --pretty=format:'%H' -n 1) *.py | awk '{print ".bob/cloned_repo/"$0""}') --config ${env.PWD}/ci/jenkins/scripts/python-ci-scripts/.flake8
+    - task: run-pydocstyle
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+        - --entrypoint pydocstyle
+      cmd: $(git -C ${env.PWD}/.bob/cloned_repo show --pretty="format:" --name-only --diff-filter=dr $(git -C ${env.PWD}/.bob/cloned_repo log --pretty=format:'%H' -n 1) *.py | awk '{print ".bob/cloned_repo/"$0""}') --config ${env.PWD}/ci/jenkins/scripts/python-ci-scripts/.pydocstyle
+
+  get-shared-images:
+    - task: get-shared-images
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: helmfile_executor get-shared-images --path-to-helmfile ${env.PWD}/${env.INT_CHART_NAME}/helmfile.yaml
+
+  shellcheck:
+    - task: run-shellcheck-on-cloned-repo
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+        - --entrypoint /bin/bash
+      cmd: -c "find ${env.PWD}/.bob/cloned_repo -name '*.sh' | xargs -r shellcheck -e SC1091"
+
+
+  helm-chart-management:
+    - task: get-current-chart-version
+      cmd: cat ${env.PWD}/${env.CHART_PATH}/Chart.yaml | grep "^version:" | awk '{print $2}' > .bob/var.version-prefix
+    - task: set-unique-dev-version
+      cmd: echo $( cat .bob/var.next-version )-tm > .bob/var.next-version-prefix
+    - task: get-git-head-sha
+      cmd: git -C ${env.CHART_PATH} rev-parse --short HEAD > .bob/var.git-head-sha
+    - task: get-chart-name
+      cmd: cat ${env.PWD}/${env.CHART_PATH}/Chart.yaml | grep "^name:" | awk '{print $2}' > .bob/var.int-chart-name
+    - task: package-chart
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+        - ${helm-cache-tags}
+        - --env GERRIT_USERNAME
+        - --env GERRIT_PASSWORD
+      cmd: helm_chart_executor helm-chart-package --path-to-chart ${env.PWD}/${env.CHART_PATH} --directory-path ${env.PWD} --version ${env.TEST_CHART_VERSION} --use-dependency-cache ${env.USE_DEPENDENCY_CACHE} --dependency-cache-directory ${env.DEPENDENCY_CACHE_DIRECTORY}
+    - task: get-helm-chart-version
+      cmd: bash -c 'ls -1 ${env.PWD}/ | egrep "[0-9.*].tgz" | head -1 > ${env.PWD}/.bob/var.helm-template-file'
+    - task: set-time
+      cmd: bash -c "date +%s | sed 's/^.\{5\}//g' > ${env.PWD}/.bob/var.time-stamp"
+
+  dependency-cache-management:
+    - task: make-cache-dir
+      cmd: bash -c 'mkdir -p -m 777 ${env.DEPENDENCY_CACHE_DIRECTORY}'
+
+  adp-inca-enabler:
+    - task: set-allow-downgrade-parameter
+      docker-image: adp-helm-install
+      cmd: /bin/bash -c "if ${env.ALLOW_DOWNGRADE};
+        then echo '--allow-downgrade';
+        else
+        echo '';
+        fi" > .bob/var.use-allow-downgrade-parameter
+    - task: update-version
+      docker-image: adp-inca
+      docker-flags:
+        - --env VERSION_CHECK_DOWNGRADE
+      cmd: ihc-update --folder ${env.PWD}/${env.ARTIFACT_PATH} --name ${env.CHART_NAME} --version ${env.CHART_VERSION} --repository ${env.CHART_REPO} ${var.use-allow-downgrade-parameter}
+    - task: update-helmfile-version
+      docker-image: adp-inca
+      docker-envs:
+        - VERSION_CHECK_DOWNGRADE=${env.VERSION_CHECK_DOWNGRADE}
+        - VERSION_CHECK=${env.VERSION_CHECK}
+        - ALLOW_DOWNGRADE=${env.ALLOW_DOWNGRADE}
+        - ADD_NEW_REPO_DETAILS=${env.ADD_NEW_REPO_DETAILS}
+        - SKIP_HELMFILE_REPO_UPDATE=${env.SKIP_HELMFILE_REPO_UPDATE}
+      cmd: ihc-helmfile-update --helmfile-path ${env.PWD}/${env.ARTIFACT_PATH} --chart-name "${env.CHART_NAME}" --chart-version "${env.CHART_VERSION}" --chart-repository "${env.CHART_REPO}" --state-values-file ${env.STATE_VALUES_FILE}
+    - task: upload-to-arm
+      docker-image: adp-inca
+      cmd: arm-upload --file ${env.ARTIFACT_NAME}-${env.ARTIFACT_VERSION}.tgz --destination ${env.HELM_REPO_NAME}/${env.ARTIFACT_NAME} --token ${env.FUNCTIONAL_USER_TOKEN}
+    - task: generate-artifact
+      docker-image: adp-inca
+      cmd: ihc-generate-artifacts --int-chart-name ${env.ARTIFACT_NAME} --int-chart-version ${env.ARTIFACT_VERSION} --int-chart-repo ${env.HELM_REPO_NAME}
+    - task: fetch-build-upload
+      docker-image: adp-inca
+      docker-flags:
+        - --env GERRIT_REFSPEC
+        - --env CHART_NAME
+        - --env CHART_VERSION
+        - --env CHART_REPO
+        - --env CI_HELM
+        - --env GIT_REPO_URL
+        - --env VCS_BRANCH
+        - --env CHART_PATH
+        - --env HELM_INTERNAL_REPO
+        - --env HELM_DROP_REPO
+        - --env HELM_RELEASED_REPO
+        - --env HELM_UPLOAD_REPO
+        - --env ALLOW_DOWNGRADE
+        - --env VERSION_CHECK_DOWNGRADE
+        - --env IGNORE_NON_RELEASED
+        - --env AUTOMATIC_RELEASE
+        - --env ALWAYS_RELEASE
+        - --env VERSION_STEP_STRATEGY_DEPENDENCY
+        - --env VERSION_STEP_STRATEGY_MANUAL
+        - --env HELM_REPO_CREDENTIALS
+        - --env ARM_API_TOKEN
+        - --env GERRIT_USERNAME
+        - --env GERRIT_PASSWORD
+        - --env COMMIT_MESSAGE_FORMAT_MANUAL
+        - --env GIT_TAG_ENABLED
+        - --env WAIT_SUBMITTABLE_BEFORE_PUBLISH
+        - --env WAIT_TIMEOUT_SEC_BEFORE_PUBLISH
+        - --env STATE_VALUES_FILE=${env.STATE_VALUES_FILE}
+        - --env HELMFILE_ENVIRONMENT=build
+      cmd: ihc-auto ${env.GERRIT_PREPARE_OR_PUBLISH}
+
+  check-gerrit-central-and-mirror-in-sync:
+    - task: get-gerrit-central-git-head-sha
+      cmd: /bin/bash -c "echo $(git ls-remote -h ${env.GERRIT_CENTRAL}/${env.GERRIT_PROJECT} ${env.GERRIT_BRANCH} | awk '{print $1}');" > .bob/var.gerrit-central-git-head-sha
+    - task: get-gerrit-mirror-git-head-sha
+      cmd: /bin/bash -c "echo $(git ls-remote -h ${env.GERRIT_MIRROR}/${env.GERRIT_PROJECT} ${env.GERRIT_BRANCH} | awk '{print $1}');" > .bob/var.gerrit-mirror-git-head-sha
+    - task: test-gerrit-central-and-mirror-in-sync
+      cmd: /bin/bash -c "echo 'Gerrit Central = ${var.gerrit-central-git-head-sha}';
+                         echo 'Gerrit Mirror = ${var.gerrit-mirror-git-head-sha}';
+                         if [[ ${var.gerrit-central-git-head-sha} != ${var.gerrit-mirror-git-head-sha} ]]; then
+                          echo 'Gerrit Central and Gerrit Mirror are OUT of sync';
+                          exit 1;
+                         else echo 'Gerrit Central and Gerrit Mirror are IN sync';
+                         fi;"
+
+  check_helmfile_versions_against_given_versions:
+    - task: check_helmfile_versions_against_given_versions
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: helmfile_executor check-helmfile-versions-against-given-versions --path-to-helmfile ${env.PWD}/${env.ARTIFACT_PATH}/helmfile.yaml --state-values-file ${env.STATE_VALUES_FILE} --chart-name "${env.CHART_NAME}" --chart-version "${env.CHART_VERSION}"
+    - task: add-result-to-properties
+      cmd: cat helmfile-version-check.properties >> artifact.properties
+
+  # OST (Object Storage Tool)
+  ost_bucket:
+    - task: set-bucket-name
+      cmd: echo ${env.BUCKET_NAME} > .bob/var.bucket-name
+    - task: set-datafile-name
+      cmd: echo ${env.DATAFILE_NAME} > .bob/var.datafile-name
+    - task: set-output-dir
+      cmd: echo ${env.BUCKET_OUTPUT_DIR} > .bob/var.bucket-output-directory
+    - task: set-output-file-name
+      cmd: echo ${env.BUCKET_OUTPUT_FILENAME} > .bob/var.bucket-output-filename
+    - task: download-all-files-in-ost-bucket
+      docker-image: pipeline-download-injector
+      docker-flags:
+        - --volume ${env.PWD}/${var.bucket-output-directory}:/usr/src/app/out
+        - --workdir /usr/src/app/
+      cmd: download-all-files-in-ost-bucket --bucket_name ${var.bucket-name} --auth_user ${env.FUNCTIONAL_USER_USERNAME} --auth_pass ${env.FUNCTIONAL_USER_PASSWORD} --generate_artifact_properties
+    - task: download-files-by-name-in-ost-bucket
+      docker-image: pipeline-download-injector
+      docker-flags:
+        - --volume ${env.PWD}/${var.bucket-output-directory}:/usr/src/app/out
+        - --workdir /usr/src/app
+      cmd: download-ost-file-by-name --bucket_name ${var.bucket-name} --datafile_name ${var.datafile-name} --datafile_type ${env.DATAFILE_TYPE} --auth_user ${env.FUNCTIONAL_USER_USERNAME} --auth_pass ${env.FUNCTIONAL_USER_PASSWORD} -gap &> ${env.PWD}/${env.DIT_SITE_VALUES_OUTPUT}
+    - task: create-document-in-ost-bucket
+      docker-image: pipeline-download-injector
+      docker-flags:
+        - --volume ${env.PWD}/${var.bucket-output-directory}:/usr/src/app/out
+        - --workdir /usr/src/app
+      cmd: create-file --bucket_name ${var.bucket-name} --datafile_name ${var.datafile-name} --datafile_type ${env.DATAFILE_TYPE} --auth_user ${env.FUNCTIONAL_USER_USERNAME} --auth_pass ${env.FUNCTIONAL_USER_PASSWORD} --datafile_content "$( cat ${env.PWD}/${env.SITE_VALUES_FILE_LATEST} )"
+
+  # DIT (Deployment Inventory Tool)
+  dit:
+    - task: set-document-name
+      cmd: echo ${env.DEPLOYMENT_NAME} > .bob/var.document-name
+    - task: download-document-from-dit
+      docker-image: pipeline-download-injector
+      docker-flags:
+        - --volume ${env.PWD}:/usr/src/app/out
+        - --workdir /usr/src/app
+      cmd: download-document-as-artifact --document_name ${var.document-name} --auth_user ${env.FUNCTIONAL_USER_USERNAME} --auth_pass ${env.FUNCTIONAL_USER_PASSWORD} -gap
+
+  # Custom values for deployment
+  openshift-extract-fsgroup:
+    - task: extract-fsgroup
+      docker-image: adp-helm-install
+      cmd: kubectl --kubeconfig ./kube_config/config get namespace ${env.NAMESPACE} -o json | grep openshift.io/sa.scc.supplemental-groups | grep -Eo '[0-9]{10}' | tr -d "\n" > ${env.PWD}/.bob/var.ocp-fsgroup
+
+  openshift-write-fsgroup:
+    - task: add-fsgroup-to-site-values
+      docker-image: adp-helm-install
+      cmd: bash -c """fsgroup=${var.ocp-fsgroup} yq-4.x eval -i '.global.fsGroup.manual = env(fsgroup)' ${env.PWD}/site_values_${env.INT_CHART_VERSION}.yaml"""
+
+  openshift-create-scc:
+    - task: create-scc-rolebindings
+      docker-image: adp-helm-install
+      cmd: ${env.PWD}/ci/jenkins/scripts/openshift_scc_rolebindings.sh ./kube_config/config ${env.NAMESPACE}
+
+  create-outdated-images-tickets:
+    - task: create-tickets
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - --env FUNCTIONAL_USER_USERNAME
+        - --env FUNCTIONAL_USER_PASSWORD
+        - ${eric-oss-ci-scripts-flags}
+      cmd: confluence_executor create-outdated-images-tickets --path-to-helmfile ${env.PWD}/${env.PATH_TO_HELMFILE} --create-tickets ${env.CREATE_TICKETS} --skip-list ${env.SKIP_LIST} --microservice-skip-list ${env.MICROSERVICE_SKIP_LIST}
+
+  edit-chassis-for-pcr:
+    - task: edit-chassis
+      cmd: find .bob/cloned_repo -type f \( -name "*.yaml" -o -name "*.tpl" \) -exec sed -i 's/\${helmChartDockerImageName/helmChartDockerImageName/g; s/helmChartDockerImageName}/eric-oss-integration-chart-chassis/g; s/\${symbol_pound/symbol_pound/g; s/symbol_pound}//g; s/\${version/version/g; s/version}/0.0.0/g; s/\${productNum/productNum/g; s/productNum}/CXC 111 1111/g' {} +
+
+  transfer-gerrit-documents:
+    - task: transfer-files
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - --env FUNCTIONAL_USER_USERNAME
+        - --env FUNCTIONAL_USER_PASSWORD
+        - ${eric-oss-ci-scripts-flags}
+      cmd: confluence_executor transfer-gerrit-documents --space-key ${env.SPACE_KEY} --url ${env.URL} --parent-id ${env.PARENT_ID} --documents-path ${env.DOCUMENTS_PATH}
+
+  nels-simulator-install:
+    - task: nels-simulator-install
+      cmd: ${env.PWD}/ci/jenkins/scripts/nels_simulator_install.sh ${env.CHART_VERSION} ${env.NAMESPACE} ${kube-config-path} ${env.FUNCTIONAL_USER_USERNAME} ${env.FUNCTIONAL_USER_PASSWORD} ${env.LICENSE_KEYS} "${env.LICENSE_DATA}"
+
+  create-common-resources:
+    - task: create-resources
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - --env FUNCTIONAL_USER_USERNAME
+        - --env FUNCTIONAL_USER_PASSWORD
+        - ${eric-oss-ci-scripts-flags}
+      cmd: kubectl_executor create-common-resources --namespace ${env.NAMESPACE} --kubeconfig-file ./kube_config/config --state-values-file ${env.PWD}/${env.STATE_VALUES_FILE} --docker-auth-config ${env.ARMDOCKER_USER_SECRET} --flow-area ${env.FLOW_AREA} --cluster-name ${env.CLUSTER_NAME}
+
+  record-server-event:
+    - task: get-server-event-variables
+      docker-image: eric-oss-ci-scripts
+      docker-flags:
+        - ${eric-oss-ci-scripts-flags}
+      cmd: kubectl_executor create-server-event-variables --namespace ${env.NAMESPACE} --kubeconfig-file ./kube_config/config
+    - task: write-api-url-variable
+      cmd: cat server-event-info.properties | grep api_url | sed 's/=/ /' | awk '{print $2}' > .bob/var.testware-api-url
+    - task: write-gui-url-variable
+      cmd: cat server-event-info.properties | grep gui_url | sed 's/=/ /' | awk '{print $2}' > .bob/var.testware-gui-url
+    - task: write-from-version-variable
+      cmd: cat server-event-info.properties | grep from_version | sed 's/=/ /' | awk '{print $2}' > .bob/var.testware-from-version
+    - task: write-event-deployment-type
+      docker-image: adp-helm-install
+      cmd: /bin/bash -c "if [ '${env.DEPLOYMENT_TYPE}' == 'upgrade' ];
+                          then echo 'UPGRADE';
+                        else
+                          echo 'INSTALL';
+                        fi" > .bob/var.server-event-deployment-type
+    - task: write-event-description
+      docker-image: adp-helm-install
+      cmd: /bin/bash -c "if [ '${env.DEPLOYMENT_TYPE}' == 'upgrade' ];
+                            then echo 'Upgrading eric-eiae-helmfile from ${var.testware-from-version} to ${env.INT_CHART_VERSION}';
+                         else
+                            echo 'Installing version ${env.INT_CHART_VERSION}';
+                         fi" > .bob/var.server-event-description
+    - task: write-event-metadata
+      docker-image: adp-helm-install
+      cmd: /bin/bash -c "if [ '${env.DEPLOYMENT_TYPE}' == 'upgrade' ];
+                          then echo '{\"artifact_name\":\"eric-eiae-helmfile\", \"artifact_type\":\"PRODUCT\", \"from_version\":\"${var.testware-from-version}\", \"to_version\":\"${env.INT_CHART_VERSION}\"}';
+                        else
+                          echo '{\"artifact_name\":\"eric-eiae-helmfile\", \"artifact_type\":\"PRODUCT\", \"from_version\":\"${env.INT_CHART_VERSION}\"}';
+                        fi" > .bob/var.server-event-metadata
+    - task: record-server-event
+      docker-image: testware-cli-image
+      docker-flags:
+        - ${start-server-event-tags}
+        - --env RPT_API_URL=${var.testware-api-url}
+        - --env RPT_GUI_URL=${var.testware-gui-url}
+      cmd: testware-cli start-server-event --type "${var.server-event-deployment-type}" --cluster ${env.CLUSTER_NAME} --namespace ${env.NAMESPACE} --description "${var.server-event-description}" --metadata '${var.server-event-metadata}'
+    - task: init-event-id
+      cmd: echo "not_found" > .bob/var.testware-event-id
+    - task: record-event-id
+      cmd: cat start-server-event.json | grep id | sed 's/=/ /' | awk '{print $2}' > .bob/var.testware-event-id
+    - task: write-event-id-to-properties
+      cmd: echo EVENT_ID=${var.testware-event-id} >> artifact.properties
+    - task: record-successful-deployment
+      cmd: echo "" > .bob/var.testware-deployment-result
+    - task: record-failed-deployment
+      cmd: echo "--failed" > .bob/var.testware-deployment-result
+    - task: end-server-event
+      docker-image: testware-cli-image
+      docker-flags:
+        - ${start-server-event-tags}
+        - --env RPT_API_URL=${var.testware-api-url}
+        - --env RPT_GUI_URL=${var.testware-gui-url}
+      cmd: testware-cli complete-server-event --id ${var.testware-event-id} ${var.testware-deployment-result}
+
+  techdocs:
+    - task: techdocs_verify
+      description: verify successful connection to MINIO storage
+      docker-image: techdocs
+      docker-envs:
+        - AWS_ACCESS_KEY_ID
+        - AWS_SECRET_ACCESS_KEY
+        - MINIO_ENDPOINT
+      docker-flags:
+        - ${techdocs-generate-volume}
+      cmd:
+        - sh -c "aws s3 ls --endpoint-url ${env.MINIO_ENDPOINT}"
+    - task: techdocs_generate
+      description: generate techdocs from specified files.
+      docker-image: techdocs
+      docker-flags:
+        - ${techdocs-generate-volume}
+      cmd:
+        - sh -c "techdocs-cli generate --no-docker"
+    - task: techdocs_publish
+      description: publish generated techdocs to MINIO bucket.
+      docker-image: techdocs
+      docker-envs:
+        - AWS_ACCESS_KEY_ID
+        - AWS_SECRET_ACCESS_KEY
+        - AWS_REGION
+        - TECHDOCS_BUCKET_NAME
+        - ENTITY_NAMESPACE
+        - ENTITY_KIND
+        - ENTITY_NAME
+        - MINIO_ENDPOINT
+      docker-flags:
+        - ${techdocs-generate-volume}
+        - ${techdocs-docker-params}
+      cmd:
+         - sh -c "aws configure set region ${env.AWS_REGION}
+          && techdocs-cli publish --publisher-type awsS3 --awsEndpoint ${env.MINIO_ENDPOINT} --storage-name ${env.TECHDOCS_BUCKET_NAME} --entity ${env.ENTITY_NAMESPACE}/${env.ENTITY_KIND}/${env.ENTITY_NAME} --awsS3ForcePathStyle true"

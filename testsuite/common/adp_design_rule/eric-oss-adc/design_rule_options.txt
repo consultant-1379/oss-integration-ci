@@ -1,0 +1,7 @@
+-DhelmDesignRule.config.DR-D1121-122=skip
+-DhelmDesignRule.config.DR-D1125-057=skip
+-DhelmDesignRule.config.DR-D1125-059=skip
+-DhelmDesignRule.config.DR-D1120-060=skip
+-DhelmDesignRule.config.DR-D1121-067=skip
+-DhelmDesignRule.config.DR-D1123-125=skip
+-DhelmDesignRule.config.eric-oss-5gpmevt-filetx-proc.DR-D470222-010=skip

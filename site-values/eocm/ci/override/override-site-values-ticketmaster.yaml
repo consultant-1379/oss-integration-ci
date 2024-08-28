@@ -1,0 +1,23 @@
+global:
+  ericsson:
+    licensing:
+      licenseDomains:
+      - productType: Ericsson_Orchestrator
+        swltId: STB-EVNFM-1
+        customerId: 800141
+        applicationId: 800141_STB-EVNFM-1_Ericsson_Orchestrator
+
+eric-eo-evnfm:
+  eric-am-common-wfs:
+    dockerRegistry:
+      secret:
+    userSecret:
+
+eric-oss-function-orchestration-common:
+  eric-am-onboarding-service:
+    container:
+      registry:
+        enabled: true
+    onboarding:
+      skipCertificateValidation: false
+

@@ -1,0 +1,66 @@
+# This override delta file was prepared for usage with main file:
+# site-values/idun/ci/template/site-values-latest.yaml
+
+eric-oss-common-base:
+  service-mesh-ingress-gateway:
+    enabled: false
+
+  eric-log-transformer:
+    egress:
+      syslog:
+        enabled: false
+        remoteHosts: []
+
+  eric-cnom-server:
+    imageCredentials:
+      pullSecret: k8s-registry-secret-legacy
+
+eric-cloud-native-base:
+  eric-fh-snmp-alarm-provider:
+    imageCredentials:
+      pullSecret: k8s-registry-secret-legacy
+
+  eric-fh-alarm-handler:
+    imageCredentials:
+      pullSecret: k8s-registry-secret-legacy
+
+  eric-data-key-value-database-rd:
+    imageCredentials:
+      pullSecret: k8s-registry-secret-legacy
+
+  eric-cloud-native-kvdb-rd-operand:
+    imageCredentials:
+      pullSecret: k8s-registry-secret-legacy
+
+eric-eo-so:
+  tlsDev:
+    enabled: true
+  so-enterprise:
+    enabled: true
+  so-slicing:
+    enabled: true
+  stubs:
+    enabled: true
+  ingress:
+    enabled: true
+  eric-eo-auth-test:
+    ingress:
+      hostname: SO_TEST_HOSTNAME_1
+      enabled: true
+      tls:
+        enabled: true
+        mtls:
+          hostname: SO_TEST_HOSTNAME_2
+          enabled: true
+
+# Required for EAS functional testing
+eric-oss-ericsson-adaptation:
+  eric-eo-enm-stub:
+    enabled: true
+  eric-oss-enm-notification-simulator:
+    enabled: true
+
+optionality:
+  eric-oss-common-base:
+    service-mesh-ingress-gateway:
+      enabled: false

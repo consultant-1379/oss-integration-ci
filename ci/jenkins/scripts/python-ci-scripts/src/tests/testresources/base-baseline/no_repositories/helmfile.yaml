@@ -1,0 +1,14 @@
+bases:
+  - repositories.yaml
+  - apiversions.gotmpl
+
+---
+
+releases:
+  - name: eric-cloud-native-service-mesh
+    namespace: {{ .Values | get "helmfile.app.namespace" "eric-app-ns" }}
+    chart: {{ .Values | get "repository" "adp-umbrella-released" }}/eric-cloud-native-service-mesh
+    version: 9.1.0
+    values:
+      - "./values-templates/global-values.yaml.gotmpl"
+      - "./values-templates/release-site-values.yaml.gotmpl"

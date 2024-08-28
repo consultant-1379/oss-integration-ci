@@ -1,0 +1,1721 @@
+{
+  "appConfig": {},
+  "application": "common-e2e-cicd",
+  "description": "",
+  "disabled": false,
+  "id": "a1761b58-9846-46db-8833-9c6e3b3eb293",
+  "index": 11,
+  "keepWaitingPipelines": false,
+  "lastModifiedBy": "tbspinauth",
+  "limitConcurrent": false,
+  "locked":   {
+    "allowUnlockUi": true,
+    "description": "This pipeline is maintained by spinnaker as a code, any changes made through the ui will be overwritten",
+    "ui": true
+  },
+  "name": "oss-csar-build-flow",
+  "notifications": [],
+  "parameterConfig":   [
+        {
+      "default": "eric-eiae-helmfile",
+      "description": "Name of the Integration Chart",
+      "hasOptions": false,
+      "label": "INT_CHART_NAME",
+      "name": "INT_CHART_NAME",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "0.0.0",
+      "description": "Version of the Integration Chart that holds the new microservice",
+      "hasOptions": false,
+      "label": "INT_CHART_VERSION",
+      "name": "INT_CHART_VERSION",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "https://arm.seli.gic.ericsson.se/artifactory/proj-eric-oss-drop-helm",
+      "description": "Repo of the Integration Chart that holds the new microservice",
+      "hasOptions": false,
+      "label": "INT_CHART_REPO",
+      "name": "INT_CHART_REPO",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "eric-eiae-helmfile/helmfile.yaml",
+      "description": "Full path to the helmfile yaml file within the extracted product helfile archive.",
+      "hasOptions": false,
+      "label": "PATH_TO_HELMFILE",
+      "name": "PATH_TO_HELMFILE",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "eric-eiae-helmfile/build-environment/tags_true.yaml",
+      "description": "Site values file used to generate what CSAR are to be built",
+      "hasOptions": false,
+      "label": "STATE_VALUES_FILE",
+      "name": "STATE_VALUES_FILE",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "evo_docker_engine_athlone",
+      "description": "SLAVE_LABEL to run CSAR build on",
+      "hasOptions": false,
+      "label": "SLAVE_LABEL",
+      "name": "SLAVE_LABEL",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "true",
+      "description": "GET_ALL_IMAGES",
+      "hasOptions": false,
+      "label": "GET_ALL_IMAGES",
+      "name": "GET_ALL_IMAGES",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "ciloopman-user-creds",
+      "description": "ID of the Function User that has been stored on the Jenkins server in the credentials area as a username and password",
+      "hasOptions": false,
+      "label": "FUNCTIONAL_USER_SECRET",
+      "name": "FUNCTIONAL_USER_SECRET",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "ciloopman-docker-auth-config",
+      "description": "Secret ID that stores the ARM Docker Credentials.",
+      "hasOptions": false,
+      "label": "ARMDOCKER_USER_SECRET",
+      "name": "ARMDOCKER_USER_SECRET",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    }
+  ],
+  "schema": "1",
+  "stages":   [
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build UDS CSAR",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-uds_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-uds_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-uds_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "None",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "None",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_ERIC_PRODUCT_INFO": "true"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build UDS CSAR",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-uds_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "continuePipeline": false,
+      "failPipeline": true,
+      "job": "Get-Release-Info-From-Helmfile",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Get App Version from HelmFile",
+      "parameters":       {
+        "GET_ALL_IMAGES": "${trigger['parameters']['GET_ALL_IMAGES']}",
+        "INT_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "INT_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "INT_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "PATH_TO_HELMFILE": "${trigger['parameters']['PATH_TO_HELMFILE']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "STATE_VALUES_FILE": "${trigger['parameters']['STATE_VALUES_FILE']}"
+      },
+      "propertyFile": "csar_build.properties",
+      "refId": "Get App Version from HelmFile",
+      "requisiteStageRefIds": ["Check Preconditions for Site Values"],
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build SO CSAR",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-so_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-so_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-so_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "None",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "None",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_ERIC_PRODUCT_INFO": "true"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build SO CSAR",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-so_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build Cloud Native Base (ADP) CSAR",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-cloud-native-base_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-cloud-native-base_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-cloud-native-base_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "None",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "None",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_ERIC_PRODUCT_INFO": "true",
+        "USE_TAG": "false"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build Cloud Native Base (ADP) CSAR",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-cloud-native-base_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build OSS Common Base CSAR",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-common-base_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-common-base_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-common-base_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "None",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "None",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_ERIC_PRODUCT_INFO": "true",
+        "USE_TAG": "false"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build OSS Common Base CSAR",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-common-base_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "continuePipeline": false,
+      "failPipeline": true,
+      "job": "getCsarProperties",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Generate CSAR Properties",
+      "parameters":       {
+        "INT_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "INT_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "INT_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "PATH_TO_HELMFILE": "${trigger['parameters']['PATH_TO_HELMFILE']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "STATE_VALUES_FILE": "${trigger['parameters']['STATE_VALUES_FILE']}"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Generate CSAR Properties",
+      "requisiteStageRefIds": ["Check Preconditions for CSARs"],
+      "type": "jenkins"
+    },
+        {
+      "continuePipeline": false,
+      "failPipeline": true,
+      "job": "Get-Latest-ChartOrHelmfile",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Get Latest HelmFile Version",
+      "parameters":       {
+        "INT_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "INT_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "INT_CHART_VERSION": "${trigger['parameters']['INT_CHART_VERSION']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Get Latest HelmFile Version",
+      "requisiteStageRefIds": [],
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build DMM CSAR",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-dmm_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-dmm_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-dmm_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "None",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "None",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_ERIC_PRODUCT_INFO": "true"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build DMM CSAR",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-dmm_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build EAS CSAR",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-ericsson-adaptation_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-ericsson-adaptation_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-ericsson-adaptation_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "None",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "None",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_ERIC_PRODUCT_INFO": "true"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build EAS CSAR",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-ericsson-adaptation_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build TH CSAR",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-topology-handling_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-topology-handling_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-topology-handling_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "None",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "None",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_ERIC_PRODUCT_INFO": "true"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build TH CSAR",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-topology-handling_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build ADC CSAR",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-adc_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-adc_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-adc_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "None",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "None",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_ERIC_PRODUCT_INFO": "true",
+        "USE_TAG": "false"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build ADC CSAR",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-adc_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build App-Mgr CSAR",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-app-mgr_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-app-mgr_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-app-mgr_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "None",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "None",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_ERIC_PRODUCT_INFO": "true"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build App-Mgr CSAR",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-app-mgr_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build Config-Handling CSAR",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-config-handling_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-config-handling_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-config-handling_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "None",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "None",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_ERIC_PRODUCT_INFO": "true"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build Config-Handling CSAR",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-config-handling_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "markUnstableAsSuccessful": true,
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build Service-Mesh-Integration CSAR",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-service-mesh-integration_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-service-mesh-integration_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-service-mesh-integration_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "None",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "None",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_ERIC_PRODUCT_INFO": "true"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build Service-Mesh-Integration CSAR",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-service-mesh-integration_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "markUnstableAsSuccessful": true,
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build Oran Support CSAR",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-oran-support_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-oran-support_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-oran-support_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "None",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "None",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_ERIC_PRODUCT_INFO": "true"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build Oran Support CSAR",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-oran-support_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "markUnstableAsSuccessful": true,
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build CNCS OSS Config CSAR",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-cncs-oss-config_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-cncs-oss-config_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-cncs-oss-config_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "None",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "None",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_ERIC_PRODUCT_INFO": "true"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build CNCS OSS Config CSAR",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-cncs-oss-config_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "markUnstableAsSuccessful": true,
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build PM Stats Handling Config CSAR",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-pm-stats-calc-handling_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-pm-stats-calc-handling_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-pm-stats-calc-handling_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "None",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "None",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_ERIC_PRODUCT_INFO": "true"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build PM Stats Handling Config CSAR",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-pm-stats-calc-handling_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build EVNFM - Container",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-evnfm_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-evnfm_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-evnfm_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "csar-build/eric-eo-evnfm/site-values.yaml",
+        "SCRIPTS_DIR": "Scripts",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "ssh://gerrit-gamma.gic.ericsson.se:29418/OSS/com.ericsson.orchestration.mgmt/am-integration-charts",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_ERIC_PRODUCT_INFO": "true",
+        "USE_TAG": "false"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build EVNFM - Container",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-evnfm_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build EVNFM - VM",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-evnfm-vm_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-evnfm-vm_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-evnfm-vm_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "csar-build/vnflcm-integration-charts/site-values.yaml",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "ssh://gerrit-gamma.gic.ericsson.se:29418/OSS/com.ericsson.oss.services.vnflcm/vnflcm-integration-charts",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_ERIC_PRODUCT_INFO": "true"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build EVNFM - VM",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-evnfm-vm_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build Cloud Manager",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-cm_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-cm_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-cm_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "csar-build/site-values.yaml",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "ssh://gerrit-gamma.gic.ericsson.se:29418/ecm/eric-eo-cm-integration-charts",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_ERIC_PRODUCT_INFO": "true"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build Cloud Manager",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-cm_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build Cloud Manager EDA",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-act-cna_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-act-cna_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-act-cna_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "csar-build/site-values.yaml",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "ssh://gerrit-gamma.gic.ericsson.se:29418/ecm/eric-eo-act-cna",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_TAG": "false"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build Cloud Manager EDA",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-act-cna_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "name": "Check Preconditions for CSARs",
+      "preconditions":       [
+                {
+          "context": {"expression": "\"${#stage('Build UDS CSAR')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build UDS CSAR')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context":           {
+            "stageName": "Build Cloud Native Base (ADP) CSAR",
+            "stageStatus": "SUCCEEDED"
+          },
+          "failPipeline": true,
+          "type": "stageStatus"
+        },
+                {
+          "context":           {
+            "stageName": "Build OSS Common Base CSAR",
+            "stageStatus": "SUCCEEDED"
+          },
+          "failPipeline": true,
+          "type": "stageStatus"
+        },
+                {
+          "context": {"expression": "\"${#stage('Build DMM CSAR')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build DMM CSAR')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Build EAS CSAR')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build EAS CSAR')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Build TH CSAR')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build TH CSAR')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Build Config-Handling CSAR')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build Config-Handling CSAR')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context":           {
+            "stageName": "Build CNCS OSS Config CSAR",
+            "stageStatus": "SUCCEEDED"
+          },
+          "failPipeline": true,
+          "type": "stageStatus"
+        },
+                {
+          "context": {"expression": "\"${#stage('Build ADC CSAR')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build ADC CSAR')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Build App-Mgr CSAR')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build App-Mgr CSAR')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Build Service-Mesh-Integration CSAR')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build Service-Mesh-Integration CSAR')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Build Oran Support CSAR')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build Oran Support CSAR')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Build PM Stats Handling Config CSAR')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build PM Stats Handling Config CSAR')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Build EVNFM - Container')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build EVNFM - Container')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Build EVNFM - VM')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build EVNFM - VM')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Build Cloud Manager')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build Cloud Manager')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Build Cloud Manager EDA')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build Cloud Manager EDA')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Build ERIC MESH CONTROLLER CSAR')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build ERIC MESH CONTROLLER CSAR')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Build CLM CSAR')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build CLM CSAR')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Build OSS Function Orch Common CSAR')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build OSS Function Orch Common CSAR')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Build ECA CSAR')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build ECA CSAR')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Build Cloud-Native-Service-Mesh')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build Cloud-Native-Service-Mesh')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Build Core Assurance Augmentation')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build Core Assurance Augmentation')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Build Core Assurance Visualisation')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build Core Assurance Visualisation')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Build Core Assurance Indexer')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build Core Assurance Indexer')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Build Eric-OSS-ML-Execution-Env')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build Eric-OSS-ML-Execution-Env')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Build CN Base OSS Config CSAR')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build CN Base OSS Config CSAR')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Build Connected Systems Registry')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build Connected Systems Registry')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Build EO Lifecycle Manager')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build EO Lifecycle Manager')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Build SEP CSAR')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build SEP CSAR')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Build SEF CSAR')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build SEF CSAR')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Build TIEH CSAR')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build TIEH CSAR')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Build Topology Exposure Handling CSAR')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build Topology Exposure Handling CSAR')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Build Helmfile CSAR - EO')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build Helmfile CSAR - EO')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Build Helmfile CSAR - EIC')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build Helmfile CSAR - EIC')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Build Helmfile CSAR - EO cCM')['status']}\" == \"SUCCEEDED\" or \"${#stage('Build Helmfile CSAR - EO cCM')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        }
+      ],
+      "refId": "Check Preconditions for CSARs",
+      "requisiteStageRefIds":       [
+        "Build EVNFM - Container",
+        "Build UDS CSAR",
+        "Build SO CSAR",
+        "Build Cloud Native Base (ADP) CSAR",
+        "Build OSS Common Base CSAR",
+        "Build DMM CSAR",
+        "Build EAS CSAR",
+        "Build TH CSAR",
+        "Build App-Mgr CSAR",
+        "Build Service-Mesh-Integration CSAR",
+        "Build Oran Support CSAR",
+        "Build CNCS OSS Config CSAR",
+        "Build ADC CSAR",
+        "Build EVNFM - VM",
+        "Build Config-Handling CSAR",
+        "Build PM Stats Handling Config CSAR",
+        "Build Cloud Manager",
+        "Build Cloud Manager EDA",
+        "Build ERIC MESH CONTROLLER CSAR",
+        "Build ECA CSAR",
+        "Build CLM CSAR",
+        "Build OSS Function Orch Common CSAR",
+        "Build Cloud-Native-Service-Mesh",
+        "Build Core Assurance Augmentation",
+        "Build Core Assurance Visualisation",
+        "Build Core Assurance Indexer",
+        "Build Eric-OSS-ML-Execution-Env",
+        "Build CN Base OSS Config CSAR",
+        "Build Connected Systems Registry",
+        "Build EO Lifecycle Manager",
+        "Build SEP CSAR",
+        "Build SEF CSAR",
+        "Build TIEH CSAR",
+        "Build Helmfile CSAR - EO",
+        "Build Helmfile CSAR - EIC",
+        "Build Helmfile CSAR - EO cCM",
+        "Build Topology Exposure Handling CSAR"
+      ],
+      "type": "checkPreconditions"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "markUnstableAsSuccessful": true,
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build ERIC MESH CONTROLLER CSAR",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-mesh-controller_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-mesh-controller_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-mesh-controller_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "None",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "None",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_ERIC_PRODUCT_INFO": "true"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build ERIC MESH CONTROLLER CSAR",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-mesh-controller_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build OSS Function Orch Common CSAR",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-function-orchestration-common_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-function-orchestration-common_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-function-orchestration-common_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "csar-build/site-values/site-values.yaml",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "ssh://gerrit-gamma.gic.ericsson.se:29418/OSS/com.ericsson.oss.ro/eric-oss-function-orchestration-common",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_ERIC_PRODUCT_INFO": "true"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build OSS Function Orch Common CSAR",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-function-orchestration-common_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failOnFailedExpressions": false,
+      "failPipeline": false,
+      "name": "Evaluate Site Values for IDUN",
+      "refId": "Evaluate Site Values for IDUN",
+      "requisiteStageRefIds": ["Get Latest HelmFile Version"],
+      "stageEnabled":       {
+        "expression": "\"${trigger['parameters'][\"INT_CHART_NAME\"].contains(\"eiae\")}\"",
+        "type": "expression"
+      },
+      "type": "evaluateVariables",
+      "variables":       [
+                {
+          "key": "STATE_VALUES_FILE",
+          "value": "site-values/idun/ci/template/site-values-latest.yaml"
+        },
+                {
+          "key": "PATH_TO_SITE_VALUES_OVERRIDE_FILE",
+          "value": "site-values/idun/ci/override/override-site-values-helmfile-template.yaml"
+        }
+      ]
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failOnFailedExpressions": false,
+      "failPipeline": false,
+      "name": "Evaluate Site Values for EO",
+      "refId": "Evaluate Site Values for EO",
+      "requisiteStageRefIds": ["Get Latest HelmFile Version"],
+      "stageEnabled":       {
+        "expression": "\"${trigger['parameters'][\"INT_CHART_NAME\"] == \"eric-eo-helmfile\"}\"",
+        "type": "expression"
+      },
+      "type": "evaluateVariables",
+      "variables":       [
+                {
+          "key": "STATE_VALUES_FILE",
+          "value": "site-values/eo/ci/template/site-values-latest.yaml"
+        },
+                {
+          "key": "PATH_TO_SITE_VALUES_OVERRIDE_FILE",
+          "value": "site-values/eo/ci/override/override-site-values-helmfile-template.yaml"
+        }
+      ]
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failOnFailedExpressions": false,
+      "failPipeline": false,
+      "name": "Evaluate Site Values for EO cCM",
+      "refId": "Evaluate Site Values for EO cCM",
+      "requisiteStageRefIds": ["Get Latest HelmFile Version"],
+      "stageEnabled":       {
+        "expression": "\"${trigger['parameters'][\"INT_CHART_NAME\"] == \"eric-eo-cm-helmfile\"}\"",
+        "type": "expression"
+      },
+      "type": "evaluateVariables",
+      "variables":       [
+                {
+          "key": "STATE_VALUES_FILE",
+          "value": "site-values/eocm/ci/template/site-values-latest.yaml"
+        },
+                {
+          "key": "PATH_TO_SITE_VALUES_OVERRIDE_FILE",
+          "value": "site-values/eocm/ci/override/override-site-values-helmfile-template.yaml"
+        }
+      ]
+    },
+        {
+      "name": "Check Preconditions for Site Values",
+      "preconditions":       [
+                {
+          "context": {"expression": "\"${#stage('Evaluate Site Values for IDUN')['status']}\" == \"SUCCEEDED\" or \"${#stage('Evaluate Site Values for IDUN')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Evaluate Site Values for EO cCM')['status']}\" == \"SUCCEEDED\" or \"${#stage('Evaluate Site Values for EO cCM')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Evaluate Site Values for EOOM')['status']}\" == \"SUCCEEDED\" or \"${#stage('Evaluate Site Values for EOOM')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Evaluate Site Values for EO')['status']}\" == \"SUCCEEDED\" or \"${#stage('Evaluate Site Values for EO')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        }
+      ],
+      "refId": "Check Preconditions for Site Values",
+      "requisiteStageRefIds":       [
+        "Evaluate Site Values for IDUN",
+        "Evaluate Site Values for EO",
+        "Evaluate Site Values for EOOM",
+        "Evaluate Site Values for EO cCM"
+      ],
+      "type": "checkPreconditions"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failOnFailedExpressions": false,
+      "failPipeline": false,
+      "name": "Evaluate Site Values for EOOM",
+      "refId": "Evaluate Site Values for EOOM",
+      "requisiteStageRefIds": ["Get Latest HelmFile Version"],
+      "stageEnabled":       {
+        "expression": "\"${trigger['parameters'][\"INT_CHART_NAME\"] == \"eric-eoom-helmfile\"}\"",
+        "type": "expression"
+      },
+      "type": "evaluateVariables",
+      "variables":       [
+                {
+          "key": "STATE_VALUES_FILE",
+          "value": "site-values/eoom/ci/template/site-values-latest.yaml"
+        },
+                {
+          "key": "PATH_TO_SITE_VALUES_OVERRIDE_FILE",
+          "value": "site-values/eoom/ci/override/override-site-values-helmfile-template.yaml"
+        }
+      ]
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build ECA CSAR",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-core-assurance_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-core-assurance_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-core-assurance_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "csar-build/site-values.yaml",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "ssh://gerrit-gamma.gic.ericsson.se:29418/OSS/com.ericsson.oss.air/ericsson-core-assurance",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_TAG": "false"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build ECA CSAR",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-core-assurance_name\"].contains(\"_name\")} && \"${trigger['parameters'][\"INT_CHART_NAME\"] != \"eric-eo-helmfile\"}\"",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build CLM CSAR",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-eo-clm_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-eo-clm_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-eo-clm_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "None",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "None",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_ERIC_PRODUCT_INFO": "true",
+        "USE_TAG": "false"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build CLM CSAR",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-eo-clm_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build Cloud-Native-Service-Mesh",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-cloud-native-service-mesh_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-cloud-native-service-mesh_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-cloud-native-service-mesh_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "None",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "None",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_ERIC_PRODUCT_INFO": "true"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build Cloud-Native-Service-Mesh",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-cloud-native-service-mesh_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build Core Assurance Augmentation",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-assurance-augmentation_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-assurance-augmentation_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-assurance-augmentation_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "None",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "None",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_ERIC_PRODUCT_INFO": "true"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build Core Assurance Augmentation",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-assurance-augmentation_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build Core Assurance Visualisation",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-assurance-visualization_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-assurance-visualization_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-assurance-visualization_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "None",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "None",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_ERIC_PRODUCT_INFO": "true"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build Core Assurance Visualisation",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-assurance-visualization_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build Core Assurance Indexer",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-assurance-indexer_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-assurance-indexer_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-assurance-indexer_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "None",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "None",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_ERIC_PRODUCT_INFO": "true"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build Core Assurance Indexer",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-assurance-indexer_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build Eric-OSS-ML-Execution-Env",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-ml-execution-env_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-ml-execution-env_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-ml-execution-env_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "None",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "None",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_ERIC_PRODUCT_INFO": "true"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build Eric-OSS-ML-Execution-Env",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-ml-execution-env_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "markUnstableAsSuccessful": true,
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build CN Base OSS Config CSAR",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-cnbase-oss-config_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-cnbase-oss-config_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-cnbase-oss-config_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "None",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "None",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_ERIC_PRODUCT_INFO": "true"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build CN Base OSS Config CSAR",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-cnbase-oss-config_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build Topology Exposure Handling CSAR",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-topology-exposure-handling_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-topology-exposure-handling_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-topology-exposure-handling_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "None",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "None",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_ERIC_PRODUCT_INFO": "true"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build Topology Exposure Handling CSAR",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-topology-exposure-handling_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build Connected Systems Registry",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-connected-systems-registry_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-connected-systems-registry_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-connected-systems-registry_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "None",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "None",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_ERIC_PRODUCT_INFO": "true",
+        "USE_TAG": "false"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build Connected Systems Registry",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-oss-connected-systems-registry_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build EO Lifecycle Manager",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-lifecycle-manager_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-lifecycle-manager_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-lifecycle-manager_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "None",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "None",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_ERIC_PRODUCT_INFO": "true",
+        "USE_TAG": "false"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build EO Lifecycle Manager",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-lifecycle-manager_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build SEP CSAR",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-storage-encryption-provider_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-storage-encryption-provider_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-storage-encryption-provider_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "None",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "None",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_ERIC_PRODUCT_INFO": "true",
+        "USE_TAG": "false"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build SEP CSAR",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-storage-encryption-provider_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build SEF CSAR",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-service-exposure-framework_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-service-exposure-framework_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-service-exposure-framework_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "None",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "None",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_ERIC_PRODUCT_INFO": "true",
+        "USE_TAG": "false"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build SEF CSAR",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-service-exposure-framework_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-CSAR-Builder",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build TIEH CSAR",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${trigger['parameters']['INT_CHART_NAME']}",
+        "HELMFILE_CHART_REPO": "${trigger['parameters']['INT_CHART_REPO']}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get Latest HelmFile Version\")[\"context\"]['INT_CHART_VERSION']}",
+        "INT_CHART_NAMES": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-top-inv-exposure-handling_name\"]}",
+        "INT_CHART_REPOS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-top-inv-exposure-handling_url\"]}",
+        "INT_CHART_VERSIONS": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-top-inv-exposure-handling_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "POPULATED_VALUES_FILE_LOCATION": "None",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "None",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}",
+        "USE_ERIC_PRODUCT_INFO": "true",
+        "USE_TAG": "false"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build TIEH CSAR",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-top-inv-exposure-handling_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-Helmfile-CSAR-Builder",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build Helmfile CSAR - EO",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-helmfile_name\"]}",
+        "HELMFILE_CHART_REPO": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-helmfile_url\"]}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-helmfile_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "None",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build Helmfile CSAR - EO",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-helmfile_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-Helmfile-CSAR-Builder",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build Helmfile CSAR - EIC",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eiae-helmfile_name\"]}",
+        "HELMFILE_CHART_REPO": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eiae-helmfile_url\"]}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eiae-helmfile_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "None",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build Helmfile CSAR - EIC",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eiae-helmfile_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-Helmfile-CSAR-Builder",
+      "master": "oss-fem7s11-eiffel216",
+      "name": "Build Helmfile CSAR - EO cCM",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "HELMFILE_CHART_NAME": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-cm-helmfile_name\"]}",
+        "HELMFILE_CHART_REPO": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-cm-helmfile_url\"]}",
+        "HELMFILE_CHART_VERSION": "${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-cm-helmfile_version\"]}",
+        "PATH_TO_SITE_VALUES_OVERRIDE_FILE": "${PATH_TO_SITE_VALUES_OVERRIDE_FILE}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SSH_REPO_URL": "None",
+        "STATE_VALUES_FILE": "${STATE_VALUES_FILE}"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "Build Helmfile CSAR - EO cCM",
+      "requisiteStageRefIds": ["Get App Version from HelmFile"],
+      "stageEnabled":       {
+        "expression": "!${#stage(\"Get App Version from HelmFile\")[\"context\"][\"eric-eo-cm-helmfile_name\"].contains(\"_name\")}",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    }
+  ],
+  "triggers": [],
+  "updateTs": "1717059753349"
+}

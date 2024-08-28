@@ -1,0 +1,76 @@
+eric-cloud-native-base:
+  eric-data-message-bus-kf:
+    configurationOverrides:
+      "auto.create.topics.enable": "true"
+  eric-data-search-engine:
+    fastButUnsafeUpgrade:
+      enabled: true
+eric-oss-adc:
+  eric-oss-enm-fns:
+    ignoreSubscription: true
+    configuredQueries: |-
+      enms:
+        - name: ProdEngENM
+          periodSeconds: 60
+          queries:
+            - name: query1
+              topic: sftp-filetrans
+              dataSpace: "4G5G"
+              dataCategory: PM_COUNTERS
+              dataType: PM_STATISTICAL
+              nodeType: "RadioNode"
+              fileType: "xml.gz"
+              id: 0
+            - name: query2
+              topic: 4g-event
+              dataSpace: 4G
+              dataCategory: PM_EVENTS
+              dataType: PM_CELLTRACE
+              nodeType: "RadioNode"
+              fileType: "bin.gz"
+              id: 0
+            - name: query3
+              topic: 5g-event
+              dataSpace: 5G
+              dataCategory: PM_EVENTS
+              dataType: "PM_CELLTRACE_*"
+              nodeType: "RadioNode"
+              fileType: "gpb.gz"
+              id: 0
+    dmm:
+      dataCatalog:
+        messageBusNamespace: "NAMESPACE"
+  eric-oss-sftp-filetrans:
+    subsystem:
+      name: "ProdEngENM"
+    dmm:
+      data_catalog:
+        message_bus_namespace: "NAMESPACE"
+        data_service:
+          data_service_instance:
+            consumed_data_provider: ProdEngENM
+    spring:
+      kafka:
+        topics:
+          enm_id: "ProdEngENM"
+    sftp:
+      topic_bucket_backward_compatible: false
+  eric-oss-5gpmevt-filetx-proc:
+    dmm:
+      dataCatalog:
+        dataProviderTypeId: "5g-event-ProdEngENM"
+        dataSpace: "5G"
+        dataCollectorName: "ProdEngENM"
+        messageBusNamespace: "NAMESPACE"
+    spring:
+      kafka:
+        topics:
+          input:
+            name: "file-notification-service--5g-event--ProdEngENM"
+eric-oss-common-base:
+  eric-oss-ddc:
+    autoUpload:
+      enabled: DDP_AUTOUPLOAD_ENABLED_REPLACE
+      ddpid: DDP_ID
+      account: DDP_ACCOUNT
+      password: "DDP_PASSWORD"

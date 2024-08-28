@@ -1,0 +1,37 @@
+{
+  "application": "common-e2e-cicd",
+  "description": "DO NOT DELETE THIS PIPELINE. \nIt is being used in all the E2E flows. \nPlease contact Thunderbee for any questions. ",
+  "disabled": true,
+  "id": "c57f00d5-f0f1-4627-8892-861c836cb3a9",
+  "index": 9,
+  "keepWaitingPipelines": false,
+  "lastModifiedBy": "epakagn",
+  "limitConcurrent": false,
+  "name": "check_PRA_and_Non_PRA_version",
+  "parameterConfig": [  {
+    "default": "",
+    "description": "Check if it is a Non PRA version",
+    "hasOptions": false,
+    "label": "",
+    "name": "IS_NON_PRA_VERSION",
+    "options": [{"value": ""}],
+    "pinned": true,
+    "required": true
+  }],
+  "schema": "1",
+  "spelEvaluator": "v4",
+  "stages": [  {
+    "failOnFailedExpressions": true,
+    "name": "check_PRA_version",
+    "preconditions": [    {
+      "context": {"expression": "${trigger[\"parameters\"][\"IS_NON_PRA_VERSION\"] == false}"},
+      "failPipeline": true,
+      "type": "expression"
+    }],
+    "refId": "1",
+    "requisiteStageRefIds": [],
+    "type": "checkPreconditions"
+  }],
+  "triggers": [],
+  "updateTs": "1718888428799"
+}

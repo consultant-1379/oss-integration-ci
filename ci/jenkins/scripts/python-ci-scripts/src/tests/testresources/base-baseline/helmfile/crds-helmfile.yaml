@@ -1,0 +1,11 @@
+bases:
+  - repositories.yaml
+
+releases:
+  - name: eric-tm-ingress-controller-cr-crd
+    namespace: dummy
+    chart: {{ .Values | get "repository" "adp-gs-all" }}/eric-tm-ingress-controller-cr-crd
+    version: 11.3.0+59
+    values:
+      - "./values-templates/global-values.yaml.gotmpl"
+      - "./values-templates/release-site-values.yaml.gotmpl"

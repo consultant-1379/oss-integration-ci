@@ -1,0 +1,15 @@
+# Enabling stubs from SO
+stubs:
+  enabled: true
+
+# Fill only if deploying EO Service Orchestration (EO SO)
+eric-eo-so:
+  stubs:
+    enabled: true
+
+# Fill only if deploying Ericsson Adaptation (EAS)
+eric-oss-ericsson-adaptation:
+  eric-eo-enm-stub:
+    enabled: true
+  eric-oss-enm-notification-simulator:
+    enabled: true

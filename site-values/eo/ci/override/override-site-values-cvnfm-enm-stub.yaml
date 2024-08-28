@@ -1,0 +1,7 @@
+# This override delta file was prepared for EVNFM long regression
+
+eric-eo-evnfm:
+  eric-vnfm-orchestrator-service:
+    oss:
+      topology:
+        secretName: enm-secret

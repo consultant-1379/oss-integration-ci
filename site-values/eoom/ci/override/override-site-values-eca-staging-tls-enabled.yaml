@@ -1,0 +1,263 @@
+# This override delta file was prepared for usage with main file:
+# site-values/eoom/ci/template/site-values-latest.yaml
+
+global:
+  security:
+    tls:
+      enabled: true
+
+eric-oss-common-base:
+  eric-oss-notification-service:
+    resources:
+      eric-oss-notification-service:
+        requests:
+          memory: 512Mi
+          cpu: 25m
+
+  eric-adp-gui-aggregator-service:
+    resources:
+      main:
+        requests:
+          cpu: 15m
+          memory: 150Mi
+
+  eric-cnom-server:
+    resources:
+      server:
+        requests:
+          memory: 150Mi
+          cpu: 10m
+      logshipper:
+        requests:
+          memory: 30Mi
+          cpu: 50m
+
+  eric-eo-api-gateway:
+    resources:
+      requests:
+        memory: 512Mi
+        cpu: 20m
+
+  eric-eo-subsystem-management:
+    resources:
+      requests:
+        memory: "450M"
+        cpu: 15m
+
+  eric-eo-usermgmt:
+    resources:
+      eric-eo-usermgmt:
+        requests:
+          memory: "400M"
+          cpu: "200m"
+
+  eric-eo-usermgmt-ui:
+    resources:
+      eric-eo-usermgmt-ui:
+        requests:
+          memory: "32M"
+          cpu: "10m"
+
+  eric-oss-dmaap:
+    resources:
+      eric-oss-dmaap:
+        requests:
+          memory: "500M"
+          cpu: "50m"
+
+  eric-oss-notification-service-database-pg:
+    resources:
+      brm:
+        requests:
+          memory: "32Mi"
+          cpu: "15m"
+      bra:
+        requests:
+          memory: "256Mi"
+          cpu: "15m"
+
+  eric-eo-subsystem-management-database-pg:
+    resources:
+      brm:
+        requests:
+          memory: "32Mi"
+          cpu: "15m"
+      bra:
+        requests:
+          memory: "256Mi"
+          cpu: "15m"
+
+  eric-oss-common-postgres:
+    resources:
+      brm:
+        requests:
+          memory: "32Mi"
+          cpu: "15m"
+      bra:
+        requests:
+          memory: "256Mi"
+          cpu: "15m"
+
+eric-cloud-native-base:
+  eric-sec-access-mgmt:
+    resources:
+      iam:
+        requests:
+          memory: "512Mi"
+          cpu: "20m"
+  eric-ctrl-bro:
+    resources:
+      backupAndRestore:
+        requests:
+          cpu: "10m"
+          memory: "700Mi"
+
+  eric-log-transformer:
+    resources:
+      logtransformer:
+        requests:
+          cpu: 150m
+          memory: 4Gi
+
+  eric-data-coordinator-zk:
+    resources:
+      datacoordinatorzk:
+        requests:
+          cpu: "100m"
+          memory: "256Mi"
+
+  eric-data-message-bus-kf:
+    resources:
+      messagebuskf:
+        requests:
+          cpu: "100m"
+          memory: "1Gi"
+
+  eric-data-object-storage-mn:
+    resources:
+      server:
+        requests:
+          memory: 512Mi
+          cpu: 50m
+
+  eric-log-shipper:
+    resources:
+      logshipper:
+        requests:
+          memory: "100Mi"
+          cpu: "30m"
+
+  eric-pm-server:
+    resources:
+      eric-pm-server:
+        requests:
+          cpu: "100m"
+          memory: "512Mi"
+      eric-pm-configmap-reload:
+        requests:
+          cpu: "10m"
+          memory: "8Mi"
+      eric-pm-exporter:
+        requests:
+          cpu: "10m"
+          memory: "8Mi"
+
+  eric-sec-key-management:
+    resources:
+      shelter:
+        requests:
+          memory: "100Mi"
+          cpu: "20m"
+      vault:
+        requests:
+          memory: "100Mi"
+          cpu: "20m"
+
+  eric-sec-sip-tls:
+    resources:
+      sip-tls:
+        requests:
+          memory: "100Mi"
+          cpu: "30m"
+      sip-tls-supervisor:
+        requests:
+          memory: "100Mi"
+          cpu: "30m"
+
+  eric-sec-access-mgmt-db-pg:
+    resources:
+      brm:
+        requests:
+          memory: "32Mi"
+          cpu: "15m"
+      bra:
+        requests:
+          memory: "256Mi"
+          cpu: "15m"
+
+eric-oss-dmm:
+  eric-oss-data-catalog:
+    resources:
+      eric-oss-data-catalog:
+        requests:
+          cpu: "50m"
+
+  eric-schema-registry-sr:
+    resources:
+      schemaregistry:
+        requests:
+          cpu: "30m"
+
+  eric-oss-dmm-data-coordinator-zk:
+    resources:
+      datacoordinatorzk:
+        requests:
+          cpu: "50m"
+          memory: "512Mi"
+
+  eric-oss-dmm-data-message-bus-kf:
+    persistence:
+      persistentVolumeClaim:
+        size: 2Gi
+    resources:
+      messagebuskf:
+        requests:
+          cpu: "100m"
+          memory: "512Mi"
+  eric-oss-dmm-kf-op-sz:
+    kafka-cluster:
+      kafka:
+        jbod:
+          size: 2Gi
+      zookeeper:
+        jbod:
+          size: 2Gi
+
+eric-service-mesh-integration:
+  eric-mesh-controller:
+    resources:
+      discovery:
+        requests:
+          cpu: 100m
+          memory: 200Mi
+
+# Enabling stubs for ECA Staging
+# Setting CARDQ config for connection to cts stub
+# Setting CSAC config for connection to pmsc stub
+eric-core-assurance:
+  stubs:
+    enabled: true
+  eric-oss-core-reporting-dimension-query:
+    cts:
+      url:
+        host: eric-oss-cts-stub
+        port: 8080
+      secret:
+        name: eric-oss-cts-stub-adminuser-credentials
+        userKey: "technicalUser.name"
+        passwordKey: "technicalUser.password"
+  eric-oss-core-slice-assurance-cfg:
+    provisioning:
+      pmsc:
+        enabled: true
+        url: "http://eric-oss-pmsc-stub:8080"

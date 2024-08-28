@@ -1,0 +1,416 @@
+# This override delta file was prepared for usage with main file:
+# site-values/ci/site-values-latest.yaml
+global:
+  bdr:
+    enabled: true
+  hosts:
+    bdr: 'BDR_HOST_REPLACE'
+
+  security:
+    tls:
+      enabled: true
+eric-oss-common-base:
+  eric-pm-alert-manager:
+    enabled: true
+    alarmHandlerWebhook:
+      enabled: true
+    alarmMappingYml:
+      serviceName: [['labels','serviceName'],  ['labels','deployment'],  ['labels','statefulset'],  ['labels','daemonset']]
+      faultyResource: [['labels','faultyResource'],  ['labels','instance']]
+  eric-adp-gui-aggregator-service:
+    resources:
+      main:
+        requests:
+          cpu: 15m
+          memory: 150Mi
+  eric-cnom-server:
+    resources:
+      server:
+        requests:
+          memory: 150Mi
+          cpu: 10m
+      logshipper:
+        requests:
+          memory: 30Mi
+          cpu: 50m
+  eric-eo-api-gateway:
+    resources:
+      requests:
+        memory: 512Mi
+        cpu: 20m
+  eric-eo-common-br-agent:
+    resources:
+      requests:
+        cpu: 10m
+        memory: 256Mi
+  eric-eo-credential-manager:
+    resources:
+      eric-eo-credential-manager:
+        requests:
+          cpu: 50m
+          memory: 350Mi
+  eric-eo-ecmsol005-adapter:
+    resources:
+      requests:
+        memory: 450M
+        cpu: 20m
+  eric-eo-ecmsol005-stub:
+    resources:
+      eric-eo-ecmsol005-stub:
+        requests:
+          memory: 350M
+          cpu: 10m
+  eric-eo-onboarding:
+    resources:
+      requests:
+        memory: 512Mi
+        cpu: 30m
+  eric-eo-subsystem-management:
+    resources:
+      requests:
+        memory: "450M"
+        cpu: 15m
+  eric-eo-subsystemsmgmt-ui:
+    resources:
+      requests:
+        memory: "32M"
+        cpu: "10m"
+  eric-eo-usermgmt:
+    resources:
+      eric-eo-usermgmt:
+        requests:
+          memory: "400M"
+          cpu: "200m"
+  eric-eo-usermgmt-ui:
+    resources:
+      eric-eo-usermgmt-ui:
+        requests:
+          memory: "32M"
+          cpu: "10m"
+  eric-eo-subsystem-management-database-pg:
+    resources:
+        brm:
+          requests:
+            memory: "32Mi"
+            cpu: "15m"
+        bra:
+          requests:
+            memory: "256Mi"
+            cpu: "15m"
+  eric-oss-common-postgres:
+    resources:
+        brm:
+          requests:
+            memory: "32Mi"
+            cpu: "15m"
+        bra:
+          requests:
+            memory: "256Mi"
+            cpu: "15m"
+
+eric-cloud-native-base:
+  eric-sec-access-mgmt:
+    resources:
+      iam:
+        requests:
+          memory: "512Mi"
+          cpu: "20m"
+  eric-ctrl-bro:
+    resources:
+      backupAndRestore:
+        requests:
+          cpu: "10m"
+          memory: "700Mi"
+  eric-log-transformer:
+    resources:
+      logtransformer:
+        requests:
+          cpu: 150m
+          memory: 4Gi
+  eric-data-coordinator-zk:
+    resources:
+      datacoordinatorzk:
+        requests:
+          cpu: "100m"
+          memory: "256Mi"
+  eric-data-message-bus-kf:
+    resources:
+      messagebuskf:
+        requests:
+          cpu: "100m"
+          memory: "1Gi"
+  eric-data-object-storage-mn:
+    resources:
+      server:
+        requests:
+          memory: 512Mi
+          cpu: 50m
+    openID:
+      enabled: true
+      certSecret: "openid-crt"
+  eric-log-shipper:
+    resources:
+      logshipper:
+        requests:
+          memory: "100Mi"
+          cpu: "30m"
+  eric-pm-server:
+    resources:
+      eric-pm-server:
+        requests:
+          cpu: "100m"
+          memory: "512Mi"
+      eric-pm-configmap-reload:
+        requests:
+          cpu: "10m"
+          memory: "8Mi"
+      eric-pm-exporter:
+        requests:
+          cpu: "10m"
+          memory: "8Mi"
+  eric-sec-key-management:
+    resources:
+      shelter:
+        requests:
+          memory: "100Mi"
+          cpu: "20m"
+      vault:
+        requests:
+          memory: "100Mi"
+          cpu: "20m"
+  eric-sec-sip-tls:
+    resources:
+      sip-tls:
+        requests:
+          memory: "100Mi"
+          cpu: "30m"
+      sip-tls-supervisor:
+        requests:
+          memory: "100Mi"
+          cpu: "30m"
+  eric-sec-access-mgmt-db-pg:
+    resources:
+      brm:
+        requests:
+          memory: "32Mi"
+          cpu: "15m"
+      bra:
+        requests:
+          memory: "256Mi"
+          cpu: "15m"
+  eric-data-search-engine:
+    service:
+      network:
+        protocol:
+          IPv6: false
+  eric-odca-diagnostic-data-collector:
+    sftpServerHost: "sftp-server:22"
+
+# Fill only if deploying EO Service Orchestration (EO SO)
+eric-eo-so:
+  stubs:
+    enabled: true
+  eric-eo-cm-database-pg:
+    resources:
+      brm:
+        requests:
+          memory: "32Mi"
+          cpu: "15m"
+      bra:
+        requests:
+          memory: "256Mi"
+          cpu: "15m"
+  eric-eo-workflow-database-pg:
+    resources:
+      brm:
+        requests:
+          memory: "32Mi"
+          cpu: "15m"
+      bra:
+        requests:
+          memory: "256Mi"
+          cpu: "15m"
+  eric-eo-tenantmgmt-database-pg:
+    resources:
+      brm:
+        requests:
+          memory: "32Mi"
+          cpu: "15m"
+      bra:
+        requests:
+          memory: "256Mi"
+          cpu: "15m"
+  eric-eo-playbook-database-pg:
+    resources:
+      brm:
+        requests:
+          memory: "32Mi"
+          cpu: "15m"
+      bra:
+        requests:
+          memory: "256Mi"
+          cpu: "15m"
+  toscao-database-pg:
+    resources:
+      brm:
+        requests:
+          memory: "32Mi"
+          cpu: "15m"
+      bra:
+        requests:
+          memory: "256Mi"
+          cpu: "15m"
+
+eric-oss-ericsson-adaptation:
+  eric-eo-enm-stub:
+    enabled: true
+  eric-oss-enm-notification-adapter:
+    enabled: false
+  eric-oss-enm-notification-simulator:
+    enabled: false
+  eric-oss-enm-discovery-adapter:
+    enabled: false
+  eric-oss-enm-model-adapter:
+    enabled: false
+  eric-oss-ran-topology-adapter:
+    enabled: false
+  eric-oss-enm-discovery-adapter-database-pg:
+    enabled: false
+    resources:
+      brm:
+        requests:
+          memory: "32Mi"
+          cpu: "15m"
+      bra:
+        requests:
+          memory: "256Mi"
+          cpu: "15m"
+  eric-oss-enm-notification-adapter-database-pg:
+    enabled: false
+    resources:
+      brm:
+        requests:
+          memory: "32Mi"
+          cpu: "15m"
+      bra:
+        requests:
+          memory: "256Mi"
+          cpu: "15m"
+  eric-oss-enm-model-adapter-database-pg:
+    enabled: false
+    resources:
+      brm:
+        requests:
+          memory: "32Mi"
+          cpu: "15m"
+      bra:
+        requests:
+          memory: "256Mi"
+          cpu: "15m"
+
+eric-oss-dmm:
+  eric-oss-data-catalog:
+    resources:
+      eric-oss-data-catalog:
+        requests:
+          cpu: "50m"
+  eric-schema-registry-sr:
+    resources:
+      schemaregistry:
+        requests:
+          cpu: "30m"
+  eric-oss-dmm-data-coordinator-zk:
+    resources:
+      datacoordinatorzk:
+        requests:
+          cpu: "50m"
+          memory: "512Mi"
+  eric-oss-dmm-data-message-bus-kf:
+    resources:
+      messagebuskf:
+        requests:
+          cpu: "100m"
+          memory: "512Mi"
+
+eric-topology-handling:
+  eric-oss-common-topology-svc:
+    eric-oss-cmn-topology-svc-core:
+      resources:
+        eric-inventory-core:
+          requests:
+            cpu: 1200m
+  eric-topology-handling-database-pg:
+      resources:
+        brm:
+          requests:
+            memory: "32Mi"
+            cpu: "15m"
+        bra:
+          requests:
+            memory: "256Mi"
+            cpu: "15m"
+
+eric-service-mesh-integration:
+  eric-mesh-controller:
+    resources:
+      discovery:
+        requests:
+          cpu: 100m
+          memory: 200Mi
+
+eric-cncs-oss-pre-config:
+  configAlertRules:
+    alarmConfigurationParameters:
+      documentDatabasePg:
+        diskSpaceThreshold: 0 # %rate
+        holdOnOffTime: 0 # minutes
+        severity: Major
+      dataSearchEngine:
+        volumeThreshold: 0 # %rate
+        volumeHoldOnOffTime: 0 # minutes
+        volumeSeverity: Major
+        missingPShardHoldOnOffTime: 0 # minutes
+        missingPShardSeverity: Major
+        missingReplicaHoldOnOffTime: 0 # minutes
+        missingReplicaSeverity: Major
+      dataObjectStorageMn:
+        diskSpaceThreshold: 0 # %rate
+        diskSpaceholdOnOffTime: 0 # minutes
+        diskSpaceSeverity: Major
+        diskOfflineThreshold: 0 # %rate
+        diskOfflineholdOnOffTime: 0 # minutes
+        diskOfflineSeverity: Major
+      diagnosticDataCollector:
+        diskSpaceThreshold: 0 # %rate
+        diskSpaceholdOnOffTime: 0 # minutes
+        diskSpaceSeverity: Major
+        dataTransferSpeedHoldOnOffTime: 0 # minutes
+        dataTransferSpeedSeverity: Warning
+        dataExportFailureThreshold: 0 # attempts
+        dataExportFailureMonitorTime: 0 # minutes
+        dataExportFailureHoldOnOffTime: 0 # minutes
+        dataExportFailureSeverity: Major
+      backupAndRestoreOrchestrator:
+        diskSpaceThreshold: 0 # %rate
+        holdOnOffTime: 0 # minutes
+        volumeSeverity: Major
+        noSuccessfulBackupDaysThreshold: 0 # days
+        noSuccessfulBackupDaysSeverity: Warning
+        exportBackupOperationFailedSeverity: Major
+        createBackupOperationFailedSeverity: Major
+        restoreBackupOperationFailedSeverity: Major
+        deleteBackupOperationFailedSeverity: Major
+      pmServer:
+        diskSpaceThreshold: 0 # %rate
+        diskSpaceholdOnOffTime: 0 # minutes
+        diskSpaceSeverity: Major
+        containerMemoryThreshold: 0 # %rate
+        containerMemoryHoldOffTime: 0 # minutes
+        containerMemorySeverity: Warning
+        containerCpuThreshold: 0 # %rate
+        containerCpuHoldOffTime: 0 # minutes
+        containerCpuSeverity: Warning
+      distributedCoordinatorEd:
+        diskSpaceThreshold: 0 # %rate
+        holdOnOffTime: 0 # minutes
+        severity: Major

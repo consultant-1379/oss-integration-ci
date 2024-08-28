@@ -1,0 +1,28 @@
+bases:
+  - environment.yaml
+  - repositories.yaml
+
+---
+
+helmDefaults:
+  wait: true
+  timeout: {{ .Values | get "helmfile.timeout" 1800 }}
+
+helmfiles:
+  - path: crds-helmfile.yaml
+    values:
+    - eric-tm-ingress-controller-cr-crd:
+        enabled: {{ .Values | get "tags.appmgr" false }}
+    - {{ toYaml .Values | nindent 6 }}
+---
+
+releases:
+  - name: eric-data-document-database-pg
+    namespace: {{ .Values | get "helmfile.app.namespace" "eric-app-ns" }}
+    chart: {{ .Values | get "repository" "eric-data-document-database-pg" }}/eric-data-document-database-pg
+    version: 7.5.0+50
+    installed: {{ .Values | get "tags.appmgr" false }}
+    labels:
+      csar: eric-data-document-database-pg
+    values:
+      - "./values-templates/release_values.yaml.gotmpl"

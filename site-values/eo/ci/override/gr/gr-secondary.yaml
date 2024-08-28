@@ -1,0 +1,9 @@
+eric-oss-function-orchestration-common:
+  eric-gr-bur-orchestrator:
+    gr:
+      sftp:
+        url: "10.216.154.56:22/gr1/GR"
+        username: "eogr"
+        password: "eogr"
+      cluster:
+        role: "SECONDARY"

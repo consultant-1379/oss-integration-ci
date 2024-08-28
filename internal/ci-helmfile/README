@@ -1,0 +1,36 @@
+This directory, "eric-ci-helmfile" & "eric-ci-inca-helmfile" holds the helmfile content that is used with the CI Flow Tests.
+
+
+Files within eric-ci-helmfile
+##########################################################################################################
+
+These files can be edited to add extra details as required.
+
+If files are edited please ensure to step the version in the metadata.yaml (This version should also be used when
+tarring up the helmfile.)
+
+# vi eric-ci-helmfile/metadata.yaml
+
+To build the image, create a tgz file.
+# tar zcvf eric-ci-helmfile-<version>.tgz
+
+New File is to be uploaded to the artifactory,
+https://arm.seli.gic.ericsson.se/artifactory/proj-eric-oss-drop-helm-local/eric-ci-helmfile/
+
+The application within the helmfile is eric-data-document-database-pg Version 7.5.0+50 which is used in
+the deployment testing, this application also has a csar stored in artifactory which is used during the
+download of real csars within helmfileDeploy.jenkinsfile.
+Location in artifactory of the stored csar.
+https://arm.seli.gic.ericsson.se/artifactory/proj-eric-oss-drop-generic-local/eric-ci-helmfile/csars
+
+
+Files within eric-ci-inca-helmfile
+###########################################################################################################
+These files are used to test the INCA functionality to ensure a new delivery
+of INCA does not affect the default values set within the Jenkins file
+
+Please do not change setting in this helmfile without notice to the
+Ticketmaster team
+
+New File is to be uploaded to the artifactory,
+https://arm.seli.gic.ericsson.se/artifactory/proj-eric-oss-drop-helm-local/eric-ci-inca-helmfile/

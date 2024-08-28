@@ -1,0 +1,57 @@
+The cluster-mgr utility has a dependency on freeport utility running on the
+same host.
+
+The reason for needing freeport utility is the following:
+1) KinD / DinD providing cluster support for cluster-mgr can't bind to
+host CLUSTER_IP with default port (0) in order to resolve a dynamic port
+2) In network-host mode for the cluster-mgr utility (in order to bind
+to CLUSTER_IP) does not work on CE nodes for remote access to cluster-mgr
+API.  CE-local tests using CLUSTER_IP were successful, but iptables/firewall
+setup by default (which should allow container port access on host
+network) did not work
+3) Freeport utility is used as a local-service to accomplish the same thing
+as socket.bind on CLUSTER_IP in order to resolve a free dynamic port on the
+host for cluster-mgr to use
+
+To build the image:
+docker build -t cluster-mgr --build-arg ARM_USER=<SIGNUM> --build-arg ARM_PASSWORD=<PASSWORD> .
+
+To run the cluster-mgr server:
+docker run -it -e CLUSTER_IP=<NODE_IP> -p <PORT>:8080 -v `pwd`/kind_configs:/configs -v $(which docker):/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock cluster-mgr
+
+Publish official image:
+docker tag cluster-mgr armdocker.rnd.ericsson.se/proj-cenx/cluster-mgr:latest
+docker push armdocker.rnd.ericsson.se/proj-cenx/cluster-mgr:latest
+
+On target node:
+docker pull armdocker.rnd.ericsson.se/proj-cenx/cluster-mgr:latest
+docker run -d --name cluster-mgr --restart=always -e CLUSTER_IP=<NODE_IP> -p <PORT>:8080 -v `pwd`/kind_configs:/configs -v $(which docker):/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock armdocker.rnd.ericsson.se/proj-cenx/cluster-mgr:latest
+
+Example (background exec):
+docker run -d -p 8080:8080 --name cluster-mgr --restart=always -e CLUSTER_IP=10.120.10.7 -v `pwd`/kind_configs:/configs -v $(which docker):/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock armdocker.rnd.ericsson.se/proj-cenx/cluster-mgr:latest
+
+Example (foreground exec):
+docker run -it --rm -p 8080:8080 -e CLUSTER_IP=10.120.10.7 -v `pwd`/kind_configs:/configs -v $(which docker):/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock armdocker.rnd.ericsson.se/proj-cenx/cluster-mgr:latest
+
+
+Testing API for remote node where cluster_mgr and freeport services are running:
+
+$ curl -X POST http://10.120.10.7:8080/cluster/test2
+<RETURNED CONFIG JSON>
+
+$ curl -X GET http://10.120.10.7:8080/config/test2 > ./config2
+
+$ kubectl --kubeconfig=./config2 get ns
+NAME                 STATUS   AGE
+default              Active   49s
+kube-node-lease      Active   51s
+kube-public          Active   51s
+kube-system          Active   51s
+local-path-storage   Active   46s
+
+
+Docs:
+http://<SERVER_IP>:<SERVER_PORT>/docs
+
+Eg.
+http://10.120.10.7:8080/docs

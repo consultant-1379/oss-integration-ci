@@ -1,0 +1,198 @@
+global:
+  hosts:
+    os: os.dummy.se
+    ml: ml.dummy.se
+    bdr: bdr.dummy.se
+    eic: eic.dummy.se
+    appmgr: appmgr.dummy.se
+    adc: adc.dummy.se
+    gas: gas.dummy
+    iam: iam.dummy
+    kafkaBootstrap: iam.dummy.se
+    la: la.dummy.se
+    th: th.dummy.se
+  registry:
+    url: armdocker.rnd.ericsson.se
+    username: dummy_username
+    password: dummy_password
+  support:
+    ipv6:
+      enabled: true
+  timezone: UTC
+  createClusterRoles: true
+  licensing:
+    sites:
+      - hostname: "dummy"
+  ericsson:
+    licensing:
+      licenseDomains:
+        - productType: "dummy"
+          swltId: "dummy"
+          customerId: 123
+  bdr:
+    enabled: true
+tags:
+  adc: true
+  dmm: true
+  th: true
+  tieh: true
+  eas: true
+  ch: true
+  appmgr: true
+  os: true
+  pmh: true
+  ml: true
+  sef: true
+
+eric-cloud-native-base:
+  eric-sec-access-mgmt:
+    accountManager:
+      enabled: false
+      inactivityThreshold: 9999
+    replicaCount: 2
+    ingress:
+      enabled: true
+    authenticationProxy:
+      cookieDomain: "rnd.gic.ericsson.se"
+      enabled: true
+      ingress:
+        enabled: true
+        hostname: "iam.todd009.rnd.gic.ericsson.se"
+        port: 8080
+        tls:
+          enabled: true
+      realm: master
+  eric-ctrl-bro:
+    persistence:
+      persistentVolumeClaim:
+        size: "15Gi"
+  eric-log-transformer:
+    egress:
+      syslog:
+        enabled: true
+        remoteHosts:
+          - host: 1.1.1.1
+            port: 1
+  eric-data-search-engine:
+    service:
+      network:
+        protocol:
+          IPv6: true
+    persistence:
+      data:
+        persistentVolumeClaim:
+          size: "10Gi"
+    index_management:
+      job_interval_in_minutes: 10
+      policies: []
+  eric-data-object-storage-mn:
+    persistentVolumeClaim:
+      size: "75Gi"
+    objects_lifecycle_cfg: ""
+    brAgent:
+      properties:
+        backup_data_path: ""
+    openID:
+      enabled: true
+  eric-fh-snmp-alarm-provider:
+    service:
+      loadBalancerIP: "1.1.1.1"
+      annotations:
+        cloudProviderLB: {}
+  eric-odca-diagnostic-data-collector:
+    sftpServerHost: "sftp-server:22"
+  eric-si-application-sys-info-handler:
+    asih:
+      applicationId: "dummy"
+eric-oss-common-base:
+  eric-oss-ddc:
+    autoUpload:
+      enabled: true
+      ddpid: dummy
+      account: dummy
+      password: dummy
+  sessionTokens:
+    maxSessionDurationSecs: 36000
+    maxIdleTimeSecs: 1800
+  service-mesh-ingress-gateway:
+    service:
+      loadBalancerIP: "1.1.1.1"
+      annotations:
+        cloudProviderLB: {}
+    externalTrafficPolicy: Cluster
+  system-user:
+    credentials:
+      username: "system-user"
+      password: "Ericsson123!"
+  gas:
+    defaultUser:
+      username: "gas-user"
+      password: "Ericsson123!"
+  eric-eo-usermgmt:
+    replicaCount: 2
+  eric-eo-usermgmt-ui:
+    replicaCount: 2
+eric-topology-handling:
+  eric-oss-common-topology-svc:
+    eric-oss-cmn-topology-svc-core:
+      defaultUser:
+        username: "cts-user"
+        password: "Ericsson123!"
+      useGasHost:
+        enabled: true
+eric-oss-oran-support:
+  eric-oss-a1-policy-mngmt-svc:
+    defaultUser:
+      username: "a1-user"
+      password: "DefaultP12345!"
+eric-oss-ericsson-adaptation:
+  eric-oss-ran-topology-adapter:
+    rtaUser:
+      username: "rta-user"
+      password: "Ericsson123!"
+eric-oss-config-handling:
+  cps-user:
+    credentials:
+      username: "cps-user"
+      password: "Ericsson123!"
+  dmi-user:
+    credentials:
+      username: "dmi-user"
+      password: "Ericsson123!"
+eric-oss-adc:
+  ingress:
+    tls:
+      secretName: ves-tls-secret
+eric-oss-ml-execution-env:
+  credentials:
+    objectStorage:
+      jobUser:
+        password: "objectStorageJobUserPassword"
+      serviceUser:
+        password: "objectStorageServiceUserPassword"
+    containerRegistry:
+      username: "dockeruser"
+      password: "dockerpassword"
+    database:
+      custom:
+        password: "modellcmpasswd"
+      metrics:
+        password: "exporter"
+      replica:
+        password: "replica"
+      super:
+        password: "Postgres1#"
+eric-oss-dmm:
+  eric-oss-dmm-kf-op-sz:
+    kafka-cluster:
+      kafka:
+        jbod:
+          size: 2Gi
+eric-service-exposure-framework:
+  log:
+    streamingMethod: "indirect"
+  eric-log-shipper:
+    enabled: false
+  eric-sef-exposure-entity-storage:
+    log:
+      streamingMethod: "indirect"

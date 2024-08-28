@@ -1,0 +1,156 @@
+global:
+  hosts:
+    so: "SO_HOST_REPLACE"
+    iam: "IAM_HOST_REPLACE"
+    pf: "PF_HOST_REPLACE"
+    uds: "UDS_HOST_REPLACE"
+    gr: "GR_HOST_REPLACE"
+    gas: "GAS_HOST_REPLACE"
+    adc: "ADC_HOST_REPLACE"
+    appmgr: "APPMGR_HOST_REPLACE"
+    os: "OS_HOST_REPLACE"
+  registry:
+    # If deploying from the director node on a CCD environment, the url can be retrieved using:
+    # kubectl get ingress eric-lcm-container-registry-ingress -n kube-system -o jsonpath="{.spec.tls[*].hosts[0]}"; echo
+    url: "DOCKER_REGISTRY_REPLACE"
+    # Docker registry username
+    username: "USERNAME_REPLACE"
+    # Docker registry password
+    password: "PASSWORD_REPLACE"
+  support:
+    ipv6:
+      enabled: false
+  timezone: UTC
+  createClusterRoles: true
+  ingressClass: "oss_iccr"
+  iccrAppIngresses: false
+  serviceMesh:
+    enabled: true
+    annotations:
+      serviceMesh: 5.0.0+114
+    ingress:
+      enabled: false
+  networkPolicy:
+    enabled: true
+# Warning! If changing these application tags from true to false and that application
+# is already installed, then that application will be removed and data will be lost!
+tags:
+  so: false
+  pf: false
+  uds: false
+  adc : false
+  dmm : false
+  th : false
+  eas: false
+  appmgr: false
+  ch: false
+  ta: false
+  pmh: false
+  os: false
+
+eric-oss-common-base:
+  system-user:
+    credentials:
+      username: "system-user"
+      password: "Ericsson123!"
+
+  service-mesh-ingress-gateway:
+    enabled: false
+    service:
+      loadBalancerIP: ""
+      annotations:
+        # Cloud Provider(for ex. AWS):
+        #  < Keys are to be placed in the cloudProviderLB hash. >
+        cloudProviderLB: {}
+
+  gas:
+    defaultUser:
+      username: "gas-user"
+      password: "Ericsson123!"
+
+eric-cloud-native-base:
+  eric-sec-access-mgmt:
+    replicaCount: 2
+    ingress:
+      type: "nginx"
+  eric-tm-ingress-controller-cr:
+    enabled: false
+    service:
+      loadBalancerIP: ""
+      annotations:
+        # Cloud Provider(for ex. AWS):
+        #  < Keys are to be placed in the cloudProviderLB hash. >
+        cloudProviderLB: {}
+
+  eric-lm-combined-server:
+    licenseServerClient:
+      licenseServer:
+        thrift:
+          # Mandatory: licenseServerClient.licenseServer.thrift.host - The NELS thrift server address or service name
+          host: ""
+
+  # Please refer to the EO dimensioning guide for the appropriate size of the BRO volume
+  # The size will be dependent on which applications are being deployed
+  eric-ctrl-bro:
+    persistence:
+      persistentVolumeClaim:
+        size: "15Gi"
+    sftp:
+      username: "dummy"
+      password: "dummy"
+
+  eric-log-transformer:
+    egress:
+      syslog:
+        enabled: false
+        remoteHosts: []
+
+  eric-data-search-engine:
+    service:
+      network:
+        protocol:
+          IPv6: false
+    persistence:
+      data:
+        persistentVolumeClaim:
+          size: "10Gi"
+
+# Fill only if deploying EO Service Orchestration (EO SO)
+eric-eo-so:
+  defaultUser:
+    username: "so-user"
+    password: "Ericsson123!"
+
+# Fill only if deploying EO PF Orchestration (EO PF)
+eric-oss-pf:
+  defaultUser:
+    username: "pf-user"
+    password: "Ericsson123!"
+
+# Fill only if deploying EO PF Orchestration (EO PF)
+eric-oss-uds:
+  defaultUser:
+    username: "uds-user"
+    password: "Ericsson123!"
+
+# For EAS tests
+eric-oss-ericsson-adaptation:
+  stubs:
+    enabled: false
+
+# For Config Handling tests
+eric-oss-config-handling:
+  cps-user:
+    credentials:
+      username: "cps-user"
+      password: "Ericsson123!"
+  dmi-user:
+    credentials:
+      username: "dmi-user"
+      password: "Ericsson123!"
+
+eric-oss-oran-support:
+  eric-oss-a1-policy-mngmt-svc:
+    defaultUser:
+      username: 'a1-user'
+      password: 'DefaultP12345!'

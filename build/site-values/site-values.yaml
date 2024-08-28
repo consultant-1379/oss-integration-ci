@@ -1,0 +1,32 @@
+global:
+  hosts:
+    iam: iam-sm.ews.gic.ericsson.se
+    gas: gas-sm.ews.gic.ericsson.se
+  registry:
+    url: armdocker.rnd.ericsson.se
+    username: dummy
+    password: dummy
+  support:
+    ipv6:
+      enabled: true
+  timezone: UTC
+  createClusterRoles: true
+tags:
+  adc: false
+  dmm: false
+  th: false
+  eas: false
+  ch: false
+  appmgr: true
+  ta: false
+  os: false
+  pmh: false
+  ml: false
+eric-data-document-database-pg:
+  highAvailability:
+    synchronousModeEnabled: false
+    replicaCount: 1
+  credentials:
+    kubernetesSecretName: eric-eo-database-pg-secret
+  persistentVolumeClaim:
+    size: 0.1Gi

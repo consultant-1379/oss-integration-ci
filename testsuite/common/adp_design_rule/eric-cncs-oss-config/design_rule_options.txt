@@ -1,0 +1,6 @@
+-DhelmDesignRule.config.eric-cncs-oss-config.DR-D1121-210=skip
+-DhelmDesignRule.config.eric-cncs-oss-config.DR-D1121-011=skip
+-DhelmDesignRule.config.eric-cncs-oss-config.DR-D1123-127=skip
+-DhelmDesignRule.config.eric-cncs-oss-config.DR-D1123-128=skip
+-DhelmDesignRule.config.eric-cncs-oss-config.DR-D1123-134=skip
+-DhelmDesignRule.config.eric-cncs-oss-config.DR-D1126-005=skip

@@ -1,0 +1,7 @@
+apiVersion: v2
+description: Test chart to test the CI Flows
+maintainers:
+- email: pdlticketm@pdl.internal.ericsson.com
+  name: Ticketmaster
+name: eric-ci-helm-b
+version: 1.0.4

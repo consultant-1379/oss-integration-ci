@@ -1,0 +1,146 @@
+global:
+  hosts:
+    so: "so.ericsson.se"
+    iam: "keycloak.ericsson.se"
+    pf: "pf.ericsson.se"
+    uds: "sdd.ericsson.se"
+    gr: "GR_HOST_REPLACE"
+    gas: "gas.ericsson.se"
+  registry:
+    # Docker registry username
+    username: "dummy"
+    # Docker registry password
+    password: "dummy"
+  support:
+    ipv6:
+      enabled: false
+  timezone: UTC
+  createClusterRoles: true
+  ingressClass: "eo_iccr"
+  tls:
+    enabled: true
+
+helmfile:
+  app:
+    namespace: helmfile
+  crd:
+    namespace: helmfilecrd
+
+# Please refer to the EO dimensioning guide for the appropriate size of the BRO volume
+# The size will be dependent on which applications are being deployed
+eric-ctrl-bro:
+  persistence:
+    persistentVolumeClaim:
+      size: "15Gi"
+  sftp:
+    username: "dummy"
+    password: "dummy"
+
+eric-cm-mediator:
+  cmkey:
+    enable: true
+
+eric-log-transformer:
+  egress:
+    syslog:
+      enabled: false
+      remoteHosts: []
+
+eric-data-search-engine:
+  brAgent:
+    enabled: true
+  service:
+    network:
+      protocol:
+        IPv6: false
+  persistence:
+    data:
+      persistentVolumeClaim:
+        size: "10Gi"
+
+eric-tm-ingress-controller-cr:
+  enabled: true
+  rbac:
+    create: true
+  service:
+    loadBalancerIP: "1.1.1.1"
+    externalTrafficPolicy: "Local"
+  ingressClass: "ingress"
+
+eric-sec-access-mgmt:
+  accountManager:
+    enabled: false
+    inactivityThreshold: 9999
+  enabled: true
+  ingress:
+    hostname: "iam.ericsson.se"
+  brAgent:
+    enabled: true
+  authenticationProxy:
+    enabled: true
+    cookieDomain: "rnd.gic.ericsson.se"
+  replicaCount: 1
+
+eric-data-distributed-coordinator-ed:
+  log:
+    outputs: ["stream", "stdout"]
+  metricsexporter:
+    enabled: true
+  brAgent:
+    enabled: true
+
+eric-data-coordinator-zk:
+  brAgent:
+    enabled: true
+  metrics:
+    enabled: true
+  metricsexporter:
+    enabled: true
+
+eric-data-object-storage-mn:
+  brAgent:
+    enabled: true
+  log:
+    outputs: [ "k8sLevel", "applicationLevel" ]
+
+eric-fh-snmp-alarm-provider:
+  enabled: true
+
+eric-fh-alarm-handler:
+  ingress:
+    enabled: true
+    hostname: "iam.ericsson.se"
+
+eric-data-message-bus-kf:
+  metricsexporter:
+    enabled: true
+  jmx:
+    enabled: true
+  log:
+    outputs: ["stream", "stdout"]
+
+eric-sec-sip-tls:
+  log:
+    outputs: ["stream", "stdout"]
+
+eric-sec-key-management:
+  enabled: true
+
+eric-lm-combined-server:
+  enabled: true
+  licenseServerClient:
+    licenseServer:
+      thrift:
+        host: "dummy"
+
+eric-data-key-value-database-rd:
+  enabled: true
+
+eric-data-document-database-pg:
+  log:
+    outputs: ["stream", "stdout"]
+  brAgent:
+    enabled: true
+
+eric-dst-collector:
+  enabled: true

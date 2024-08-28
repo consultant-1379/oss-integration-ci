@@ -1,0 +1,6 @@
+{
+  "timestamp": 1657883489223,
+  "status": 404,
+  "error": "Not Found",
+  "message": "Pipeline config (id: RecreateNamespace) not found for Application (id: evnfm-e2e-cicd)"
+}

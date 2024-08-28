@@ -1,0 +1,114 @@
+{
+  "id": "c893915c-1f68-4f17-a453-1a2749973981",
+  "name": "Unreserve Cancelled pipelines",
+  "application": "common-e2e-cicd",
+  "schema": "1",
+  "triggers":   [
+        {
+      "pipeline": "5f583206-c6d9-46ca-b967-da128fd0d9c4",
+      "application": "adc-e2e-cicd",
+      "type": "pipeline",
+      "enabled": true,
+      "status": ["canceled"]
+    },
+        {
+      "pipeline": "3e52c10f-e245-480f-a2b7-7b766c01ffa4",
+      "application": "app-mgr-e2e-cicd",
+      "type": "pipeline",
+      "enabled": true,
+      "status": ["canceled"]
+    },
+        {
+      "pipeline": "96f936b7-f9f5-4da9-8d37-7940db4bd0fa",
+      "application": "config-handling-e2e-cicd",
+      "type": "pipeline",
+      "enabled": true,
+      "status": ["canceled"]
+    },
+        {
+      "pipeline": "684bc696-7598-45d9-b975-bfa6b618a631",
+      "application": "dmm-e2e-cicd",
+      "type": "pipeline",
+      "enabled": true,
+      "status": ["canceled"]
+    },
+        {
+      "pipeline": "e10893df-7000-41f3-af41-8967337afcba",
+      "application": "eas-e2e-cicd",
+      "type": "pipeline",
+      "enabled": true,
+      "status": ["canceled"]
+    },
+        {
+      "pipeline": "265a8a2e-f542-4e3f-b2c8-b11c15861bd9",
+      "application": "os-e2e-cicd",
+      "type": "pipeline",
+      "enabled": true,
+      "status": ["canceled"]
+    },
+        {
+      "pipeline": "61ba07f2-840e-4b00-a470-cd8ba6dfd6f9",
+      "application": "pf-e2e-cicd",
+      "type": "pipeline",
+      "enabled": true,
+      "status": ["canceled"]
+    },
+        {
+      "pipeline": "a67d8abc-939b-459e-835b-1f425f2f3538",
+      "application": "pmh-e2e-cicd",
+      "type": "pipeline",
+      "enabled": true,
+      "status": ["canceled"]
+    },
+        {
+      "pipeline": "7f2f0a43-5089-45ad-96ad-8c6929c6266f",
+      "application": "so-e2e-cicd",
+      "type": "pipeline",
+      "enabled": true,
+      "status": ["canceled"]
+    },
+        {
+      "pipeline": "1099757c-4eb6-445b-8970-59427fd12146",
+      "application": "ta-e2e-cicd",
+      "type": "pipeline",
+      "enabled": true,
+      "status": ["canceled"]
+    },
+        {
+      "pipeline": "fe5ca561-63cd-430d-9050-a8376827592c",
+      "application": "topology-handling-e2e-cicd",
+      "type": "pipeline",
+      "enabled": true,
+      "status": ["canceled"]
+    },
+        {
+      "pipeline": "55c715ca-6df3-4502-9efc-60017a0ac043",
+      "application": "uds-e2e-cicd",
+      "type": "pipeline",
+      "enabled": true,
+      "status": ["canceled"]
+    },
+        {
+      "pipeline": "bff3ce13-ec06-4eae-8ba8-0b8acf8aef78",
+      "application": "base-platform-e2e-cicd",
+      "type": "pipeline",
+      "enabled": true,
+      "status": ["canceled"]
+    }
+  ],
+  "index": 7,
+  "updateTs": "1670347310015",
+  "lastModifiedBy": "zolepan",
+  "stages": [],
+  "keepWaitingPipelines": false,
+  "limitConcurrent": true,
+  "spelEvaluator": "v4",
+  "appConfig": {},
+  "notifications": [  {
+    "address": "oleksii.panchenko@ericsson.com",
+    "level": "pipeline",
+    "message": {"pipeline.starting": {"text": "Someone canceled the Application Baseline pipeline!"}},
+    "type": "email",
+    "when": ["pipeline.starting"]
+  }]
+}

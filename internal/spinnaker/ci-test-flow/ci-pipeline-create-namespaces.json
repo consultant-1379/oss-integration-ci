@@ -1,0 +1,165 @@
+{
+  "appConfig": {},
+  "description": "The is a CI Release pipeline to be used by Team TicketMaster",
+  "keepWaitingPipelines": false,
+  "lastModifiedBy": "emanjoh",
+  "limitConcurrent": false,
+  "parameterConfig": [
+    {
+      "default": "oss-deploy",
+      "description": "Namespace to be used to execute deployment against on the kubernetes system",
+      "hasOptions": false,
+      "label": "Namespace",
+      "name": "NAMESPACE",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "crd-namespace",
+      "description": "CRD Namespace to be used to execute the CRD deployment against on the kubernetes system",
+      "hasOptions": false,
+      "label": "CRD Namespace",
+      "name": "CRD_NAMESPACE",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "",
+      "description": "Kubeconfig file id stored in the Jenkins secret area",
+      "hasOptions": false,
+      "label": "Kubernetes Config File ID",
+      "name": "KUBECONFIG_FILE",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": true,
+      "required": true
+    },
+    {
+      "default": "refs/heads/master",
+      "description": "Gerrit RefSpec to be able to test the flow against a review before merge. Use with caution",
+      "hasOptions": false,
+      "label": "Gerrit Ref Spec",
+      "name": "GERRIT_REFSPEC",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "evo_docker_engine",
+      "description": "Jenkins Slave where this flow should be executed from",
+      "hasOptions": false,
+      "label": "SLAVE LABEL",
+      "name": "SLAVE_LABEL",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": true
+    },
+    {
+      "default": "armdocker.rnd.ericsson.se/proj-eric-oss-drop/eric-oss-ci-scripts:latest",
+      "description": "CI Docker image details",
+      "hasOptions": false,
+      "label": "Ci Docker Image",
+      "name": "CI_DOCKER_IMAGE",
+      "options": [
+        {
+          "value": ""
+        }
+      ],
+      "pinned": false,
+      "required": false
+    }
+  ],
+  "schema": "1",
+  "spelEvaluator": "v4",
+  "stages": [
+    {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "CI-Test-predeploy-create-namespace",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Create OSS Namespace",
+      "parameters": {
+        "CI_DOCKER_IMAGE": "${trigger['parameters']['CI_DOCKER_IMAGE']}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['GERRIT_REFSPEC']}",
+        "KUBECONFIG_FILE": "${trigger['parameters']['KUBECONFIG_FILE']}",
+        "NAMESPACE": "${trigger['parameters']['NAMESPACE']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}"
+      },
+      "refId": "1",
+      "requisiteStageRefIds": [],
+      "type": "jenkins"
+    },
+    {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "CI-Test-predeploy-create-namespace",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Create CRD Namespace",
+      "parameters": {
+        "CI_DOCKER_IMAGE": "${trigger['parameters']['CI_DOCKER_IMAGE']}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['GERRIT_REFSPEC']}",
+        "IGNORE_IF_CREATED": "true",
+        "KUBECONFIG_FILE": "${trigger['parameters']['KUBECONFIG_FILE']}",
+        "NAMESPACE": "${trigger['parameters']['CRD_NAMESPACE']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}"
+      },
+      "refId": "2",
+      "requisiteStageRefIds": [],
+      "type": "jenkins"
+    },
+    {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": false,
+      "failPipeline": true,
+      "name": "Check Namespace Creation",
+      "preconditions": [
+        {
+          "context": {
+            "stageName": "Create OSS Namespace",
+            "stageStatus": "SUCCEEDED"
+          },
+          "failPipeline": true,
+          "type": "stageStatus"
+        },
+        {
+          "context": {
+            "stageName": "Create CRD Namespace",
+            "stageStatus": "SUCCEEDED"
+          },
+          "failPipeline": true,
+          "type": "stageStatus"
+        }
+      ],
+      "refId": "3",
+      "requisiteStageRefIds": [
+        "1",
+        "2"
+      ],
+      "type": "checkPreconditions"
+    }
+  ],
+  "triggers": []
+}

@@ -1,0 +1,33 @@
+The pipeline-mgt-scripts Python utility provides automation that includes the Spinnaker CLI and other utilities (managing certificates, Jenkins resources, etc.).
+
+Support:
+
+Please contact App Staging Ops <PDLAPPSTAG@pdl.internal.ericsson.com> for any support questions.
+
+Contributions:
+
+Changes should be submitted for review to the Ticketmaster/Stepmaster2000 code review channel:
+https://teams.microsoft.com/l/channel/19%3a24a63aa23b484b8092251565822c18f0%40thread.skype/Code%2520Review%2520Requests?groupId=1483901a-b5c4-445a-b707-aa7a5d0c1b4c&tenantId=92e84ceb-fbfd-47ab-be52-080c6b87953f
+
+There is a pre-code verification job that auto-labels reviews that include script changes to pipeline-mgt-scripts directory in oss-integration-ci:
+https://fem5s11-eiffel052.eiffel.gic.ericsson.se:8443/jenkins/job/PipelineMgt-Precode/
+
+Examples of usage:
+
+1) Jenkins job (eg. Spinnaker app banner rollout):
+
+https://fem8s11-eiffel052.eiffel.gic.ericsson.se:8443/jenkins/view/App%20Staging/job/Rollout-Spinnaker-App-Banner/
+
+2) Direct from local image (eg. Spinnaker app banner rollout from CSV file):
+
+From oss-integration-ci --> internal/pipeline-mgt-scripts:
+
+# Build the image locally
+docker build -t pipeline-mgt --target release -f ./Dockerfile .
+
+# Setup spin config variables
+export SPIN_USERNAME=<FOO>
+export SPIN_PASSWORD=<BAR>
+
+# Run a pipeline-mgt container to sync banner messages from "sample.csv"
+docker run -it -v `pwd`:/data -e SPIN_USERNAME=$SPIN_USERNAME -e SPIN_PASSWORD=$SPIN_PASSWORD pipeline-mgt spinnaker-update-banners-from-csv --filename /data/tests/testresources/sample.csv

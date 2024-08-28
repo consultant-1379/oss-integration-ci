@@ -1,0 +1,176 @@
+bases:
+  - repositories.yaml
+
+hooks:
+  # Prepare hook to write the helmfile command in use to a file, for later use
+  - events: ["prepare"]
+    command: ./scripts/create_helmfile_command_file.sh
+    args:
+      - "{{`{{.HelmfileCommand}}`}}"
+
+  # Cleanup hook to delete the helmfile_command file created in an earlier hook
+  - events: ["cleanup"]
+    command: ./scripts/delete_helmfile_command_file.sh
+
+releases:
+  - name: eric-tm-ingress-controller-cr-crd
+    namespace: {{ .Values | get "helmfile.crd.namespace" "eric-crd-ns" }}
+    chart: {{ .Values | get "repository" "adp-gs-all" }}/eric-tm-ingress-controller-cr-crd
+    version: 11.3.0+59
+    condition: eric-tm-ingress-controller-cr-crd.enabled
+    labels:
+      csar: eric-cloud-native-base
+    values:
+      - "./values-templates/global-values.yaml.gotmpl"
+      - "./values-templates/release-site-values.yaml.gotmpl"
+    hooks:
+      - events: ['postsync']
+        showlogs: true
+        command: ./scripts/wait_for_crds_to_deploy.sh
+        args:
+          - '{{`{{ .Release.Namespace }}`}}'
+          - '{{`{{ .Release.Name }}`}}'
+
+  - name: eric-mesh-controller-crd
+    namespace: {{ .Values | get "helmfile.crd.namespace" "eric-crd-ns" }}
+    chart: {{ .Values | get "repository" "adp-gs-all" }}/eric-mesh-controller-crd
+    version: 13.0.0+50
+    condition: eric-mesh-controller-crd.enabled
+    labels:
+      csar: eric-cloud-native-service-mesh
+    values:
+      - "./values-templates/global-values.yaml.gotmpl"
+      - "./values-templates/release-site-values.yaml.gotmpl"
+    hooks:
+      - events: ['postsync']
+        showlogs: true
+        command: ./scripts/wait_for_crds_to_deploy.sh
+        args:
+          - '{{`{{ .Release.Namespace }}`}}'
+          - '{{`{{ .Release.Name }}`}}'
+
+  - name: eric-sec-sip-tls-crd
+    namespace: {{ .Values | get "helmfile.crd.namespace" "eric-crd-ns" }}
+    chart: {{ .Values | get "repository" "adp-gs-all" }}/eric-sec-sip-tls-crd
+    version: 6.0.0+2
+    condition: eric-sec-sip-tls-crd.enabled
+    labels:
+      csar: eric-cloud-native-base
+    values:
+      - "./values-templates/global-values.yaml.gotmpl"
+      - "./values-templates/release-site-values.yaml.gotmpl"
+    hooks:
+      - events: ['postsync']
+        showlogs: true
+        command: ./scripts/wait_for_crds_to_deploy.sh
+        args:
+          - '{{`{{ .Release.Namespace }}`}}'
+          - '{{`{{ .Release.Name }}`}}'
+
+  - name: eric-oss-kf-sz-op-crd
+    namespace: {{ .Values | get "helmfile.crd.namespace" "eric-crd-ns" }}
+    chart: {{ .Values | get "repository" "eric-oss-drop" }}/eric-oss-kf-sz-op-crd
+    version: 1.1.0-6
+    condition: eric-oss-kf-sz-op-crd.enabled
+    labels:
+      csar: eric-oss-dmm
+    values:
+      - "./values-templates/global-values.yaml.gotmpl"
+      - "./values-templates/release-site-values.yaml.gotmpl"
+    hooks:
+      - events: ['postsync']
+        showlogs: true
+        command: ./scripts/wait_for_crds_to_deploy.sh
+        args:
+          - '{{`{{ .Release.Namespace }}`}}'
+          - '{{`{{ .Release.Name }}`}}'
+
+  - name: eric-sec-certm-crd
+    namespace: {{ .Values | get "helmfile.crd.namespace" "eric-crd-ns" }}
+    chart: {{ .Values | get "repository" "adp-gs-all" }}/eric-sec-certm-crd
+    version: 5.0.0+18
+    condition: eric-sec-certm-crd.enabled
+    labels:
+      csar: eric-cloud-native-base
+    values:
+      - "./values-templates/global-values.yaml.gotmpl"
+      - "./values-templates/release-site-values.yaml.gotmpl"
+    hooks:
+      - events: ['postsync']
+        showlogs: true
+        command: ./scripts/wait_for_crds_to_deploy.sh
+        args:
+          - '{{`{{ .Release.Namespace }}`}}'
+          - '{{`{{ .Release.Name }}`}}'
+
+  - name: eric-data-key-value-database-rd-crd
+    namespace: {{ .Values | get "helmfile.crd.namespace" "eric-crd-ns" }}
+    chart: {{ .Values | get "repository" "adp-gs-all" }}/eric-data-key-value-database-rd-crd
+    version: 1.1.0+1
+    condition: eric-data-key-value-database-rd-crd.enabled
+    labels:
+      csar: eric-cloud-native-base
+    values:
+      - "./values-templates/global-values.yaml.gotmpl"
+      - "./values-templates/release-site-values.yaml.gotmpl"
+    hooks:
+      - events: ['postsync']
+        showlogs: true
+        command: ./scripts/wait_for_crds_to_deploy.sh
+        args:
+          - '{{`{{ .Release.Namespace }}`}}'
+          - '{{`{{ .Release.Name }}`}}'
+
+  - name: eric-aiml-model-lcm-crd
+    namespace: {{ .Values | get "helmfile.crd.namespace" "eric-crd-ns" }}
+    chart: {{ .Values | get "repository" "mlops-drop" }}/eric-aiml-model-lcm-crd
+    version: 1.0.0+0
+    condition: eric-aiml-model-lcm-crd.enabled
+    labels:
+      csar: eric-oss-ml-execution-env
+    values:
+      - "./values-templates/global-values.yaml.gotmpl"
+      - "./values-templates/release-site-values.yaml.gotmpl"
+    hooks:
+      - events: ['postsync']
+        showlogs: true
+        command: ./scripts/wait_for_crds_to_deploy.sh
+        args:
+          - '{{`{{ .Release.Namespace }}`}}'
+          - '{{`{{ .Release.Name }}`}}'
+
+  - name: eric-data-wide-column-database-cd-crd
+    namespace: {{ .Values | get "helmfile.crd.namespace" "eric-crd-ns" }}
+    chart: {{ .Values | get "repository" "adp-gs-all" }}/eric-data-wide-column-database-cd-crd
+    version: 1.23.0+30
+    condition: eric-data-wide-column-database-cd-crd.enabled
+    labels:
+      csar: eric-service-exposure-framework
+    values:
+      - "./values-templates/global-values.yaml.gotmpl"
+      - "./values-templates/release-site-values.yaml.gotmpl"
+    hooks:
+      - events: ['postsync']
+        showlogs: true
+        command: ./scripts/wait_for_crds_to_deploy.sh
+        args:
+          - '{{`{{ .Release.Namespace }}`}}'
+          - '{{`{{ .Release.Name }}`}}'
+
+  - name: eric-sec-access-mgmt-crd
+    namespace: {{ .Values | get "helmfile.crd.namespace" "eric-crd-ns" }}
+    chart: {{ .Values | get "repository" "adp-gs-all" }}/eric-sec-access-mgmt-crd
+    version: 1.1.0+1
+    condition: eric-sec-access-mgmt-crd.enabled
+    labels:
+      csar: eric-cloud-native-base
+    values:
+      - "./values-templates/global-values.yaml.gotmpl"
+      - "./values-templates/release-site-values.yaml.gotmpl"
+    hooks:
+      - events: ['postsync']
+        showlogs: true
+        command: ./scripts/wait_for_crds_to_deploy.sh
+        args:
+          - '{{`{{ .Release.Namespace }}`}}'
+          - '{{`{{ .Release.Name }}`}}'

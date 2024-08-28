@@ -1,0 +1,497 @@
+global:
+  hosts:
+    bdr: BDR_HOST_REPLACE
+    eic: EIC_HOST_REPLACE
+    iam: EIC_HOST_REPLACE
+  bdr:
+    enabled: true
+  eic:
+    enabled: true
+  security:
+    tls:
+      enabled: true
+
+eric-oss-common-base:
+  eric-oss-ui-settings-database-pg:
+    resources:
+      bra:
+        requests:
+          cpu: 150m
+      brm:
+        requests:
+          cpu: 100m
+  eric-oss-common-postgres:
+    resources:
+      bra:
+        requests:
+          cpu: 150m
+      brm:
+        requests:
+          cpu: 100m
+  eric-cnom-server-database-pg:
+    resources:
+      bra:
+        requests:
+          cpu: 150m
+      brm:
+        requests:
+          cpu: 100m
+
+eric-cloud-native-base:
+  eric-data-object-storage-mn:
+    openID:
+      enabled: true
+    resources:
+      server:
+        requests:
+          cpu: 250m
+
+  eric-odca-diagnostic-data-collector:
+    sftpServerHost: "sftp-server:22"
+
+  eric-log-transformer:
+    resources:
+      logtransformer:
+        requests:
+          cpu: 250m
+          memory: 3Gi
+
+  eric-data-search-engine:
+    resources:
+      ingest:
+        requests:
+          cpu: 250m
+          memory: 2Gi
+      master:
+        requests:
+          cpu: 250m
+          memory: 2Gi
+      data:
+        requests:
+          cpu: 250m
+          memory: 3Gi
+
+  eric-ctrl-bro:
+    resources:
+      backupAndRestore:
+        requests:
+          cpu: 250m
+
+  eric-dst-collector:
+    resources:
+      eric-dst-collector-elasticsearch:
+        requests:
+          cpu: 250m
+
+  eric-cm-mediator:
+    resources:
+      eric-cm-mediator:
+        requests:
+          cpu: 250m
+
+  eric-fh-alarm-handler:
+    resources:
+      alarmhandler:
+        requests:
+          cpu: 250m
+
+  eric-pm-server:
+    resources:
+      eric-pm-server:
+        requests:
+          cpu: 250m
+
+  eric-data-distributed-coordinator-ed:
+    resources:
+      dced:
+        requests:
+          cpu: 250m
+   
+# app-mgr
+eric-oss-app-mgr:
+  eric-oss-acm-runtime:
+    resources:
+      eric-oss-acm-runtime:
+        requests:
+          cpu: 250m
+  eric-appmgr-data-document-db:
+    resources:
+      bra:
+        requests:
+          cpu: 150m
+      brm:
+        requests:
+          cpu: 100m
+
+# CS
+eric-oss-connected-systems-registry:
+  eric-eo-subsystem-management-database-pg:
+    resources:
+      bra:
+        requests:
+          cpu: 150m
+      brm:
+        requests:
+          cpu: 100m
+
+# ML
+eric-oss-ml-execution-env:
+  eric-oss-ml-db-pg:
+    resources:
+      bra:
+        requests:
+          cpu: 150m
+      brm:
+        requests:
+          cpu: 100m
+#DMM
+eric-oss-dmm:
+  eric-oss-dmm-kf-op-sz:
+    kafka-cluster:
+      kafka:
+        resources:
+          requests:
+            cpu: 250m
+            memory: 4Gi
+#SEF
+eric-service-exposure-framework:
+  eric-data-wide-column-database-cd:
+    resources:
+      cassandra:
+        requests:
+          cpu: 250m
+          memory: 1Gi
+  eric-sef-exposure-api-gateway:
+    resources:
+      api-proxy:
+        requests:
+          cpu: 250m
+      istio:
+        requests:
+          cpu: 250m
+
+# CH
+eric-oss-config-handling:
+  eric-oss-ncmp-database-pg:
+    resources:
+      postgres:
+        requests:
+          cpu: 250m
+  eric-oss-ncmp:
+    resources:
+      eric-oss-ncmp:
+        requests:
+          cpu: 250m
+
+# TH
+eric-topology-handling:
+  eric-topology-handling-database-pg:
+    resources:
+      postgres:
+        requests:
+          cpu: 250m
+  eric-oss-common-topology-svc:
+    eric-oss-jms-svc-amq:
+      resources:
+        eric-artemis-server:
+          requests:
+            cpu: 250m
+            requests: 1Gi
+    eric-oss-cmn-topology-svc-core:
+      resources:
+        eric-inventory-core:
+          requests:
+            cpu: 250m
+            requests: 12Gi
+  eric-oss-common-topology-ui:
+    resources:
+      topologyui:
+        requests:
+          cpu: 250m
+
+# TIEH
+eric-top-inv-exposure-handling:
+  eric-oss-top-inv-exposure-data-pg:
+    resources:
+      postgres:
+        requests:
+          cpu: 250m
+
+# ADC
+eric-oss-adc:
+  eric-oss-enm-fns:
+    configuredQueries: |-
+      enms:
+        - name: ProdEngENM
+          periodSeconds: 60
+          queries:
+            - name: query1
+              topic: sftp-filetrans
+              fileType: "xml.gz"
+              fileLocation: ""
+              dmmDataTypeRegistrationParameters:
+                dataSpace: "4G5G"
+                dataCategory: PM_COUNTERS
+              enmFileLookupServiceParameters:
+                dataType: PM_STATISTICAL
+                nodeType: "RadioNode"
+                id: 0
+            - name: query2
+              topic: 4g-event
+              fileType: "bin.gz"
+              fileLocation: ""
+              dmmDataTypeRegistrationParameters:
+                dataSpace: 4G
+                dataCategory: PM_EVENTS
+              enmFileLookupServiceParameters:
+                dataType: PM_CELLTRACE
+                nodeType: "RadioNode"
+                id: 0
+            - name: query3
+              topic: 5g-event
+              fileType: "gpb.gz"
+              fileLocation: ".*_1_\\d+\\.gpb(?:\\.gz)?$"
+              dmmDataTypeRegistrationParameters:
+                dataSpace: 5G
+                dataCategory: PM_EVENTS
+              enmFileLookupServiceParameters:
+                dataType: "PM_CELLTRACE_*"
+                nodeType: "RadioNode"
+                id: 0
+            - name: query4
+              topic: sftp-filetrans
+              fileType: "xml.gz"
+              fileLocation: ""
+              dmmDataTypeRegistrationParameters:
+                dataSpace: "4G5G"
+                dataCategory: PM_COUNTERS
+              enmFileLookupServiceParameters:
+                dataType: PM_STATISTICAL
+                nodeType: "Shared-CNF"
+                id: 0
+        - name: enm1
+          periodSeconds: 60
+          queries:
+            - name: query1
+              topic: sftp-filetrans
+              fileType: ""
+              fileLocation: ""
+              dmmDataTypeRegistrationParameters:
+                dataSpace: "4G5G"
+                dataCategory: PM_COUNTERS
+              enmFileLookupServiceParameters:
+                dataType: PM_STATISTICAL
+                nodeType: "RadioNode"
+                id: -1
+            - name: query2
+              topic: 5g-event
+              fileType: "gpb.gz"
+              fileLocation: ".*_1_\\d+\\.gpb(?:\\.gz)?$"
+              dmmDataTypeRegistrationParameters:
+                dataSpace: 5G
+                dataCategory: PM_EVENTS
+              enmFileLookupServiceParameters:
+                dataType: "PM_CELLTRACE_*"
+                nodeType: "RadioNode"
+                id: -1
+            - name: query3
+              topic: sftp-filetrans
+              fileType: "xml.gz"
+              fileLocation: ""
+              dmmDataTypeRegistrationParameters:
+                dataSpace: "4G5G"
+                dataCategory: PM_COUNTERS
+              enmFileLookupServiceParameters:
+                dataType: PM_STATISTICAL
+                nodeType: "Shared-CNF"
+                id: -1
+        - name: ProdEngRestsimPMSCH
+          periodSeconds: 60
+          queries:
+            - name: query1
+              topic: sftp-filetrans
+              fileType: ""
+              fileLocation: ""
+              dmmDataTypeRegistrationParameters:
+                dataSpace: "4G5G"
+                dataCategory: PM_COUNTERS
+              enmFileLookupServiceParameters:
+                dataType: PM_STATISTICAL
+                nodeType: "RadioNode"
+                id: 0
+  preHookJobs:
+    enabled: true
+  eric-oss-sftp-filetrans:
+    subsystem:
+      name: "enm1"
+    dmm:
+      data_catalog:
+        data_service:
+          datatype:
+            schema_name: ran
+  eric-oss-sftp-filetrans-ran-2:
+    enabled: true
+    replicaCount: 1
+    resources:
+      eric-oss-sftp-filetrans:
+        requests:
+          cpu: 250m
+    subsystem:
+      name: "ProdEngENM"
+    dmm:
+      data_catalog:
+        message_bus_namespace: "oss-deploy"
+        data_service:
+          datatype:
+            schema_name: ran
+  eric-oss-sftp-filetrans-ran-3:
+    enabled: true
+    replicaCount: 1
+    resources:
+      eric-oss-sftp-filetrans:
+        requests:
+          cpu: 250m
+    subsystem:
+      name: "ProdEngRestsimPMSCH"
+    dmm:
+      data_catalog:
+        message_bus_namespace: "oss-deploy"
+        data_service:
+          datatype:
+            schema_name: ran
+  eric-oss-5gpmevt-filetx-proc:
+    dmm:
+      dataCatalog:
+        dataCollectorName: "enm1"
+    enabled: true
+    replicaCount: 3
+    resources:
+      eric-oss-5gpmevt-filetx-proc:
+        requests:
+          cpu: 250m
+          memory: 1Gi
+    eventRegulation:
+      produceNonStandard: true
+    imageCredentials:
+      eric-oss-5gpmevt-filetx-proc:
+        registry:
+          imagePullPolicy: Always
+    spring:
+      kafka:
+        topics:
+          input:
+            name: "file-notification-service--5g-event--enm1"
+    subsystem:
+      name: "enm1"
+
+  eric-oss-5gpmevt-filetx-proc-2:
+    dmm:
+      dataCatalog:
+        dataCollectorName: "ProdEngENM"
+    enabled: true
+    resources:
+      eric-oss-5gpmevt-filetx-proc:
+        requests:
+          cpu: 250m
+          memory: 1Gi
+    eventRegulation:
+      produceNonStandard: true
+    imageCredentials:
+      eric-oss-5gpmevt-filetx-proc:
+        registry:
+          imagePullPolicy: Always
+    replicaCount: 2
+    spring:
+      kafka:
+        topics:
+          input:
+            name: "file-notification-service--5g-event--ProdEngENM"
+    subsystem:
+      name: "ProdEngENM"
+  init:
+    sftp-username: flsuser1                          #FLS User's username
+    sftp-password: flspass@12                        #FLS User's passowrd
+    sftp-port: 2020
+    scriptingVM: eric-oss-pm-solution-enm-1.NAMESPACE.svc.cluster.local
+    url: http://eric-oss-fls-enm-1.NAMESPACE.svc.cluster.local:8080
+
+  eric-oss-3gpp-pm-xml-ran-parser:
+    replicaCount: 3
+    resources:
+      eric-oss-3gpp-pm-xml-ran-parser:
+        requests:
+          cpu: 250m
+  eric-oss-4g-pm-event-parser:
+    replicaCount: 10
+    resources:
+      parser:
+        requests:
+          cpu: 250m
+          memory: 1Gi
+  eric-oss-4gpmevent-filetrans-proc:
+    resources:
+      eric-oss-4gpmevent-filetrans-proc:
+        requests:
+          cpu: 250m
+          memory: 1500Mi
+  eric-oss-sftp-filetrans:
+    resources:
+      eric-oss-sftp-filetrans:
+        requests:
+          cpu: 250m
+  eric-oss-ves-collector:
+    resources:
+      termination:
+        requests:
+          cpu: 250m
+  
+
+eric-oss-common-base:
+  eric-oss-ddc:
+    autoUpload:
+      ddpid: DDP_ID
+      account: DDP_ACCOUNT
+      password: "DDP_PASSWORD"
+  eric-eo-api-gateway:
+    enabled: true
+
+eric-oss-pm-stats-calc-handling:
+  sef:
+    enabled: true
+  eric-oss-pm-stats-calculator:
+    kpiData:
+      resources:
+        postgres:
+          requests:
+            cpu: 250m
+            memory: 6Gi
+    resources:
+      calculator: 
+        requests:
+          cpu: 250m
+          requests: 3Gi
+  spark:
+    resources:
+      master:
+        requests:
+          cpu: 250m
+          memory: 2500Mi
+      worker:
+        requests:
+          cpu: 250m
+          memory: 2500Mi
+
+  eric-oss-pm-stats-query-service:
+    resources:
+      eric-oss-pm-stats-query-service:
+        requests:
+          cpu: 250m
+          memory: 1250Mi
+            
+eric-oss-ericsson-adaptation:
+  eric-oss-enm-notification-adapter:
+    resources:
+      eric-oss-enm-notification-adapter:
+        requests:
+          cpu: 250m
+          memory: 1Gi

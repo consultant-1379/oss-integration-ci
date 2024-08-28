@@ -1,0 +1,29 @@
+#Install Baseline Loop Override File
+global:
+  hosts:
+    eic: EIC_HOST_REPLACE
+  eic:
+    enabled: true
+eric-service-exposure-framework:
+  eric-sef-exposure-api-gateway:
+    serviceMesh:
+      ingress:
+        hosts:
+        - EIC_HOST_REPLACE
+
+eric-cncs-oss-config:
+  sef:
+    enabled: true
+
+eric-oss-dmm:
+  eric-oss-dmm-kf-op-sz:
+    kafka-cluster:
+      kafka-listeners:
+        oauthIngressTlsSecretName : eic-tls-secret
+
+# AppMgr AppStaging specific values to enable CNLCM and ACMR
+eric-oss-app-mgr:
+  eric-oss-am-cnlcm-adapter:
+    enabled: true
+  eric-oss-acm-runtime:
+    enabled: true

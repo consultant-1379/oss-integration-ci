@@ -1,0 +1,211 @@
+global:
+  hosts:
+    bdr: BDR_HOST_REPLACE
+    eic: EIC_HOST_REPLACE
+  bdr:
+    enabled: true
+  eic:
+    enabled: true
+eric-cloud-native-base:
+  eric-data-object-storage-mn:
+    openID:
+      enabled: true
+  eric-odca-diagnostic-data-collector:
+    sftpServerHost: "sftp-server:22"
+
+eric-oss-adc:
+  eric-oss-enm-fns:
+    configuredQueries: |-
+      enms:
+        - name: ProdEngENM
+          periodSeconds: 60
+          queries:
+            - name: query1
+              topic: sftp-filetrans
+              fileType: "xml.gz"
+              fileLocation: ""
+              dmmDataTypeRegistrationParameters:
+                dataSpace: "4G5G"
+                dataCategory: PM_COUNTERS
+              enmFileLookupServiceParameters:
+                dataType: PM_STATISTICAL
+                nodeType: "RadioNode"
+                id: 0
+            - name: query2
+              topic: 4g-event
+              fileType: "bin.gz"
+              fileLocation: ""
+              dmmDataTypeRegistrationParameters:
+                dataSpace: 4G
+                dataCategory: PM_EVENTS
+              enmFileLookupServiceParameters:
+                dataType: PM_CELLTRACE
+                nodeType: "RadioNode"
+                id: 0
+            - name: query3
+              topic: 5g-event
+              fileType: "gpb.gz"
+              fileLocation: ".*_1_\\d+\\.gpb(?:\\.gz)?$"
+              dmmDataTypeRegistrationParameters:
+                dataSpace: 5G
+                dataCategory: PM_EVENTS
+              enmFileLookupServiceParameters:
+                dataType: "PM_CELLTRACE_*"
+                nodeType: "RadioNode"
+                id: 0
+        - name: enm1
+          periodSeconds: 60
+          queries:
+            - name: query1
+              topic: sftp-filetrans
+              fileType: ""
+              fileLocation: ""
+              dmmDataTypeRegistrationParameters:
+                dataSpace: "4G5G"
+                dataCategory: PM_COUNTERS
+              enmFileLookupServiceParameters:
+                dataType: PM_STATISTICAL
+                nodeType: "RadioNode"
+                id: -1
+            - name: query2
+              topic: 5g-event
+              fileType: ""
+              fileLocation: ".*_1_\\d+\\.gpb(?:\\.gz)?$"
+              dmmDataTypeRegistrationParameters:
+                dataSpace: 5G
+                dataCategory: PM_EVENTS
+              enmFileLookupServiceParameters:
+                dataType: "PM_CELLTRACE_*"
+                nodeType: ""
+                id: -1
+        - name: ProdEngRestsimPMSCH
+          periodSeconds: 60
+          queries:
+            - name: query1
+              topic: sftp-filetrans
+              fileType: ""
+              fileLocation: ""
+              dmmDataTypeRegistrationParameters:
+                dataSpace: "4G5G"
+                dataCategory: PM_COUNTERS
+              enmFileLookupServiceParameters:
+                dataType: PM_STATISTICAL
+                nodeType: "RadioNode"
+                id: -1
+    dmm:
+      dataCatalog:
+        messageBusNamespace: "oss-deploy"
+  preHookJobs:
+    enabled: true
+  eric-oss-pmcounter-filetrans:
+    bdr:
+      access_key: "Mark1:VuywHaka"
+      secret_key: "Mark1:VuywHaka"
+    subsystem:
+      name: "ProdEngENM"
+  eric-oss-sftp-filetrans:
+    subsystem:
+      name: "enm1"
+    dmm:
+      data_catalog:
+        message_bus_namespace: "oss-deploy"
+        data_service:
+          data_service_instance:
+            consumed_data_provider: enm1
+          datatype:
+            schema_name: ran
+    spring:
+      kafka:
+        topics:
+          enm_id: "enm1"
+  eric-oss-sftp-filetrans-ran-2:
+    enabled: true
+    replicaCount: 1
+    subsystem:
+      name: "ProdEngENM"
+    dmm:
+      data_catalog:
+        message_bus_namespace: "oss-deploy"
+        data_service:
+          data_service_instance:
+            consumed_data_provider: ProdEngENM
+          datatype:
+            schema_name: ran
+    spring:
+      kafka:
+        topics:
+          enm_id: "ProdEngENM"
+    sftp:
+      topic_bucket_backward_compatible: false
+  eric-oss-sftp-filetrans-ran-3:
+    enabled: true
+    replicaCount: 1
+    subsystem:
+      name: "ProdEngRestsimPMSCH"
+    dmm:
+      data_catalog:
+        message_bus_namespace: "oss-deploy"
+        data_service:
+          data_service_instance:
+            consumed_data_provider: ProdEngRestsimPMSCH
+          datatype:
+            schema_name: ran
+    spring:
+      kafka:
+        topics:
+          enm_id: "ProdEngRestsimPMSCH"
+  eric-oss-5gpmevt-filetx-proc:
+    dmm:
+      dataCatalog:
+        dataProviderTypeId: "5g-event-ProdEngENM"
+        dataSpace: "5G"
+        dataCollectorName: "ProdEngENM"
+        messageBusNamespace: "oss-deploy"
+    spring:
+      kafka:
+        topics:
+          input:
+            name: "file-notification-service--5g-event--ProdEngENM"
+  eric-oss-3gpp-pm-xml-ran-parser:
+    dmm:
+      enabled: true
+    bdr:
+      enabled: true
+    spring:
+      kafka:
+        auto:
+          start: false
+    connected:
+      systems:
+        enabled: true
+  init:
+    sftp-username: flsuser1                          #FLS User's username
+    sftp-password: flspass@12                        #FLS User's passowrd
+    sftp-port: 2020
+    scriptingVM: eric-oss-pm-solution-enm-1.NAMESPACE.svc.cluster.local
+    url: http://eric-oss-fls-enm-1.NAMESPACE.svc.cluster.local:8080
+eric-oss-common-base:
+  eric-oss-ddc:
+    autoUpload:
+      ddpid: DDP_ID
+      account: DDP_ACCOUNT
+      password: "DDP_PASSWORD"
+eric-service-exposure-framework:
+  eric-sef-exposure-api-gateway:
+    serviceMesh:
+      ingress:
+        hosts:
+        - EIC_HOST_REPLACE
+eric-cncs-oss-config:
+  sef:
+    enabled: true
+eric-oss-dmm:
+  eric-oss-dmm-kf-op-sz:
+    kafka-cluster:
+      kafka-listeners:
+        oauthIngressTlsSecretName : eic-tls-secret
+eric-oss-app-mgr:
+  eric-oss-am-cnlcm-adapter:
+    enabled: true
+  eric-oss-acm-runtime:
+    enabled: true

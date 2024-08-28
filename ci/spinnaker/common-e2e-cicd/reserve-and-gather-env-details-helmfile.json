@@ -1,0 +1,112 @@
+{
+  "appConfig": {},
+  "application": "common-e2e-cicd",
+  "id": "0bb78817-8f6d-43e1-ac37-a26b495164cc",
+  "index": 12,
+  "keepWaitingPipelines": true,
+  "lastModifiedBy": "ZSRRAES",
+  "limitConcurrent": false,
+  "name": "reserve-and-gather-env-details-helmfile",
+  "parameterConfig":   [
+        {
+      "default": "",
+      "description": "This is the label to search for that is attached to the environments in the Lockable Resource Plugin on Jenkins. Example: adc-staging",
+      "hasOptions": false,
+      "label": "",
+      "name": "ENV_LABEL",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "Spinnaker",
+      "description": "Flow URL Tag is used when locking the invironment to add a tag to descript what has locked the environment for easier tracking",
+      "hasOptions": false,
+      "label": "",
+      "name": "FLOW_URL_TAG",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "600",
+      "description": "This is the time to wait for an Environment to become available. After the time expirers the job will fail out",
+      "hasOptions": false,
+      "label": "",
+      "name": "WAIT_TIME",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "ci-infrastructure/pooling/resources",
+      "description": "This is the directory within the Repo specified within the  Gather-Env-Details Jenkins job where to find the  pooling environment details",
+      "hasOptions": false,
+      "label": "",
+      "name": "ENV_DETAILS_DIR",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "",
+      "description": "This is used when mapped a flow to an environment",
+      "hasOptions": false,
+      "label": "",
+      "name": "SPINNAKER_FLOW_ID",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "common_agents",
+      "description": "",
+      "hasOptions": false,
+      "label": "",
+      "name": "SLAVE_LABEL",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    }
+  ],
+  "schema": "1",
+  "spelEvaluator": "v4",
+  "stages":   [
+        {
+      "continuePipeline": false,
+      "failPipeline": true,
+      "job": "OSS-Integration-Reserve-Environment",
+      "master": "oss-fem8s11-eiffel052",
+      "name": "Reserve Env",
+      "parameters":       {
+        "ENV_LABEL": "${trigger['parameters']['ENV_LABEL']}",
+        "FLOW_URL": "https://spinnaker.rnd.gic.ericsson.se/#/applications/${execution['application']}/executions/details/${trigger['parameters']['SPINNAKER_FLOW_ID']}",
+        "FLOW_URL_TAG": "${trigger['parameters']['FLOW_URL_TAG']}",
+        "WAIT_TIME": "${trigger['parameters']['WAIT_TIME']}"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "1",
+      "requisiteStageRefIds": [],
+      "stageTimeoutMs": 14400000,
+      "type": "jenkins"
+    },
+        {
+      "continuePipeline": false,
+      "failPipeline": true,
+      "job": "OSS-Integration-Gather-Env-Details",
+      "master": "oss-fem8s11-eiffel052",
+      "name": "Gather Env Details",
+      "parameters":       {
+        "ENV_DETAILS_DIR": "${trigger['parameters']['ENV_DETAILS_DIR']}",
+        "ENV_NAME": "${#stage(\"Reserve Env\")[\"context\"][\"RESOURCE_NAME\"]}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}"
+      },
+      "propertyFile": "artifact.properties",
+      "refId": "2",
+      "requisiteStageRefIds": ["1"],
+      "type": "jenkins"
+    }
+  ],
+  "triggers": [],
+  "updateTs": "1693468312406"
+}

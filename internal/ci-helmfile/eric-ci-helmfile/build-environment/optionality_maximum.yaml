@@ -1,0 +1,36 @@
+# If this is left empty no values will be set to false in any of the charts
+optionality:
+  # Adding this to get around issue rendering conditions.
+  eric-cloud-native-base:
+    eric-cm-mediator:
+      enabled: false
+    eric-data-document-database-pg:
+      enabled: false
+    eric-fh-alarm-handler-db-pg:
+      enabled: false
+    eric-lm-combined-server-db-pg:
+      enabled: false
+    eric-cm-mediator-db-pg:
+      enabled: false
+    eric-data-object-storage-mn:
+      enabled: true
+    eric-tm-ingress-controller-cr:
+      enabled: false
+  # Set any stubs to enabled:false so stub images are not included in CSAR
+  eric-oss-common-base:
+    eric-eo-ecmsol005-stub:
+      enabled: false
+    eric-eo-evnfm-nbi:
+      enabled: false
+    eric-eo-evnfm-crypto:
+      enabled: false
+    eric-gr-bur-orchestrator:
+      enabled: false
+    eric-gr-bur-database-pg:
+      enabled: false
+    eric-oss-metrics-stager:
+      enabled: false
+    eric-oss-ddc:
+      enabled: false
+    eric-pm-kube-state-metrics:
+      enabled: false

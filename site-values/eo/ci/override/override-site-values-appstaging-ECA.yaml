@@ -1,0 +1,19 @@
+# This override delta file was prepared for usage with main file:
+# site-values/eo/ci/template/site-values-latest.yaml
+
+tags:
+  eoCm: false
+  eoEvnfm: false
+  eoPf: false
+  eoSo: false
+  eoUds: false
+  eoVmvnfm: false
+  eoEca: false
+
+eric-cloud-native-base:
+  eric-lm-combined-server:
+    licenseServerClient:
+      licenseServer:
+        thrift:
+          # Mandatory: licenseServerClient.licenseServer.thrift.host - The NELS thrift server address or service name
+          host: ""

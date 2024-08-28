@@ -1,0 +1,9 @@
+repositories:
+  - name: eric-data-document-database-pg
+    url: https://arm.sero.gic.ericsson.se/artifactory/proj-adp-gs-all-helm/
+    username: {{ env "GERRIT_USERNAME" }}
+    password: {{ env "GERRIT_PASSWORD" }}
+  - name: adp-gs-all
+    url: https://arm.sero.gic.ericsson.se/artifactory/proj-adp-gs-all-helm
+    username: {{ env "GERRIT_USERNAME" }}
+    password: {{ env "GERRIT_PASSWORD" }}

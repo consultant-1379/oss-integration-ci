@@ -1,0 +1,3 @@
+# A file with all tags set to true to be used for running helmfile commands without passing a state values file
+tags:
+  so: true

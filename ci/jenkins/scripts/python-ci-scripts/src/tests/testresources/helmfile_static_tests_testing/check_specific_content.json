@@ -1,0 +1,11 @@
+{
+  "test_validate_minimum_replica_count": {
+    "check": [
+      [["eric-log-transformer"], ["Deployment"], ["2"]],
+      [["eric-data-search-engine-master"], ["StatefulSet"], ["3"]],
+      [["eric-data-search-engine-data"], ["StatefulSet"], ["2"]],
+      [["eric-data-search-engine-ingest"], ["Deployment"], ["2"]],
+      [["eric-sec-key-management-main"], ["StatefulSet"], ["2"]]
+    ]
+  }
+}

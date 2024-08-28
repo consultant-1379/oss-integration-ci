@@ -1,0 +1,2 @@
+-DhelmDesignRule.config.eric-ci-helm-a.DR-D1121-001=skip
+-DhelmDesignRule.config.eric-ci-helm-a.DR-D470222-010=skip

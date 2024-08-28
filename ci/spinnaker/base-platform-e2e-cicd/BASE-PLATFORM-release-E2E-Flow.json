@@ -1,0 +1,541 @@
+{
+  "appConfig": {},
+  "application": "base-platform-e2e-cicd",
+  "disabled": true,
+  "id": "7526fb20-8b19-4777-a72c-c03ff1f0ee11",
+  "index": 15,
+  "keepWaitingPipelines": true,
+  "lastModifiedBy": "epakagn",
+  "limitConcurrent": false,
+  "name": "BASE-PLATFORM-release-E2E-Flow",
+  "parameterConfig":   [
+        {
+      "default": "3600",
+      "description": "Time in seconds for the deployment manager to wait for the deployment to complete",
+      "hasOptions": false,
+      "label": "HELM_TIMEOUT",
+      "name": "HELM_TIMEOUT",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "false",
+      "description": "Set this parameter to true if you wish for the environment to be quarentined if the deployment flow false",
+      "hasOptions": false,
+      "label": "QUARANTINE_ENV",
+      "name": "QUARANTINE_ENV",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "true",
+      "description": "Option to Deploy SO set either \"true\" or \"false\"",
+      "hasOptions": false,
+      "label": "SO_DEPLOY",
+      "name": "SO_DEPLOY",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "true",
+      "description": "Option to Deploy Policy Framework set either \"true\" or \"false\"",
+      "hasOptions": false,
+      "label": "PF_DEPLOY",
+      "name": "PF_DEPLOY",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "true",
+      "description": "Option to Deploy UDS set either \"true\" or \"false\"",
+      "hasOptions": false,
+      "label": "UDS_DEPLOY",
+      "name": "UDS_DEPLOY",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "true",
+      "description": "Option to Deploy PLATFORM set either \"true\" or \"false\"",
+      "hasOptions": false,
+      "label": "PLATFORM_DEPLOY",
+      "name": "PLATFORM_DEPLOY",
+      "options": [{"value": ""}],
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "ciloopman-user-creds",
+      "description": "Arm docker credential secret ro get access to the ar docker during the deployment using the deployment manager",
+      "hasOptions": false,
+      "label": "FUNCTIONAL_USER_SECRET",
+      "name": "FUNCTIONAL_USER_SECRET",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "eo-integration-ci/honeypots/pooling/environments",
+      "description": "This is the directory within the Repo specified within the Gather-Env-Details Jenkins job where to find the pooling environment details",
+      "hasOptions": false,
+      "label": "ENV_DETAILS_DIR",
+      "name": "ENV_DETAILS_DIR",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "honeypots",
+      "description": "This is the label to search for that is attached to the environments in the Lockable Resource Plugin on Jenkins",
+      "hasOptions": false,
+      "label": "",
+      "name": "ENV_LABEL",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "HoneyPots OSS Code Submit",
+      "description": "Flow URL Tag is used when locking the invironment to add a tag to descript what has locked the environment for easier tracking",
+      "hasOptions": false,
+      "label": "FLOW_URL_TAG",
+      "name": "FLOW_URL_TAG",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "120",
+      "description": "This is the time to wait for an Environment to become available. After the time expirers the job will fail out",
+      "hasOptions": false,
+      "label": "WAIT_TIME",
+      "name": "WAIT_TIME",
+      "options": [{"value": ""}],
+      "pinned": false,
+      "required": true
+    }
+  ],
+  "schema": "1",
+  "spelEvaluator": "v4",
+  "stages":   [
+        {
+      "failOnFailedExpressions": true,
+      "name": "Check_if_releasable_version",
+      "notifications": [      {
+        "address": "PDLAPPSTAG@pdl.internal.ericsson.com",
+        "level": "stage",
+        "type": "email",
+        "when": ["stage.failed"]
+      }],
+      "refId": "Check_if_releasable_version",
+      "requisiteStageRefIds": [],
+      "sendNotifications": true,
+      "type": "evaluateVariables",
+      "variables": [      {
+        "key": "SKIP_CHART_RELEASE",
+        "value": "${false}"
+      }]
+    },
+        {
+      "application": "base-platform-e2e-cicd",
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "name": "Base_Platform_Staging",
+      "pipeline": "bff3ce13-ec06-4eae-8ba8-0b8acf8aef78",
+      "pipelineParameters":       {
+        "FLOW_URL_TAG": "${trigger['parameters']['FLOW_URL_TAG']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "GERRIT_BRANCH": "${trigger['payload']['GERRIT_BRANCH']}",
+        "GERRIT_CHANGE_URL": "${GERRIT_CHANGE_URL}",
+        "GERRIT_REFSPEC": "${trigger['payload']['GERRIT_REFSPEC']}",
+        "GIT_COMMIT_SUMMARY": "${GERRIT_CHANGE_SUBJECT}",
+        "HELM_TIMEOUT": "${trigger['parameters']['HELM_TIMEOUT']}",
+        "II_INT_CHART_VERSION": "0.0.0",
+        "SKIP_CHART_RELEASE": "${SKIP_CHART_RELEASE}"
+      },
+      "refId": "Base_Platform_Staging",
+      "requisiteStageRefIds":       [
+        "Check_if_releasable_version",
+        "1"
+      ],
+      "type": "pipeline",
+      "waitForCompletion": true
+    },
+        {
+      "application": "common-e2e-cicd",
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failOnFailedExpressions": false,
+      "failPipeline": false,
+      "name": "Check_Non_PRA_Version",
+      "pipeline": "c57f00d5-f0f1-4627-8892-861c836cb3a9",
+      "pipelineParameters": {"IS_NON_PRA_VERSION": "${SKIP_CHART_RELEASE}"},
+      "refId": "Check_Non_PRA_Version_Staging",
+      "requisiteStageRefIds": ["Base_Platform_Staging"],
+      "type": "pipeline",
+      "waitForCompletion": true
+    },
+        {
+      "application": "product-e2e-cicd",
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "name": "IDUN_Product_Staging",
+      "notifications": [],
+      "pipeline": "d8e85bad-3d55-433b-b7db-d3d3567e2553",
+      "pipelineParameters":       {
+        "BASE_PLATFORM_BASELINE_NAME": "${#stage(\"Base_Platform_Staging\")[\"outputs\"][\"BASE_PLATFORM_BASELINE_NAME\"]}",
+        "BASE_PLATFORM_BASELINE_REPO": "${#stage(\"Base_Platform_Staging\")[\"outputs\"][\"BASE_PLATFORM_BASELINE_REPO\"]}",
+        "BASE_PLATFORM_BASELINE_VERSION": "${#stage(\"Base_Platform_Staging\")[\"outputs\"][\"BASE_PLATFORM_BASELINE_VERSION\"]}",
+        "CHART_NAME": "${#stage(\"Base_Platform_Staging\")[\"context\"][\"INT_CHART_NAME\"]}",
+        "CHART_REPO": "${#stage(\"Base_Platform_Staging\")[\"context\"][\"INT_CHART_REPO\"]}",
+        "CHART_VERSION": "${#stage(\"Base_Platform_Staging\")[\"context\"][\"INT_CHART_VERSION\"]}",
+        "ENV_DETAILS_DIR": "${trigger['parameters']['ENV_DETAILS_DIR']}",
+        "FLOW_URL_TAG": "${trigger['parameters']['FLOW_URL_TAG']}",
+        "GERRIT_CHANGE_URL": "${GERRIT_CHANGE_URL}",
+        "GIT_COMMIT_SUMMARY": "${GERRIT_CHANGE_SUBJECT}",
+        "HELM_TIMEOUT": "${trigger['parameters']['HELM_TIMEOUT']}",
+        "WAIT_TIME": "${trigger['parameters']['WAIT_TIME']}"
+      },
+      "refId": "IDUN_Product_Staging",
+      "requisiteStageRefIds":       [
+        "Gerrit Feedback on Successful Base_Platform_Staging",
+        "Gerrit Feedback on Failed Base_Platform_Staging",
+        "Check_Non_PRA_Version_Staging"
+      ],
+      "sendNotifications": true,
+      "stageEnabled":       {
+        "expression": "\"${#stage('Base_Platform_Staging')['status']}\" == \"SUCCEEDED\"",
+        "type": "expression"
+      },
+      "type": "pipeline",
+      "waitForCompletion": true
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": false,
+      "failPipeline": true,
+      "job": "OSS-Common-Base-Gerrit-Notification",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Gerrit Feedback on Trigger",
+      "parameters":       {
+        "GERRIT_CHANGE_NUMBER": "${trigger['payload']['GERRIT_CHANGE_NUMBER']}",
+        "GERRIT_PATCHSET_NUMBER": "${trigger['payload']['GERRIT_PATCHSET_NUMBER']}",
+        "Message": "Spinnaker pipeline triggered. https://spinnaker.rnd.gic.ericsson.se/#/applications/${execution['application']}/executions/details/${execution['id']}",
+        "SLAVE_LABEL": "evo_docker_engine_gic_IDUN"
+      },
+      "propertyFile": "",
+      "refId": "Gerrit Feedback on Trigger",
+      "requisiteStageRefIds": [],
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": false,
+      "failPipeline": true,
+      "job": "OSS-Common-Base-Gerrit-Notification",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Gerrit Feedback on Failed Base_Platform_Staging",
+      "parameters":       {
+        "GERRIT_CHANGE_NUMBER": "${trigger['payload']['GERRIT_CHANGE_NUMBER']}",
+        "GERRIT_PATCHSET_NUMBER": "${trigger['payload']['GERRIT_PATCHSET_NUMBER']}",
+        "Message": "Platform Stage Testing Failed https://spinnaker.rnd.gic.ericsson.se/#/applications/${execution['application']}/executions/details/${execution['id']}",
+        "SLAVE_LABEL": "evo_docker_engine_gic_IDUN"
+      },
+      "propertyFile": "",
+      "refId": "Gerrit Feedback on Failed Base_Platform_Staging",
+      "requisiteStageRefIds": ["Base_Platform_Staging"],
+      "stageEnabled":       {
+        "expression": "\"${#stage('Base_Platform_Staging')['status']}\" != \"SUCCEEDED\"",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-Common-Base-Gerrit-Notification",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Gerrit Feedback on Failed IDUN_Product_Staging",
+      "parameters":       {
+        "GERRIT_CHANGE_NUMBER": "${trigger['payload']['GERRIT_CHANGE_NUMBER']}",
+        "GERRIT_PATCHSET_NUMBER": "${trigger['payload']['GERRIT_PATCHSET_NUMBER']}",
+        "Message": "IDUN_Product_Staging Testing Failed https://spinnaker.rnd.gic.ericsson.se/#/applications/${execution['application']}/executions/details/${execution['id']}",
+        "SLAVE_LABEL": "evo_docker_engine_gic_IDUN"
+      },
+      "propertyFile": "",
+      "refId": "Gerrit Feedback on Failed IDUN_Product_Staging",
+      "requisiteStageRefIds": ["IDUN_Product_Staging"],
+      "stageEnabled":       {
+        "expression": "\"${#stage('IDUN_Product_Staging')['status']}\" != \"SUCCEEDED\" and \"${#stage('IDUN_Product_Staging')['status']}\" != \"SKIPPED\"",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": false,
+      "failPipeline": true,
+      "job": "OSS-Common-Base-Gerrit-Notification",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Gerrit Feedback on Successful Base_Platform_Staging",
+      "parameters":       {
+        "GERRIT_CHANGE_NUMBER": "${trigger['payload']['GERRIT_CHANGE_NUMBER']}",
+        "GERRIT_PATCHSET_NUMBER": "${trigger['payload']['GERRIT_PATCHSET_NUMBER']}",
+        "Message": "Platform Stage Testing SUCCEEDED https://spinnaker.rnd.gic.ericsson.se/#/applications/${execution['application']}/executions/details/${execution['id']}",
+        "SLAVE_LABEL": "evo_docker_engine_gic_IDUN"
+      },
+      "propertyFile": "",
+      "refId": "Gerrit Feedback on Successful Base_Platform_Staging",
+      "requisiteStageRefIds": ["Base_Platform_Staging"],
+      "stageEnabled":       {
+        "expression": "\"${#stage('Base_Platform_Staging')['status']}\" == \"SUCCEEDED\"",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-Common-Base-Gerrit-Notification",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Gerrit Feedback on Successful IDUN_Product_Staging",
+      "parameters":       {
+        "GERRIT_CHANGE_NUMBER": "${trigger['payload']['GERRIT_CHANGE_NUMBER']}",
+        "GERRIT_PATCHSET_NUMBER": "${trigger['payload']['GERRIT_PATCHSET_NUMBER']}",
+        "Message": "Product Stage Testing  SUCCEEDED - All Flows Completed https://spinnaker.rnd.gic.ericsson.se/#/applications/${execution['application']}/executions/details/${execution['id']}",
+        "SLAVE_LABEL": "evo_docker_engine_gic_IDUN"
+      },
+      "propertyFile": "",
+      "refId": "Gerrit Feedback on Successful IDUN_Product_Staging",
+      "requisiteStageRefIds": ["IDUN_Product_Staging"],
+      "stageEnabled":       {
+        "expression": "\"${#stage('IDUN_Product_Staging')['status']}\" == \"SUCCEEDED\"",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "name": "Flow Completed",
+      "preconditions":       [
+                {
+          "context": {"expression": "\"${#stage('Base_Platform_Staging')['status']}\" == \"SUCCEEDED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('IDUN_Product_Staging')['status']}\" == \"SUCCEEDED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Gerrit Feedback on Successful IDUN_Product_Staging')['status']}\" == \"SUCCEEDED\""},
+          "failPipeline": false,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('Gerrit Feedback on Successful EO_Product_Staging')['status']}\" == \"SUCCEEDED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('EO_Product_Staging')['status']}\" == \"SUCCEEDED\""},
+          "failPipeline": true,
+          "type": "expression"
+        }
+      ],
+      "refId": "Flow Completed",
+      "requisiteStageRefIds":       [
+        "IDUN_Product_Staging",
+        "Gerrit Feedback on Successful IDUN_Product_Staging",
+        "3",
+        "2",
+        "7",
+        "5",
+        "Gerrit Feedback on Failed IDUN_Product_Staging",
+        "4",
+        "6"
+      ],
+      "type": "checkPreconditions"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failOnFailedExpressions": false,
+      "failPipeline": false,
+      "name": "Commit Info",
+      "refId": "1",
+      "requisiteStageRefIds": [],
+      "type": "evaluateVariables",
+      "variables":       [
+                {
+          "key": "GERRIT_CHANGE_URL",
+          "value": "${trigger.payload.GERRIT_CHANGE_URL}"
+        },
+                {
+          "key": "GERRIT_CHANGE_OWNER",
+          "value": "${trigger.payload.GERRIT_CHANGE_OWNER}"
+        },
+                {
+          "key": "GERRIT_CHANGE_SUBJECT",
+          "value": "${trigger.payload.GERRIT_CHANGE_SUBJECT}"
+        }
+      ]
+    },
+        {
+      "application": "eoapp",
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "name": "EO_Product_Staging",
+      "pipeline": "fe9cb49d-cb50-4966-bcf5-2c51dd381399",
+      "pipelineParameters":       {
+        "BASE_PLATFORM_BASELINE_NAME": "${#stage(\"Base_Platform_Staging\")[\"outputs\"][\"BASE_PLATFORM_BASELINE_NAME\"]}",
+        "BASE_PLATFORM_BASELINE_REPO": "${#stage(\"Base_Platform_Staging\")[\"outputs\"][\"BASE_PLATFORM_BASELINE_REPO\"]}",
+        "BASE_PLATFORM_BASELINE_VERSION": "${#stage(\"Base_Platform_Staging\")[\"outputs\"][\"BASE_PLATFORM_BASELINE_VERSION\"]}",
+        "CHART_NAME": "${#stage(\"Base_Platform_Staging\")[\"context\"][\"INT_CHART_NAME\"]}",
+        "CHART_REPO": "${#stage(\"Base_Platform_Staging\")[\"context\"][\"INT_CHART_REPO\"]}",
+        "CHART_VERSION": "${#stage(\"Base_Platform_Staging\")[\"context\"][\"INT_CHART_VERSION\"]}"
+      },
+      "refId": "2",
+      "requisiteStageRefIds":       [
+        "Check_Non_PRA_Version_Staging",
+        "Gerrit Feedback on Failed Base_Platform_Staging",
+        "Gerrit Feedback on Successful Base_Platform_Staging"
+      ],
+      "stageEnabled":       {
+        "expression": "\"${#stage('Base_Platform_Staging')['status']}\" == \"SUCCEEDED\"",
+        "type": "expression"
+      },
+      "type": "pipeline",
+      "waitForCompletion": true
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-Common-Base-Gerrit-Notification",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Gerrit Feedback on Successful EO_Product_Staging",
+      "parameters":       {
+        "GERRIT_CHANGE_NUMBER": "${trigger['payload']['GERRIT_CHANGE_NUMBER']}",
+        "GERRIT_PATCHSET_NUMBER": "${trigger['payload']['GERRIT_PATCHSET_NUMBER']}",
+        "Message": "EO Product Stage Testing  SUCCEEDED - All Flows Completed https://spinnaker.rnd.gic.ericsson.se/#/applications/${execution['application']}/executions/details/${execution['id']}",
+        "SLAVE_LABEL": "evo_docker_engine_gic_IDUN"
+      },
+      "propertyFile": "",
+      "refId": "3",
+      "requisiteStageRefIds": ["2"],
+      "stageEnabled":       {
+        "expression": "\"${#stage('EO_Product_Staging')['status']}\" == \"SUCCEEDED\"",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-Common-Base-Gerrit-Notification",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Gerrit Feedback on Failed EO_Product_Staging",
+      "parameters":       {
+        "GERRIT_CHANGE_NUMBER": "${trigger['payload']['GERRIT_CHANGE_NUMBER']}",
+        "GERRIT_PATCHSET_NUMBER": "${trigger['payload']['GERRIT_PATCHSET_NUMBER']}",
+        "Message": "EO_Product_Staging Testing Failed https://spinnaker.rnd.gic.ericsson.se/#/applications/${execution['application']}/executions/details/${execution['id']}",
+        "SLAVE_LABEL": "evo_docker_engine_gic_IDUN"
+      },
+      "propertyFile": "",
+      "refId": "4",
+      "requisiteStageRefIds": ["2"],
+      "stageEnabled":       {
+        "expression": "\"${#stage('EO_Product_Staging')['status']}\" != \"SUCCEEDED\" and \"${#stage('EO_Product_Staging')['status']}\" != \"SKIPPED\"",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "application": "eoom-staging",
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "name": "EOOM_Product_Staging",
+      "pipeline": "2065f547-f988-4779-b83f-b757ad0f12b4",
+      "pipelineParameters":       {
+        "CHART_NAME": "${#stage(\"Base_Platform_Staging\")[\"context\"][\"INT_CHART_NAME\"]}",
+        "CHART_REPO": "${#stage(\"Base_Platform_Staging\")[\"context\"][\"INT_CHART_REPO\"]}",
+        "CHART_VERSION": "${#stage(\"Base_Platform_Staging\")[\"context\"][\"INT_CHART_VERSION\"]}"
+      },
+      "refId": "5",
+      "requisiteStageRefIds":       [
+        "Gerrit Feedback on Successful Base_Platform_Staging",
+        "Gerrit Feedback on Failed Base_Platform_Staging",
+        "Check_Non_PRA_Version_Staging"
+      ],
+      "stageEnabled":       {
+        "expression": "false",
+        "type": "expression"
+      },
+      "type": "pipeline",
+      "waitForCompletion": true
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-Common-Base-Gerrit-Notification",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Gerrit Feedback on Failed EOOM_Product_Staging",
+      "parameters":       {
+        "GERRIT_CHANGE_NUMBER": "${trigger['payload']['GERRIT_CHANGE_NUMBER']}",
+        "GERRIT_PATCHSET_NUMBER": "${trigger['payload']['GERRIT_PATCHSET_NUMBER']}",
+        "Message": "EOOM_Product_Staging Testing Failed https://spinnaker.rnd.gic.ericsson.se/#/applications/${execution['application']}/executions/details/${execution['id']}",
+        "SLAVE_LABEL": "evo_docker_engine_gic_IDUN"
+      },
+      "propertyFile": "",
+      "refId": "6",
+      "requisiteStageRefIds": ["5"],
+      "stageEnabled":       {
+        "expression": "false",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-Common-Base-Gerrit-Notification",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "Gerrit Feedback on Successful EOOM_Product_Staging",
+      "parameters":       {
+        "GERRIT_CHANGE_NUMBER": "${trigger['payload']['GERRIT_CHANGE_NUMBER']}",
+        "GERRIT_PATCHSET_NUMBER": "${trigger['payload']['GERRIT_PATCHSET_NUMBER']}",
+        "Message": "EOOM Product Stage Testing  SUCCEEDED - All Flows Completed https://spinnaker.rnd.gic.ericsson.se/#/applications/${execution['application']}/executions/details/${execution['id']}",
+        "SLAVE_LABEL": "evo_docker_engine_gic_IDUN"
+      },
+      "propertyFile": "",
+      "refId": "7",
+      "requisiteStageRefIds": ["5"],
+      "stageEnabled":       {
+        "expression": "false",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    }
+  ],
+  "triggers": [  {
+    "enabled": true,
+    "source": "submit-COMMON_BASE-chart-reviews",
+    "type": "webhook"
+  }],
+  "updateTs": "1715067688678"
+}

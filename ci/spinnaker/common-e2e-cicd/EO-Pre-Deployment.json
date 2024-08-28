@@ -1,0 +1,662 @@
+{
+  "appConfig": {},
+  "application": "common-e2e-cicd",
+  "description": "This spinnaker flow can be used to execute the EO pre deployment steps.",
+  "id": "6e96c0f7-7edc-4c0b-9cd2-624387edf891",
+  "index": 1,
+  "keepWaitingPipelines": false,
+  "lastModifiedBy": "tbspinauth",
+  "limitConcurrent": false,
+  "locked":   {
+    "allowUnlockUi": true,
+    "description": "This pipeline is maintained by Spinnaker as a code, any changes made through the UI will be overwritten. Please see https://gerrit-gamma.gic.ericsson.se/plugins/gitiles/OSS/com.ericsson.oss.aeonic/oss-integration-ci/+/refs/heads/master/docs/flows/EO-Pre-Deployment.md for details",
+    "ui": true
+  },
+  "name": "EO-Pre-Deployment",
+  "parameterConfig":   [
+        {
+      "default": "oss-deploy",
+      "description": "Namespace to be used to execute deployment against on the kubernetes system",
+      "hasOptions": false,
+      "label": "Namespace",
+      "name": "NAMESPACE",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "crd-namespace",
+      "description": "CRD Namespace to be used to execute the CRD deployment against on the kubernetes system",
+      "hasOptions": false,
+      "label": "CRD Namespace",
+      "name": "CRD_NAMESPACE",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "ciloopman-user-creds",
+      "description": "Jenkins secret ID for ARM Registry Credentials",
+      "hasOptions": false,
+      "label": "FUNCTIONAL_USER_SECRET",
+      "name": "FUNCTIONAL_USER_SECRET",
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": true,
+      "description": "Used to ignore if the namespace is already created do not fail the job.",
+      "hasOptions": false,
+      "label": "IGNORE_IF_CREATED",
+      "name": "IGNORE_IF_CREATED",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "Ericsson123!",
+      "description": "IAM Password to use when creating the secret",
+      "hasOptions": false,
+      "label": "ADP_IAM_AA_CLIENT_PASSWORD",
+      "name": "ADP_IAM_AA_CLIENT_PASSWORD",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "eric-sec-access-mgmt-aapxy-creds",
+      "description": "Authentication Proxy Secret name to be created",
+      "hasOptions": false,
+      "label": "AAPXY_SECRET_NAME",
+      "name": "AAPXY_SECRET_NAME",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "eric-sec-access-mgmt-creds",
+      "description": "Postgres secret name to be created",
+      "hasOptions": false,
+      "label": "MGMT_CREDS_SECRET_NAME",
+      "name": "MGMT_CREDS_SECRET_NAME",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "odca-ddc-sftp-credentials",
+      "description": "Jenkins credentials object consisting of a username and password for use when creating the SFTP Server secret",
+      "hasOptions": false,
+      "label": "SFTP_CREDENTIALS",
+      "name": "SFTP_CREDENTIALS",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "eric-odca-diagnostic-data-collector-sftp-credentials",
+      "description": "SFTP Server Secret name to be created",
+      "hasOptions": false,
+      "label": "SFTP_SECRET_NAME",
+      "name": "SFTP_SECRET_NAME",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "eric-eo-database-pg-secret",
+      "description": "Postgres secret name to be created",
+      "hasOptions": false,
+      "label": "DATABASE_PG_SECRET_NAME",
+      "name": "DATABASE_PG_SECRET_NAME",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "None",
+      "description": "Name of the Environment file OST bucket that stores the kube config file for the environment. ONLY USED if environment data store in OST",
+      "hasOptions": false,
+      "label": "ENV_FILES_BUCKET_NAME",
+      "name": "ENV_FILES_BUCKET_NAME",
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "k8s-registry-secret",
+      "description": "This is the name of the secret to create for both the Main Namespace  (NAMESPACE) and CRD namespace (CRD_NAMESPACE)",
+      "hasOptions": false,
+      "label": "Namespace Secret Name",
+      "name": "SECRET_NAME",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "",
+      "description": "Kubeconfig file id stored in the Jenkins secret area",
+      "hasOptions": false,
+      "label": "Kubernetes Config File ID",
+      "name": "KUBECONFIG_FILE",
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "container-registry-users-secret",
+      "description": "Internal registry secret name to use.",
+      "hasOptions": false,
+      "label": "REGISTRY_SECRET_NAME",
+      "name": "REGISTRY_SECRET_NAME",
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "evnfm",
+      "description": "Release name to be added to the file example <metadata.name <SERACC_CLSROLB_META_NAME>",
+      "hasOptions": false,
+      "label": "SERACC_CLSROLB_META_NAME",
+      "name": "SERACC_CLSROLB_META_NAME",
+      "pinned": true,
+      "required": true
+    },
+        {
+      "default": "false",
+      "description": "Used to Create a custom cluster role, should be used in conjunction with the site values when the  \"global.createClusterRoles=false\" is set.",
+      "hasOptions": true,
+      "label": "Create Custom Cluster Role",
+      "name": "CUSTOM_CLUSTER_ROLE",
+      "options":       [
+        {"value": "true"},
+        {"value": "false"}
+      ],
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "false",
+      "description": "Configure ENM and Container VNFM Connectivity option set to true to execute the stage to create the secret. If set to true please ensure the variables beging with ENM_ are set appropriately ",
+      "hasOptions": true,
+      "label": "Configure ENM and Container VNFM Connectivity",
+      "name": "CONFIGURE_ENM_AND_VNFM_CONNECTIVITY",
+      "options":       [
+        {"value": "true"},
+        {"value": "false"}
+      ],
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "admin",
+      "description": "Key Cloak Admin User (--from-literal=kcadminid=<KC_ADMIN_ID>)",
+      "hasOptions": false,
+      "label": "Key Cloak Admin User ",
+      "name": "KC_ADMIN_ID",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "Ericsson123!",
+      "description": "Key Cloak Admin Password (--from-literal=kcpasswd=<KC_PASSWORD>)",
+      "hasOptions": false,
+      "label": "Key Cloak Admin Password",
+      "name": "KC_PASSWORD",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "admin",
+      "description": "Key Cloak Postgres Admin User (--from-literal=pguserid=<PG_USER_ID>)",
+      "hasOptions": false,
+      "label": "Key Cloak Postgres Admin User",
+      "name": "PG_USER_ID",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "Ericsson-pw123!",
+      "description": "Key Cloak Postgres Admin Password (--from-literal=pgpasswd=<PG_PASSWORD>) ",
+      "hasOptions": false,
+      "label": "Key Cloak Postgres Admin Password",
+      "name": "PG_PASSWORD",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "eouser",
+      "description": "Postgres Custom user used in the creation of the generic secret (--from-literal=custom-user=<CUSTOM_USER_ID>)",
+      "hasOptions": false,
+      "label": "Postgres Custom User",
+      "name": "CUSTOM_USER_ID",
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "customuser",
+      "description": "Postgres Custom user used in the creation of the generic secret for app mgr (--from-literal=custom-user=<CUSTOM_USER_ID>)",
+      "hasOptions": false,
+      "label": "Postgres Custom User",
+      "name": "APRMGR_CUSTOM_USER_ID",
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "Postgres123!",
+      "description": "Postgres Custom Password  used in the creation of the generic secret (--from-literal=custom-pwd=<CUSTOM_PASSWORD>)",
+      "hasOptions": false,
+      "label": "Postgres Custom Password",
+      "name": "CUSTOM_PASSWORD",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "exporter",
+      "description": "Postgres Metric User used in the creation of the generic secret (--from-literal=metrics-user=<METRICS_USER_ID>)",
+      "hasOptions": false,
+      "label": "Postgres Metrics User",
+      "name": "METRICS_USER_ID",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "Postgres123!",
+      "description": "Postgres Metric Password  used in the creation of the generic secret (--from-literal=metrics-pwd=<METRICS_PASSWORD>)",
+      "hasOptions": false,
+      "label": "Postgres Metrics Password",
+      "name": "METRICS_PASSWORD",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "replica",
+      "description": "Postgres Replica User used in the creation of the generic secret (--from-literal=replica-user=<REPLICA_USER_ID>)",
+      "hasOptions": false,
+      "label": "Postgres Replica User ID",
+      "name": "REPLICA_USER_ID",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "Postgres123!",
+      "description": "Postgres Replica Password used in the creation of the generic secret (--from-literal=replica-pwd=<REPLICA_PASSWORD>)",
+      "hasOptions": false,
+      "label": "Postgres Replica Password",
+      "name": "REPLICA_PASSWORD",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "postgres",
+      "description": "Postgres Super User used in the creation of the generic secret (--from-literal=super-user=<SUPER_USER_ID>)",
+      "hasOptions": false,
+      "label": "Postgres Super User ID",
+      "name": "SUPER_USER_ID",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "Postgres123!",
+      "description": "Postgres Super User Password used in the creation of the generic secret (--from-literal=super-pwd=<SUPER_PASSWORD>)",
+      "hasOptions": false,
+      "label": "Postgres Super User Password",
+      "name": "SUPER_PASSWORD",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "evnfm",
+      "description": "This is the release name i.e. evnfm used in the meta:name for the the service account and the cluster role binding for evnfm (metadata:   name: <SERACC-CLSROLB_META_NAME>-<NAMESPACE_NAME>",
+      "hasOptions": false,
+      "label": "Service Account & Cluster Role B Meta Name",
+      "name": "SERACC-CLSROLB_META_NAME",
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "evnfm",
+      "description": "thie is used as part of the cluster role bind name for the evnfm pre install steps (metadata:   name: <CLUSTER_ROLE_BINDING_RELEASE_NAME>-<NAMESPACE_NAME>)",
+      "hasOptions": false,
+      "label": "Cluster Role Binding Release Name",
+      "name": "CLUSTER_ROLE_BINDING_RELEASE_NAME",
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "vnfm",
+      "description": "This is used in the creation of the Internal Container Registry for pre deployment of evnfm. <USER_ID> must match the <eric-eo-evnfm-nbi.eric-evnfm-rbac.defaultUser.username> in the site values file.",
+      "hasOptions": false,
+      "label": "Internal Container Registry User ID",
+      "name": "USER_ID",
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "Ericsson123!",
+      "description": "This is used in the creation of the Internal Container Registry for pre deployment of evnfm.  <USER_PASSWORD> must match the <eric-eo-evnfm-nbi.eric-evnfm-rbac.defaultUser.password> in the site values file.",
+      "hasOptions": false,
+      "label": "Internal Container Registry User Password",
+      "name": "USER_PASSWORD",
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "20000",
+      "description": "ENM Connection timeout in milli seconds used in the creation of the  secret for the section Configure ENM and EVNFM Connectivity",
+      "hasOptions": false,
+      "label": "ENM Connection timeout (milli seconds)",
+      "name": "ENM_CONNECTION_TIMEOUT_IN_MILLISECONDS",
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "enm-secret",
+      "description": "ENM Contaioner secret name used in the creation of the  secret for the section Configure ENM and EVNFM Connectivity",
+      "hasOptions": false,
+      "label": "ENM Container Secret Name",
+      "name": "ENM_CONTAINER_SECRET_NAME",
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "enmUser",
+      "description": "ENM Container Secret Username used in the creation of the  secret for the section Configure ENM and EVNFM Connectivity",
+      "hasOptions": false,
+      "label": "ENM Container Secret Username",
+      "name": "ENM_USERNAME",
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "Ericsson123!",
+      "description": "ENM Container Secret password used in the creation of the  secret for the section Configure ENM and EVNFM Connectivity",
+      "hasOptions": false,
+      "label": "ENM Container Secret password",
+      "name": "ENM_PASSWORD",
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "1.1.1.1",
+      "description": "ENM Container Scripting Cluster IP used in the creation of the  secret for the section Configure ENM and EVNFM Connectivity",
+      "hasOptions": false,
+      "label": "ENM Container Scripting Cluster IP",
+      "name": "ENM_SCRIPTING_CLUSTER_IP",
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "22",
+      "description": "ENM Container Scripting SSH Port used in the creation of the  secret for the section Configure ENM and EVNFM Connectivity",
+      "hasOptions": false,
+      "label": "ENM Container Scripting SSH Port",
+      "name": "ENM_SCRIPTING_SSH_PORT",
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "masterservice",
+      "description": "Enm Master Server Hostname used in the creation of the secret for VM VNFM with ENM Connectivity",
+      "hasOptions": false,
+      "label": "Enm Master Server Hostname",
+      "name": "ENM_MASTER_SERVER_HOSTNAME",
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "notificationservice",
+      "description": "ENM Notification Service Hostname used in the creation of the secret for VM VNFM with ENM Connectivity",
+      "hasOptions": false,
+      "label": "ENM Notification Service Hostname",
+      "name": "ENM_NOTIFICATION_SERVICE_HOSTNAME",
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "1.1.1.1",
+      "description": "ENM Master Service IP  used in the creation of the secret for VM VNFM with ENM Connectivity",
+      "hasOptions": false,
+      "label": "ENM Master Service IP",
+      "name": "ENM_MASTER_SERVICE_IP",
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "1.1.1.1",
+      "description": "ENM Notification Service IP used in the creation of the secret for VM VNFM with ENM Connectivity",
+      "hasOptions": false,
+      "label": "ENM Notification Service IP",
+      "name": "ENM_NOTIFICATION_SERVICE_IP",
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "oss-secret",
+      "description": "ENM VM Secret Name used in the creation of the secret for VM VNFM with ENM Connectivity",
+      "hasOptions": false,
+      "label": "ENM VM Secret Name",
+      "name": "ENM_VM_SECRET_NAME",
+      "pinned": false,
+      "required": false
+    },
+        {
+      "default": "refs/heads/master",
+      "description": "Gerrit RefSpec to be able to test the flow against a review before merge. Use with caution",
+      "hasOptions": false,
+      "label": "Gerrit Ref Spec",
+      "name": "GERRIT_REFSPEC",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "ciloopman-docker-auth-config",
+      "description": "Arm Docker User secret to log into dock to be able to pull images",
+      "hasOptions": false,
+      "label": "ARMDOCKER USER SECRET",
+      "name": "ARMDOCKER_USER_SECRET",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "armdocker.rnd.ericsson.se/proj-eric-oss-drop/eric-oss-ci-scripts:default",
+      "description": "CI Docker image to use. Mainly used in CI Testing flows",
+      "hasOptions": false,
+      "label": "CI_DOCKER_IMAGE",
+      "name": "CI_DOCKER_IMAGE",
+      "pinned": false,
+      "required": true
+    },
+        {
+      "default": "evo_docker_engine",
+      "description": "Jenkins Slave where this flow should be executed from",
+      "hasOptions": false,
+      "label": "SLAVE LABEL",
+      "name": "SLAVE_LABEL",
+      "pinned": false,
+      "required": true
+    }
+  ],
+  "schema": "1",
+  "stages":   [
+        {
+      "name": "Check Secret & Cluster Role Creation",
+      "preconditions":       [
+                {
+          "context": {"expression": "\"${#stage('EVNFM Pre Deployment: Service Account / Cluster Role Binding & Internal Container Registry Secret')['status']}\" == \"SUCCEEDED\" or \"${#stage('EVNFM Pre Deployment: Service Account / Cluster Role Binding & Internal Container Registry Secret')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('OSS Common Pre Deployment')['status']}\" == \"SUCCEEDED\" or \"${#stage('OSS Common Pre Deployment')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('ENM Secret for Container EVNFM')['status']}\" == \"SUCCEEDED\" or \"${#stage('ENM Secret for Container EVNFM')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        },
+                {
+          "context": {"expression": "\"${#stage('ENM Secret for VM VNFM')['status']}\" == \"SUCCEEDED\" or \"${#stage('ENM Secret for VM VNFM')['status']}\" == \"SKIPPED\""},
+          "failPipeline": true,
+          "type": "expression"
+        }
+      ],
+      "refId": "Check Secret & Cluster Role Creation",
+      "requisiteStageRefIds":       [
+        "EVNFM Pre Deployment: Service Account / Cluster Role Binding & Internal Container Registry Secret",
+        "OSS Common Pre Deployment",
+        "ENM Secret for Container EVNFM",
+        "ENM Secret for VM VNFM"
+      ],
+      "type": "checkPreconditions"
+    },
+        {
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "job": "OSS-Integration-predeploy-evnfm",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "EVNFM Pre Deployment: Service Account / Cluster Role Binding & Internal Container Registry Secret",
+      "parameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "CI_DOCKER_IMAGE": "${trigger['parameters']['CI_DOCKER_IMAGE']}",
+        "ENV_FILES_BUCKET_NAME": "${trigger['parameters']['ENV_FILES_BUCKET_NAME']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['GERRIT_REFSPEC']}",
+        "KUBECONFIG_FILE": "${trigger['parameters']['KUBECONFIG_FILE']}",
+        "NAMESPACE": "${trigger['parameters']['NAMESPACE']}",
+        "SERACC_CLSROLB_META_NAME": "${trigger['parameters']['SERACC_CLSROLB_META_NAME']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "USER_ID": "${trigger['parameters']['USER_ID']}",
+        "USER_PASSWORD": "${trigger['parameters']['USER_PASSWORD']}"
+      },
+      "refId": "EVNFM Pre Deployment: Service Account / Cluster Role Binding & Internal Container Registry Secret",
+      "requisiteStageRefIds": ["Create Namespaces"],
+      "stageEnabled":       {
+        "expression": "'${#stage('Create Namespaces')['status']}' == 'SUCCEEDED'",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "application": "common-e2e-cicd",
+      "failPipeline": true,
+      "name": "Create Namespaces",
+      "pipeline": "f26e3ffd-8bfb-44f4-9c8d-712384c19994",
+      "pipelineParameters":       {
+        "ARMDOCKER_USER_SECRET": "${trigger['parameters']['ARMDOCKER_USER_SECRET']}",
+        "CI_DOCKER_IMAGE": "${trigger['parameters']['CI_DOCKER_IMAGE']}",
+        "CRD_NAMESPACE": "${trigger['parameters']['CRD_NAMESPACE']}",
+        "ENV_FILES_BUCKET_NAME": "${trigger['parameters']['ENV_FILES_BUCKET_NAME']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['GERRIT_REFSPEC']}",
+        "IGNORE_IF_CREATED": "${trigger['parameters']['IGNORE_IF_CREATED']}",
+        "KUBECONFIG_FILE": "${trigger['parameters']['KUBECONFIG_FILE']}",
+        "NAMESPACE": "${trigger['parameters']['NAMESPACE']}",
+        "SECRET_NAME": "${trigger['parameters']['SECRET_NAME']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}"
+      },
+      "refId": "Create Namespaces",
+      "requisiteStageRefIds": [],
+      "type": "pipeline",
+      "waitForCompletion": true
+    },
+        {
+      "application": "common-e2e-cicd",
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": true,
+      "failPipeline": false,
+      "name": "OSS Common Pre Deployment",
+      "pipeline": "5a7df4f9-e323-4e0b-8eae-15fe78958b51",
+      "pipelineParameters":       {
+        "AAPXY_SECRET_NAME": "${trigger['parameters']['AAPXY_SECRET_NAME']}",
+        "ADP_IAM_AA_CLIENT_PASSWORD": "${trigger['parameters']['ADP_IAM_AA_CLIENT_PASSWORD']}",
+        "CI_DOCKER_IMAGE": "${trigger['parameters']['CI_DOCKER_IMAGE']}",
+        "CLUSTER_ROLE_RELEASE_NAME": "${trigger['parameters']['CLUSTER_ROLE_BINDING_RELEASE_NAME']}",
+        "CRD_NAMESPACE": "${trigger['parameters']['CRD_NAMESPACE']}",
+        "CUSTOM_CLUSTER_ROLE": "${trigger['parameters']['CUSTOM_CLUSTER_ROLE']}",
+        "CUSTOM_PASSWORD": "${trigger['parameters']['CUSTOM_PASSWORD']}",
+        "CUSTOM_USER_ID": "${trigger['parameters']['CUSTOM_USER_ID']}",
+        "DATABASE_PG_SECRET_NAME": "${trigger['parameters']['DATABASE_PG_SECRET_NAME']}",
+        "ENV_FILES_BUCKET_NAME": "${trigger['parameters']['ENV_FILES_BUCKET_NAME']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['GERRIT_REFSPEC']}",
+        "KC_ADMIN_ID": "${trigger['parameters']['KC_ADMIN_ID']}",
+        "KC_PASSWORD": "${trigger['parameters']['KC_PASSWORD']}",
+        "KUBECONFIG_FILE": "${trigger['parameters']['KUBECONFIG_FILE']}",
+        "METRICS_PASSWORD": "${trigger['parameters']['CUSTOM_PASSWORD']}",
+        "METRICS_USER_ID": "${trigger['parameters']['METRICS_USER_ID']}",
+        "MGMT_CREDS_SECRET_NAME": "${trigger['parameters']['MGMT_CREDS_SECRET_NAME']}",
+        "NAMESPACE": "${trigger['parameters']['NAMESPACE']}",
+        "PG_PASSWORD": "${trigger['parameters']['PG_PASSWORD']}",
+        "PG_USER_ID": "${trigger['parameters']['PG_USER_ID']}",
+        "REPLICA_PASSWORD": "${trigger['parameters']['REPLICA_PASSWORD']}",
+        "REPLICA_USER_ID": "${trigger['parameters']['REPLICA_USER_ID']}",
+        "SFTP_CREDENTIALS": "${trigger['parameters']['SFTP_CREDENTIALS']}",
+        "SFTP_SECRET_NAME": "${trigger['parameters']['SFTP_SECRET_NAME']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}",
+        "SUPER_PASSWORD": "${trigger['parameters']['SUPER_PASSWORD']}",
+        "SUPER_USER_ID": "${trigger['parameters']['SUPER_USER_ID']}",
+        "TESTWARE_API_URL": "${trigger['parameters']['TESTWARE_API_URL']}",
+        "TESTWARE_DATABASE_URL": "${trigger['parameters']['TESTWARE_DATABASE_URL']}",
+        "TESTWARE_K6_TOOL_GUI_URL": "${trigger['parameters']['TESTWARE_K6_TOOL_GUI_URL']}"
+      },
+      "refId": "OSS Common Pre Deployment",
+      "requisiteStageRefIds": ["Create Namespaces"],
+      "stageEnabled":       {
+        "expression": "'${#stage('Create Namespaces')['status']}' == 'SUCCEEDED'",
+        "type": "expression"
+      },
+      "type": "pipeline",
+      "waitForCompletion": true
+    },
+        {
+      "continuePipeline": false,
+      "failPipeline": true,
+      "job": "OSS-Integration-predeploy-enm-container-vnfm-connectivity",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "ENM Secret for Container EVNFM",
+      "parameters":       {
+        "CI_DOCKER_IMAGE": "${trigger['parameters']['CI_DOCKER_IMAGE']}",
+        "ENM_CONNECTION_TIMEOUT_IN_MILLISECONDS": "${trigger['parameters']['ENM_CONNECTION_TIMEOUT_IN_MILLISECONDS']}",
+        "ENM_CONTAINER_SECRET_NAME": "${trigger['parameters']['ENM_CONTAINER_SECRET_NAME']}",
+        "ENM_PASSWORD": "${trigger['parameters']['ENM_PASSWORD']}",
+        "ENM_SCRIPTING_CLUSTER_IP": "${trigger['parameters']['ENM_SCRIPTING_CLUSTER_IP']}",
+        "ENM_SCRIPTING_SSH_PORT": "${trigger['parameters']['ENM_SCRIPTING_SSH_PORT']}",
+        "ENM_USERNAME": "${trigger['parameters']['ENM_USERNAME']}",
+        "ENV_FILES_BUCKET_NAME": "${trigger['parameters']['ENV_FILES_BUCKET_NAME']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['GERRIT_REFSPEC']}",
+        "KUBECONFIG_FILE": "${trigger['parameters']['KUBECONFIG_FILE']}",
+        "NAMESPACE": "${trigger['parameters']['NAMESPACE']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}"
+      },
+      "refId": "ENM Secret for Container EVNFM",
+      "requisiteStageRefIds": ["Create Namespaces"],
+      "stageEnabled":       {
+        "expression": "'${trigger['parameters']['CONFIGURE_ENM_AND_VNFM_CONNECTIVITY']}' == 'true'",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    },
+        {
+      "continuePipeline": false,
+      "failPipeline": true,
+      "job": "OSS-Integration-predeploy-enm-vm-vnfm-connectivity",
+      "master": "oss-aispinn-fem5s11-eiffel052",
+      "name": "ENM Secret for VM VNFM",
+      "parameters":       {
+        "CI_DOCKER_IMAGE": "${trigger['parameters']['CI_DOCKER_IMAGE']}",
+        "ENM_MASTER_SERVER_HOSTNAME": "${trigger['parameters']['ENM_MASTER_SERVER_HOSTNAME']}",
+        "ENM_MASTER_SERVICE_IP": "${trigger['parameters']['ENM_MASTER_SERVICE_IP']}",
+        "ENM_NOTIFICATION_SERVICE_HOSTNAME": "${trigger['parameters']['ENM_NOTIFICATION_SERVICE_HOSTNAME']}",
+        "ENM_NOTIFICATION_SERVICE_IP": "${trigger['parameters']['ENM_NOTIFICATION_SERVICE_IP']}",
+        "ENM_VM_SECRET_NAME": "${trigger['parameters']['ENM_VM_SECRET_NAME']}",
+        "ENV_FILES_BUCKET_NAME": "${trigger['parameters']['ENV_FILES_BUCKET_NAME']}",
+        "FUNCTIONAL_USER_SECRET": "${trigger['parameters']['FUNCTIONAL_USER_SECRET']}",
+        "GERRIT_REFSPEC": "${trigger['parameters']['GERRIT_REFSPEC']}",
+        "KUBECONFIG_FILE": "${trigger['parameters']['KUBECONFIG_FILE']}",
+        "NAMESPACE": "${trigger['parameters']['NAMESPACE']}",
+        "SLAVE_LABEL": "${trigger['parameters']['SLAVE_LABEL']}"
+      },
+      "refId": "ENM Secret for VM VNFM",
+      "requisiteStageRefIds": ["Create Namespaces"],
+      "stageEnabled":       {
+        "expression": "'${trigger['parameters']['CONFIGURE_ENM_AND_VNFM_CONNECTIVITY']}' == 'true'",
+        "type": "expression"
+      },
+      "type": "jenkins"
+    }
+  ],
+  "triggers": [],
+  "updateTs": "1718116120697"
+}

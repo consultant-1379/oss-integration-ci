@@ -1,0 +1,4 @@
+-DhelmDesignRule.config.eric-oss-dmm.DR-D1121-102=skip
+-DhelmDesignRule.config.eric-oss-kf-sz-op.DR-D1123-111=skip
+-DhelmDesignRule.config.eric-oss-kf-sz-op.DR-D1123-124=skip
+-DhelmDesignRule.config.eric-oss-kf-bridge-sz.DR-D1124-020=skip

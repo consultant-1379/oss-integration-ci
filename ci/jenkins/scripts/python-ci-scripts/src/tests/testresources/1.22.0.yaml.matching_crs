@@ -1,0 +1,452 @@
+---
+# Source: eric-sec-sip-tls-crd/templates/internal-certificate-crd.yaml
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: internalcertificates.siptls.sec.ericsson.com
+  labels:
+    app: "eric-sec-sip-tls-crd"
+    app.kubernetes.io/instance: "eric-sec-sip-tls-crd"
+    app.kubernetes.io/name: "eric-sec-sip-tls-crd"
+    app.kubernetes.io/version: "5.0.0_29"
+    chart: "eric-sec-sip-tls-crd-5.0.0_29"
+    heritage: "Helm"
+    release: "eric-sec-sip-tls-crd"
+  annotations:
+    ericsson.com/product-name: "Service Identity Provider TLS CRD"
+    ericsson.com/product-number: "CXC 174 2970"
+    ericsson.com/product-revision: "5.0.0"
+    helm.sh/resource-policy: "keep"
+    meta.helm.sh/release-name: "eric-sec-sip-tls-crd"
+    meta.helm.sh/release-namespace: "eric-crd-ns"
+spec:
+  group: siptls.sec.ericsson.com
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: false
+    additionalPrinterColumns:
+      - name: CN
+        type: string
+        description: The requested certificate common name.
+        jsonPath: .spec.certificate.subject.cn
+      - name: Secret
+        type: string
+        description: The Kubernetes secret where the certificate and key are stored.
+        jsonPath: .spec.kubernetes.generatedSecretName
+    schema:
+      openAPIV3Schema:
+        type: object
+        description: InternalCertificate is used to request a certificate and private key from SIP-TLS.
+        properties:
+          spec:
+            required:
+              - kubernetes
+              - certificate
+            type: object
+            description: Spec defines the properties of the certificate and private key.
+            properties:
+              kubernetes:
+                type: object
+                description: Defines properties related to the storage of the certificate and private key in Kubernetes.
+                required:
+                  - generatedSecretName
+                properties:
+                  generatedSecretName:
+                    type: string
+                    description: The secret where the certificate and key are stored. The same secret should not be used
+                      for multiple purposes.
+                    # Use the same regex as used by Kubernetes API Server
+                    pattern: '^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$'
+                  certificateName:
+                    type: string
+                    description: The YAML key name of the certificate in the secret. If not given, 'cert.pem' is used.
+                    # Disallow whitespace
+                    pattern: '^[^\s]+$'
+                  privateKeyName:
+                    type: string
+                    description: The YAML key name of the private key in the secret. If not given, 'key.pem' is used.
+                    # Disallow whitespace
+                    pattern: '^[^\s]+$'
+                  privateKeyFormat:
+                    type: string
+                    description: The format of the private key in the secret. One of 'pkcs1' or 'pkcs8'. If not given,
+                      'pkcs8' is used.
+                    enum:
+                      - 'pkcs1'
+                      - 'pkcs8'
+                  secretType:
+                    type: string
+                    description: The type of the Kubernetes secret, 'generic' or 'tls'. Note that privateKeyName and
+                      certificateName will be overwritten, if specified. Default is generic.
+                    enum:
+                      - 'generic'
+                      - 'tls'
+              certificate:
+                type: object
+                description: Defines properties related to the content of the certificate.
+                required:
+                  - subject
+                  - extendedKeyUsage
+                properties:
+                  subject:
+                    type: object
+                    description: Properties related to X.509 'Subject' field.
+                    required:
+                      - cn
+                    properties:
+                      cn:
+                        type: string
+                        description: The Subject Common Name (CN) of the certificate. This typically corresponds to the
+                          hostname of the service or a client identifier.
+                        maxLength: 63
+                  validity:
+                    type: object
+                    description: Properties related to X.509 'Not After' field and renewal period.
+                    properties:
+                      overrideTtl:
+                        type: integer
+                        description: The duration (seconds) that the certificate is valid. This is an absolute value. If
+                          not specified, the default time to live configured in SIP-TLS is used.
+                        minimum: 180
+                        maximum: 315576000
+                      overrideLeadTime:
+                        type: integer
+                        description: The lead time (seconds) before certificate is renewed. This is an absolute value. If
+                          not given, the lead time is calculated from the renewalThreshold and the time to live
+                          of the certificate. Lead time must be smaller than the certificate validity time.
+                        minimum: 180
+                  issuer:
+                    type: object
+                    description: Properties related to X.509 'Issuer' field.
+                    properties:
+                      reference:
+                        type: string
+                        description: The identifier for the Issuer CA. Decides from which CA to request the certificate.
+                          It must be the same as the InternalUserCA custom resource metadata.name field. If
+                          left empty, the certificate is issued by SIP-TLS intermediate CA which is part of
+                          the SIP-TLS trusted root CA chain.
+                        # Disallow whitespace
+                        pattern: '^[^\s]*$'
+                  subjectAlternativeName:
+                    type: object
+                    description: Properties related to X.509 v3 extension 'Subject Alternative Name'.
+                    properties:
+                      populateKubernetesDns:
+                        type: boolean
+                        description: Whether to populate the Subject Alt Name with fully qualified DNS names of the
+                          cluster, based on the common name value from 'certificate.subject.cn'. If true, the
+                          following DNS are populated automatically. '<common-name>',
+                          '<common-name>.<namespace>', '<common-name>.<namespace>.svc',
+                          '<common-name>.<namespace>.svc.<cluster-domain>'.
+                      dns:
+                        type: array
+                        description: List of additional DNS to populate into Subject Alt Name field.
+                        items:
+                          type: string
+                          # Disallow whitespace
+                          pattern: '^[^\s]+$'
+                  extendedKeyUsage:
+                    type: object
+                    description: Properties related to X.509 v3 extension 'Extended Key Usage'.
+                    required:
+                      - tlsClientAuth
+                      - tlsServerAuth
+                    properties:
+                      tlsClientAuth:
+                        type: boolean
+                        description: Whether Extended Key Usage flag 'TLS Web Client Authentication' is set or not.
+                      tlsServerAuth:
+                        type: boolean
+                        description: Whether Extended Key Usage flag 'TLS Web Server Authentication' is set or not.
+  - name: v1
+    served: true
+    storage: true
+    additionalPrinterColumns:
+      - name: CN
+        type: string
+        description: The requested certificate common name.
+        jsonPath: .spec.certificate.subject.cn
+      - name: Secret
+        type: string
+        description: The Kubernetes secret where the certificate and key are stored.
+        jsonPath: .spec.kubernetes.generatedSecretName
+    schema:
+      openAPIV3Schema:
+        type: object
+        description: InternalCertificate is used to request a certificate and private key from SIP-TLS.
+        properties:
+          spec:
+            required:
+              - kubernetes
+              - certificate
+            type: object
+            description: Spec defines the properties of the certificate and private key.
+            properties:
+              kubernetes:
+                type: object
+                description: Defines properties related to the storage of the certificate and private key in Kubernetes.
+                required:
+                  - generatedSecretName
+                properties:
+                  generatedSecretName:
+                    type: string
+                    description: The secret where the certificate and key are stored. The same secret should not be used
+                      for multiple purposes.
+                    # Use the same regex as used by Kubernetes API Server
+                    pattern: '^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$'
+                  certificateName:
+                    type: string
+                    description: The YAML key name of the certificate in the secret. If not given, 'cert.pem' is used.
+                    # Disallow whitespace
+                    pattern: '^[^\s]+$'
+                  privateKeyName:
+                    type: string
+                    description: The YAML key name of the private key in the secret. If not given, 'key.pem' is used.
+                    # Disallow whitespace
+                    pattern: '^[^\s]+$'
+                  privateKeyFormat:
+                    type: string
+                    description: The format of the private key in the secret. One of 'pkcs1' or 'pkcs8'. If not given,
+                      'pkcs8' is used.
+                    enum:
+                      - 'pkcs1'
+                      - 'pkcs8'
+                  secretType:
+                    type: string
+                    description: The type of the Kubernetes secret, 'generic' or 'tls'. Note that privateKeyName and
+                      certificateName will be overwritten, if specified. Default is generic.
+                    enum:
+                      - 'generic'
+                      - 'tls'
+              certificate:
+                type: object
+                description: Defines properties related to the content of the certificate.
+                required:
+                  - subject
+                  - extendedKeyUsage
+                properties:
+                  subject:
+                    type: object
+                    description: Properties related to X.509 'Subject' field.
+                    required:
+                      - cn
+                    properties:
+                      cn:
+                        type: string
+                        description: The Subject Common Name (CN) of the certificate. This typically corresponds to the
+                          hostname of the service or a client identifier.
+                        maxLength: 63
+                  validity:
+                    type: object
+                    description: Properties related to X.509 'Not After' field and renewal period.
+                    properties:
+                      overrideTtl:
+                        type: integer
+                        description: The duration (seconds) that the certificate is valid. This is an absolute value. If
+                          not specified, the default time to live configured in SIP-TLS is used.
+                        minimum: 180
+                        maximum: 315576000
+                      overrideLeadTime:
+                        type: integer
+                        description: The lead time (seconds) before certificate is renewed. This is an absolute value. If
+                          not given, the lead time is calculated from the renewalThreshold and the time to live
+                          of the certificate. Lead time must be smaller than the certificate validity time.
+                        minimum: 180
+                  issuer:
+                    type: object
+                    description: Properties related to X.509 'Issuer' field.
+                    properties:
+                      reference:
+                        type: string
+                        description: The identifier for the Issuer CA. Decides from which CA to request the certificate.
+                          It must be the same as the InternalUserCA custom resource metadata.name field. If
+                          left empty, the certificate is issued by SIP-TLS intermediate CA which is part of
+                          the SIP-TLS trusted root CA chain.
+                        # Disallow whitespace
+                        pattern: '^[^\s]*$'
+                  subjectAlternativeName:
+                    type: object
+                    description: Properties related to X.509 v3 extension 'Subject Alternative Name'.
+                    properties:
+                      populateKubernetesDns:
+                        type: boolean
+                        description: Whether to populate the Subject Alt Name with fully qualified DNS names of the
+                          cluster, based on the common name value from 'certificate.subject.cn'. If true, the
+                          following DNS are populated automatically. '<common-name>',
+                          '<common-name>.<namespace>', '<common-name>.<namespace>.svc',
+                          '<common-name>.<namespace>.svc.<cluster-domain>'.
+                      dns:
+                        type: array
+                        description: List of additional DNS to populate into Subject Alt Name field.
+                        items:
+                          type: string
+                          # Disallow whitespace
+                          pattern: '^[^\s]+$'
+                  extendedKeyUsage:
+                    type: object
+                    description: Properties related to X.509 v3 extension 'Extended Key Usage'.
+                    required:
+                      - tlsClientAuth
+                      - tlsServerAuth
+                    properties:
+                      tlsClientAuth:
+                        type: boolean
+                        description: Whether Extended Key Usage flag 'TLS Web Client Authentication' is set or not.
+                      tlsServerAuth:
+                        type: boolean
+                        description: Whether Extended Key Usage flag 'TLS Web Server Authentication' is set or not.
+  scope: Namespaced
+  names:
+    plural: internalcertificates
+    singular: internalcertificate
+    kind: InternalCertificate
+    shortNames:
+      - intcert
+      - intcerts
+      - internalcert
+      - internalcerts
+  preserveUnknownFields: false
+---
+# Source: eric-cloud-native-base/charts/eric-data-distributed-coordinator-ed/templates/etcdctl-client-certificate.yaml
+apiVersion: siptls.sec.ericsson.com/v1
+kind: InternalCertificate
+metadata:
+  name: eric-data-distributed-coordinator-ed-etcdctl-client-cert
+  labels:
+    app: "eric-data-distributed-coordinator-ed"
+    app.kubernetes.io/instance: "eric-cloud-native-base"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-data-distributed-coordinator-ed"
+    app.kubernetes.io/version: "eric-data-distributed-coordinator-ed-4.4.0_45"
+  annotations:
+    ericsson.com/product-name: "Distributed Coordinator ED"
+    ericsson.com/product-number: "CXC 201 2039"
+    ericsson.com/product-revision: "4.4.0"
+spec:
+  kubernetes:
+    generatedSecretName: eric-data-distributed-coordinator-ed-etcdctl-client-cert
+    certificateName: clicert.pem
+    privateKeyName: cliprivkey.pem
+  certificate:
+    subject:
+      cn: root
+    issuer:
+      reference: eric-data-distributed-coordinator-ed-ca
+    extendedKeyUsage:
+      tlsClientAuth: true
+      tlsServerAuth: false
+    validity:
+      overrideTtl: 604800
+      overrideLeadTime: 601200
+---
+# Source: eric-cloud-native-base/charts/eric-data-distributed-coordinator-ed/templates/peer-certificate.yaml
+apiVersion: siptls.sec.ericsson.com/v1
+kind: InternalCertificate
+metadata:
+  name: eric-data-distributed-coordinator-ed-peer-client-cert
+  labels:
+    app: "eric-data-distributed-coordinator-ed"
+    app.kubernetes.io/instance: "eric-cloud-native-base"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-data-distributed-coordinator-ed"
+    app.kubernetes.io/version: "eric-data-distributed-coordinator-ed-4.4.0_45"
+  annotations:
+    ericsson.com/product-name: "Distributed Coordinator ED"
+    ericsson.com/product-number: "CXC 201 2039"
+    ericsson.com/product-revision: "4.4.0"
+spec:
+  kubernetes:
+    generatedSecretName: eric-data-distributed-coordinator-ed-peer-cert
+    certificateName: srvcert.pem
+    privateKeyName: srvprivkey.pem
+  certificate:
+    subject:
+      cn: eric-data-distributed-coordinator-ed-peer
+    subjectAlternativeName:
+      dns: ["*.eric-data-distributed-coordinator-ed-peer.eric-app-ns.svc.cluster.local","*.eric-data-distributed-coordinator-ed.eric-app-ns.svc.cluster.local","certified-scrape-target"]
+    extendedKeyUsage:
+      tlsClientAuth: true
+      tlsServerAuth: true
+    validity:
+      overrideTtl: 15778800
+      overrideLeadTime: 15778000
+---
+# Source: eric-cloud-native-base/charts/eric-data-distributed-coordinator-ed/templates/server-certificate.yaml
+apiVersion: siptls.sec.ericsson.com/v1
+kind: InternalCertificate
+metadata:
+  name: eric-data-distributed-coordinator-ed-server-cert
+  labels:
+    app: "eric-data-distributed-coordinator-ed"
+    app.kubernetes.io/instance: "eric-cloud-native-base"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/name: "eric-data-distributed-coordinator-ed"
+    app.kubernetes.io/version: "eric-data-distributed-coordinator-ed-4.4.0_45"
+  annotations:
+    ericsson.com/product-name: "Distributed Coordinator ED"
+    ericsson.com/product-number: "CXC 201 2039"
+    ericsson.com/product-revision: "4.4.0"
+spec:
+  kubernetes:
+    generatedSecretName: eric-data-distributed-coordinator-ed-cert
+    certificateName: srvcert.pem
+    privateKeyName: srvprivkey.pem
+  certificate:
+    subject:
+      cn: eric-data-distributed-coordinator-ed
+    subjectAlternativeName:
+      dns: ["*.eric-data-distributed-coordinator-ed-peer.eric-app-ns.svc.cluster.local","*.eric-data-distributed-coordinator-ed.eric-app-ns.svc.cluster.local","certified-scrape-target"]
+    extendedKeyUsage:
+      tlsClientAuth: true
+      tlsServerAuth: true
+    validity:
+      overrideTtl: 604800
+      overrideLeadTime: 601200
+---
+# Source: eric-cloud-native-base/charts/eric-sec-key-management/templates/client-certificate.yaml
+apiVersion: siptls.sec.ericsson.com/v1
+kind: InternalCertificate
+metadata:
+  name: eric-sec-key-management-client-certificate
+  labels:
+    app: "eric-sec-key-management"
+    app.kubernetes.io/instance: "eric-cloud-native-base"
+    app.kubernetes.io/name: "eric-sec-key-management"
+    app.kubernetes.io/version: "4.3.0_16"
+    chart: "eric-sec-key-management-4.3.0_16"
+    heritage: "Helm"
+    release: "eric-cloud-native-base"
+  annotations:
+    ericsson.com/product-name: "Key Management Service Helm Chart"
+    ericsson.com/product-number: "CXC1742793"
+    ericsson.com/product-revision: "4.3.0"
+spec:
+  kubernetes:
+    generatedSecretName: eric-sec-key-management-client-cert
+    certificateName: 'clicert.pem'
+    privateKeyName: 'cliprivkey.pem'
+  certificate:
+    subject:
+      cn: eric-sec-key-management
+    validity:
+      # Renewal policy:
+      #
+      # The time to live of the certificate (in seconds). We override
+      # the default certificate time-to-live in order to avoid deadlock
+      # when cluster is down. Since KMS is dependent on DCED, if the
+      # KMS certificate expires then it cannot communicate with DCED
+      # and SIP-TLS can no longer provision certificates. It would
+      # require manual intervention. Set to one week (7 days = 604800 s).
+      #
+      # The certificate is renewed after 1 hour, meaning the lead time
+      # is 7 days - 1 hour = 604800 s - 3600 s = 601200 s. This means
+      # that it takes about 6.95 days before a valid certificate expires.
+      overrideTtl: 604800
+      overrideLeadTime: 601200
+    issuer:
+      reference: eric-data-distributed-coordinator-ed-ca
+    extendedKeyUsage:
+      tlsClientAuth: true
+      tlsServerAuth: false
+---

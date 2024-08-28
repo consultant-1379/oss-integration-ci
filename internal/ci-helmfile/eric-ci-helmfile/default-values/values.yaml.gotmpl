@@ -1,0 +1,70 @@
+# This file should contain project level configuration only, that can't be
+# handled at the Application Chart Level.
+# The values entered here will not be exposed to the customer.
+
+global:
+  iam:
+    clientId: eo
+    adminSecret: eric-sec-access-mgmt-creds
+    tlsSecret: iam-tls-secret
+    userKey: kcadminid
+    passwordKey: kcpasswd
+  pullSecret: "k8s-registry-secret"
+  security:
+    tls:
+      enabled: false
+    sasl:
+      enabled: true
+  networkPolicy:
+    enabled: true
+  ingressClass: "oss_iccr"
+  iccrAppIngresses: false
+  serviceMesh:
+    enabled: true
+
+#This below snippet eric-lm-combined-server will deleted once LM config is added to site-values-template.yaml file
+eric-cloud-native-base:
+  eric-lm-combined-server:
+    licenseServerClient:
+      licenseServer:
+        thrift:
+          # Please provide following mandatory value when License Manager service is enabled
+          # Mandatory: licenseServerClient.licenseServer.thrift.host - The NELS thrift server address or service name
+          host: ""
+
+secret-eric-data-object-storage-mn:
+  enabled: true
+
+eric-cncs-oss-pre-config:
+  enabled: true
+
+eric-oss-common-base:
+  ingress:
+    enabled: false
+
+eric-eo-so:
+  ingress:
+    enabled: false
+
+eric-cncs-oss-config:
+  ingress:
+    enabled: false
+
+eric-oss-pf:
+  ingress:
+    enabled: false
+
+eric-oss-uds:
+  ingress:
+    enabled: false
+
+eric-oss-adc:
+  ingress:
+    enabled: false
+
+eric-oss-app-mgr:
+  ingress:
+    enabled: false
+  eric-lcm-container-registry:
+    ingress:
+      enabled: false
